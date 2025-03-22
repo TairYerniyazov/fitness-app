@@ -14,7 +14,7 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController)
         }
         composable(Screen.ExerciseKindList.route) {
-             ExerciseKindListScreen()
+            ExerciseKindListScreen()
         }
     }
 }

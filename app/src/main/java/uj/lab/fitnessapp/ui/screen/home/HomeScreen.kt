@@ -1,10 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -53,7 +50,11 @@ fun HomeScreen(navController: NavController) {
                         icon = { Icon(it.first, contentDescription = null) },
                         selected = navController.currentDestination?.route == it.second?.route,
                         onClick = {
-                            it.second?.let { screen -> navController.navigate(screen.route) }
+                            it.second?.let { screen ->
+                                if (navController.currentDestination?.route != screen.route) {
+                                    navController.navigate(screen.route)
+                                }
+                            }
                         }
                     )
                 }

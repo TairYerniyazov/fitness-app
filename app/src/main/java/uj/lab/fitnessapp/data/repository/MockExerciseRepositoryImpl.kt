@@ -9,7 +9,7 @@ import javax.inject.Singleton
  * It's temporary since we don't have database yet.
  */
 @Singleton
-class MockExerciseRepositoryImpl @Inject constructor() : ExerciseRepository{
+class MockExerciseRepositoryImpl @Inject constructor() : ExerciseRepository {
     override fun getExerciseKinds(): List<ExerciseKind> = listOf(
         ExerciseKind(1, "Running"),
         ExerciseKind(2, "Swimming"),
