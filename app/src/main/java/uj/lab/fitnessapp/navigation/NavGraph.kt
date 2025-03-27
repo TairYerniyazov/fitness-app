@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import uj.lab.fitnessapp.ui.component.DummyCreatorScreen
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseKindListScreen
 import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 
@@ -14,7 +15,13 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController)
         }
         composable(Screen.ExerciseKindList.route) {
-            ExerciseKindListScreen()
+            ExerciseKindListScreen(navController)
+        }
+        // remove when proper screen is created
+        composable("dummy_creator/{exerciseKindName}") {
+            backStackEntry ->
+            val exerciseKindName = backStackEntry.arguments?.getString("exerciseKindName") ?: ""
+            DummyCreatorScreen(exerciseKindName)
         }
     }
 }
