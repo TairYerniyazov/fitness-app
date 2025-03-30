@@ -5,28 +5,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavController
+import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 
 /**
  * Screen displaying a list of exercise kinds.
  * Screen 2 in figma.
  */
 @Composable
-fun ExerciseKindListScreen() {
+fun ExerciseKindListScreen(navController: NavController) {
     val viewModel = hiltViewModel<ExerciseKindListViewModel>()
     val state by viewModel.uiState.collectAsState()
 
     Scaffold { padding ->
         Column(Modifier.padding(padding)) {
-            Text("Exercise kind list screen")
-            LazyColumn {
+            LazyColumn(Modifier.padding((padding))) {
                 items(state.exerciseKinds) { exerciseKind ->
-                    Text(exerciseKind.name)
+                        ExerciseKindListEntry(
+                            exerciseKind = exerciseKind,
+                            // should be replaced with proper screen
+                            onClick = { navController.navigate("dummy_creator/${exerciseKind.name}")}
+                        )
                 }
             }
         }
