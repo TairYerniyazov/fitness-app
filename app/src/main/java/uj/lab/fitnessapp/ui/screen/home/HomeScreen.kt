@@ -1,22 +1,21 @@
 package uj.lab.fitnessapp.ui.screen.home
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
+
 
 /**
  * Home screen.
@@ -28,12 +27,26 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         content = { padding ->
-            Column(Modifier.padding(padding)) {
-                Text("Home screen")
-                Button(onClick = {
-                    navController.navigate(Screen.ExerciseKindList.route)
-                }) {
-                    Text("Go to exercise kind list")
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)) {
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.ExerciseKindList.route)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20)),
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(18.dp)
+                        .height(56.dp)
+                        .fillMaxWidth(0.8f)
+                ) {
+                    Text(
+                        "Dodaj instancję ćwiczenia",
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
                 }
             }
         },
