@@ -14,7 +14,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
+import uj.lab.fitnessapp.ui.theme.backgroundColor
+import uj.lab.fitnessapp.ui.theme.green1
 
 
 /**
@@ -26,6 +27,7 @@ fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
 
     Scaffold(
+        containerColor = backgroundColor,
         content = { padding ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -34,18 +36,18 @@ fun HomeScreen(navController: NavController) {
                     onClick = {
                         navController.navigate(Screen.ExerciseKindList.route)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B5E20)),
+                    colors = ButtonDefaults.buttonColors(containerColor = green1),
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(18.dp)
                         .height(56.dp)
-                        .fillMaxWidth(0.8f)
+                        .fillMaxWidth(0.6f)
                 ) {
                     Text(
                         "Dodaj instancję ćwiczenia",
-                        fontSize = 18.sp,
-                        color = Color.White
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge
                     )
                 }
             }

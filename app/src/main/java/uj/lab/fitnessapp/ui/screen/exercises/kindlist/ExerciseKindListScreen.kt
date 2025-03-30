@@ -1,5 +1,6 @@
 package uj.lab.fitnessapp.ui.screen.exercises.kindlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
+import uj.lab.fitnessapp.ui.theme.backgroundColor
 
 /**
  * Screen displaying a list of exercise kinds.
@@ -23,12 +25,16 @@ fun ExerciseKindListScreen(navController: NavController) {
     val state by viewModel.uiState.collectAsState()
 
     Scaffold { padding ->
-        Column(Modifier.padding(padding)) {
+        Column(Modifier
+            .background(backgroundColor)
+            .padding(padding)
+        ) {
             LazyColumn(Modifier.padding((padding))) {
                 items(state.exerciseKinds) { exerciseKind ->
                         ExerciseKindListEntry(
                             exerciseKind = exerciseKind,
-                            onClick = { navController.navigate("exercise_instance_create/${exerciseKind.name}") }
+                            onClick = { navController.navigate(
+                                "exercise_instance_create/${exerciseKind.name}") }
                         )
                 }
             }

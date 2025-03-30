@@ -87,17 +87,6 @@ fun ExerciseKindListEntry(
         }
     }
 
-// remove when proper screen is created
-@Composable
-fun DummyCreatorScreen(exerciseName: String) {
-    Scaffold(
-        content = { padding ->
-            Column(Modifier.padding(padding)) {
-                Text(exerciseName)
-            }
-        })
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ExerciseKindListEntryPreview() {
