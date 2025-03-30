@@ -35,7 +35,7 @@ import uj.lab.fitnessapp.ui.theme.buttonGrey
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 
 @Composable
-fun ExerciseInstanceCreateScreen(navController: NavController) {
+fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { padding ->
@@ -56,7 +56,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController) {
                 shape = RoundedCornerShape(4.dp),
             ) {
                 Text(
-                    text = "Exercise Name",
+                    text = exerciseKind,
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -136,5 +136,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController) {
 @Preview
 @Composable
 fun ExerciseInstanceCreateScreenPreview() {
-    ExerciseInstanceCreateScreen(navController = NavController(LocalContext.current))
+    ExerciseInstanceCreateScreen(
+        navController = NavController(LocalContext.current),
+        exerciseKind = "Exercise Name")
 }

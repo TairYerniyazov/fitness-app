@@ -28,8 +28,7 @@ fun ExerciseKindListScreen(navController: NavController) {
                 items(state.exerciseKinds) { exerciseKind ->
                         ExerciseKindListEntry(
                             exerciseKind = exerciseKind,
-                            // should be replaced with proper screen
-                            onClick = { navController.navigate("dummy_creator/${exerciseKind.name}")}
+                            onClick = { navController.navigate("exercise_instance_create/${exerciseKind.name}") }
                         )
                 }
             }
