@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
     tableName = "cardioSets",
     foreignKeys = [ForeignKey(
         entity = ExerciseInstance::class,
-        parentColumns = ["instanceID"],
+        parentColumns = ["ID"],
         childColumns = ["instanceID"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class CardioSet(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "cardioSetID") val cardioSetID: Int,
+    @ColumnInfo(name = "ID") val id: Int,
     @ColumnInfo(name = "instanceID") val instanceID: Int,
     @ColumnInfo(name = "time") val time: Int, //TODO: zmienić na S/M/H
     @ColumnInfo(name = "distance") val distance: Int //metry

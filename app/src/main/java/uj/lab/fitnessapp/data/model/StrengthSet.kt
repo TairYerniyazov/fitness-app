@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
     tableName = "strengthSets",
     foreignKeys = [ForeignKey(
         entity = ExerciseInstance::class,
-        parentColumns = ["instanceID"],
+        parentColumns = ["ID"],
         childColumns = ["instanceID"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class StrengthSet(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "strengthSetID") val strengthSetID: Int,
+    @ColumnInfo(name = "ID") val id: Int,
     @ColumnInfo(name = "instanceID") val instanceID: Int,
     @ColumnInfo(name = "reps") val reps: Int,
     @ColumnInfo(name = "load") val load: Int //kg

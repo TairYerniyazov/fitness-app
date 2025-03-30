@@ -10,14 +10,14 @@ import java.sql.Date
     tableName = "exerciseInstances",
     foreignKeys = [ForeignKey(
         entity = Exercise::class,
-        parentColumns = ["exerciseID"],
+        parentColumns = ["ID"],
         childColumns = ["exerciseID"],
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class ExerciseInstance(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "instanceID") val instanceID: Int,
+    @ColumnInfo(name = "ID") val id: Int,
     @ColumnInfo(name = "exerciseID") val exerciseID: Int,
     @ColumnInfo(name = "date") val date: String, // TODO: zamienić ten typ na D/M/Y
 )
