@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
-import uj.lab.fitnessapp.data.repository.MockExerciseRepositoryImpl
+import uj.lab.fitnessapp.data.repository.ExerciseRepositoryImpl
 import javax.inject.Singleton
 
 @Module
@@ -15,5 +15,5 @@ abstract class RepositoryModule {
     // Once the real implementation is ready, this should be changed to the real implementation
     @Singleton
     @Binds
-    abstract fun bindExerciseRepository(repository: MockExerciseRepositoryImpl): ExerciseRepository
+    abstract fun bindExerciseRepository(repository: ExerciseRepositoryImpl): ExerciseRepository
 }

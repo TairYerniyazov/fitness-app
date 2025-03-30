@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseKindListScreen
+import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListScreen
 import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 
 @Composable
@@ -14,7 +14,7 @@ fun Navigation(navController: NavHostController) {
             HomeScreen(navController)
         }
         composable(Screen.ExerciseKindList.route) {
-            ExerciseKindListScreen()
+            ExerciseListScreen()
         }
     }
 }

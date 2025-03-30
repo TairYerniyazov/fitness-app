@@ -17,16 +17,16 @@ import androidx.compose.runtime.getValue
  * Screen 2 in figma.
  */
 @Composable
-fun ExerciseKindListScreen() {
-    val viewModel = hiltViewModel<ExerciseKindListViewModel>()
+fun ExerciseListScreen() {
+    val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
 
     Scaffold { padding ->
         Column(Modifier.padding(padding)) {
             Text("Exercise kind list screen")
             LazyColumn {
-                items(state.exerciseKinds) { exerciseKind ->
-                    Text(exerciseKind.name)
+                items(state.exercises) { exercise ->
+                    Text(exercise.exerciseName)
                 }
             }
         }
