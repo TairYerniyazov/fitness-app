@@ -6,7 +6,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import uj.lab.fitnessapp.ui.component.DummyCreatorScreen
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseKindListScreen
 import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateScreen
