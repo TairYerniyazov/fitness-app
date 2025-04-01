@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.data.source
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
@@ -17,7 +18,7 @@ import uj.lab.fitnessapp.data.repository.WorkoutSetDao
 import java.util.concurrent.Executors
 
 @Database(
-    entities = [Exercise::class, ExerciseInstance::class, CardioSet::class,StrengthSet::class],
+    entities = [Exercise::class, ExerciseInstance::class, WorkoutSet::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -41,7 +42,11 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "appDatabase"
                 )
-                .allowMainThreadQueries()
+                .setQueryCallback(QueryCallback { sqlQuery, bindArgs ->
+                    println("SQL Query: $sqlQuery SQL Args: $bindArgs")
+                }, Executors.newSingleThreadExecutor())
+                .allowMainThreadQueries() //TODO: rozwiązać problem z tym
+                .fallbackToDestructiveMigration() //TODO: być może nie jest to najlepsze wyjście
                 .addCallback(roomCallback)
                 .build()
 
@@ -72,17 +77,30 @@ abstract class AppDatabase : RoomDatabase() {
             // zmienić na rozwiązanie z ioThread
 
             val exerciseDao = db.exerciseDao()
-//            val exerciseInstanceDao = db.exerciseInstanceDao()
-//            val workoutSetDao = db.workoutSetDao()
+            val exerciseInstanceDao = db.exerciseInstanceDao()
+            val workoutSetDao = db.workoutSetDao()
 
             //TODO: tutaj wypełnienie bazy danymi przy pierwszym odpaleniu
             val ex1 = Exercise(0, "Bench Press", false, false, false)
             val ex2 = Exercise(0, "Squat", false, false, false)
             val ex3 = Exercise(0, "Bike", true, false, false)
 
+
             exerciseDao.insertExercise(ex1)
             exerciseDao.insertExercise(ex2)
             exerciseDao.insertExercise(ex3)
+
+            val exInst = exerciseDao.getExerciseByName("Bench Press")
+            exerciseInstanceDao.insertInstance(ExerciseInstance(0, exInst.id, "01.04.2025"))
+
+            val category = exInst.workoutType// warunkowe wybranie pól do wypełnienia na podstawie tego typu
+            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 10, 80.0, null, null))
+            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 8, 82.5, null, null))
+            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 6, 85.0, null, null))
+            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 4, 90.0, null, null))
+
+
+            Log.i("_____TESTING_____", exerciseInstanceDao.getExerciseInstanceWithDetails(exInst.id).toString())
 
         }
 

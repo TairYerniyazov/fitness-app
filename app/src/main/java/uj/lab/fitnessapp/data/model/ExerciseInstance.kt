@@ -3,17 +3,20 @@ package uj.lab.fitnessapp.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.sql.Date
 
 @Entity(
     tableName = "exerciseInstances",
-    foreignKeys = [ForeignKey(
-        entity = Exercise::class,
-        parentColumns = ["ID"],
-        childColumns = ["exerciseID"],
-        onDelete = ForeignKey.CASCADE
-    )]
+    foreignKeys = [
+        ForeignKey(
+            entity = Exercise::class,
+            parentColumns = ["ID"],
+            childColumns = ["exerciseID"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["exerciseID"])]
 )
 data class ExerciseInstance(
     @PrimaryKey(autoGenerate = true)

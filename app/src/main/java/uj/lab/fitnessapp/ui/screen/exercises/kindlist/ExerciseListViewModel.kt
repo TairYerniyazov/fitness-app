@@ -9,9 +9,11 @@ import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import javax.inject.Inject
+
+
 @HiltViewModel
 class ExerciseListViewModel @Inject constructor(
-    private val exerciseRepository: ExerciseRepository
+    private val exerciseRepository: ExerciseRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList()))

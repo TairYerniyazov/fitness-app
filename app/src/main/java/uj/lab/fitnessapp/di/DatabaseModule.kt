@@ -14,6 +14,7 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Singleton
     @Provides
+    /* https://stackoverflow.com/questions/63072927/how-to-inject-application-context-in-a-repository-with-hilt */
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return AppDatabase.getDatabase(context)
     }

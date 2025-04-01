@@ -17,25 +17,27 @@ class ExerciseRepositoryImpl @Inject constructor(
         exerciseDao.insertExercise(exercise)
     }
 
-    override fun updateExercise(exercise: Exercise){
+    override suspend fun updateExercise(exercise: Exercise){
         exerciseDao.updateExercise(exercise)
     }
 
-    override fun unsafeDeleteExercise(exercise: Exercise){
+    override suspend fun unsafeDeleteExercise(exercise: Exercise){
         exerciseDao.unsafeDeleteExercise(exercise)
     }
 
-    override fun deleteExercise(exerciseID: Int){
+    override suspend fun deleteExercise(exerciseID: Int){
         exerciseDao.deleteExercise(exerciseID)
     }
 
     override suspend fun getAllExercises(): List<Exercise> = exerciseDao.getAllExercises()
-    override fun getUserExercises(): List<Exercise> = exerciseDao.getUserExercises()
-    override fun getBasicExercises(): List<Exercise> = exerciseDao.getBasicExercises()
-    override fun getFavouriteExercises(): List<Exercise> = exerciseDao.getFavouriteExercises()
-    override fun getStrengthExercises(): List<Exercise> = exerciseDao.getStrengthExercises()
-    override fun getCardioExercises(): List<Exercise> = exerciseDao.getCardioExercises()
-    override fun searchExerciseByName(queryName: String): List<Exercise> = exerciseDao.searchExerciseByName(queryName)
+    override suspend fun getUserExercises(): List<Exercise> = exerciseDao.getUserExercises()
+    override suspend fun getBasicExercises(): List<Exercise> = exerciseDao.getBasicExercises()
+    override suspend fun getFavouriteExercises(): List<Exercise> = exerciseDao.getFavouriteExercises()
+    override suspend fun getStrengthExercises(): List<Exercise> = exerciseDao.getStrengthExercises()
+    override suspend fun getCardioExercises(): List<Exercise> = exerciseDao.getCardioExercises()
+    override suspend fun searchExercisesByName(queryName: String): List<Exercise> = exerciseDao.searchExercisesByName(queryName)
+    override suspend fun getExerciseByName(exerciseName: String): Exercise = exerciseDao.getExerciseByName(exerciseName)
+
 }
 
 

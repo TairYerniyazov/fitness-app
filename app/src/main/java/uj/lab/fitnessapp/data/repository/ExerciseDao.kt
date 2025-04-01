@@ -14,33 +14,38 @@ interface ExerciseDao {
     suspend fun insertExercise(exercise: Exercise)
 
     @Update
-    fun updateExercise(exercise: Exercise)
+    suspend fun updateExercise(exercise: Exercise)
 
     @Delete
-    fun unsafeDeleteExercise(exercise: Exercise)
+    suspend fun unsafeDeleteExercise(exercise: Exercise)
 
     //TODO: zastanowic się, czy tutaj tego nie robić inaczej
     @Query("DELETE FROM exercises WHERE ID = :id AND canModify = 1")
-    fun deleteExercise(id: Int)
+    suspend fun deleteExercise(id: Int)
 
     @Query("SELECT * FROM exercises")
-    fun getAllExercises(): List<Exercise>
+    suspend fun getAllExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE canModify = 1")
-    fun getUserExercises(): List<Exercise>
+    suspend fun getUserExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE canModify = 0")
-    fun getBasicExercises(): List<Exercise>
+    suspend fun getBasicExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE isFavourite = 1")
-    fun getFavouriteExercises(): List<Exercise>
+    suspend fun getFavouriteExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE workoutType = 0")
-    fun getStrengthExercises(): List<Exercise>
+    suspend fun getStrengthExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE workoutType = 1")
-    fun getCardioExercises(): List<Exercise>
+    suspend fun getCardioExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE exerciseName MATCH :queryName")
-    fun searchExerciseByName(queryName: String): List<Exercise>
+    suspend fun searchExercisesByName(queryName: String): List<Exercise>
+
+    @Query("SELECT * FROM exercises WHERE exerciseName = :exerciseName")
+    suspend fun getExerciseByName(exerciseName: String): Exercise
+
+
 }

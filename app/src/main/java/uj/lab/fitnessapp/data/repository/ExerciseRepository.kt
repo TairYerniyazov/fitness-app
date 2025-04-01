@@ -5,14 +5,16 @@ import uj.lab.fitnessapp.data.model.Exercise
 interface ExerciseRepository {
 
     suspend fun insertExercise(exercise: Exercise)
-    fun updateExercise(exercise: Exercise)
-    fun unsafeDeleteExercise(exercise: Exercise)
-    fun deleteExercise(exerciseID: Int)
+    suspend fun updateExercise(exercise: Exercise)
+    suspend fun unsafeDeleteExercise(exercise: Exercise)
+    suspend fun deleteExercise(exerciseID: Int)
     suspend fun getAllExercises(): List<Exercise>
-    fun getUserExercises(): List<Exercise>
-    fun getBasicExercises(): List<Exercise>
-    fun getFavouriteExercises(): List<Exercise>
-    fun getStrengthExercises(): List<Exercise>
-    fun getCardioExercises(): List<Exercise>
-    fun searchExerciseByName(queryName: String): List<Exercise>
+    suspend fun getUserExercises(): List<Exercise>
+    suspend fun getBasicExercises(): List<Exercise>
+    suspend fun getFavouriteExercises(): List<Exercise>
+    suspend fun getStrengthExercises(): List<Exercise>
+    suspend fun getCardioExercises(): List<Exercise>
+    suspend fun searchExercisesByName(queryName: String): List<Exercise>
+    suspend fun getExerciseByName(exerciseName: String): Exercise
+
 }
