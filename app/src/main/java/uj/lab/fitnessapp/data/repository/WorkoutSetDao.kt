@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Update
-import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.WorkoutSet
 
 @Dao
