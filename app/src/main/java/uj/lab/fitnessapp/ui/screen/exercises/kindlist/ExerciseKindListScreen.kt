@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
-import uj.lab.fitnessapp.ui.component.ExerciseListEntry
+import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 
 /**
  * Screen displaying a list of exercise kinds.
@@ -26,7 +26,7 @@ fun ExerciseKindListScreen(navController: NavController) {
         Column(Modifier.padding(padding)) {
             LazyColumn(Modifier.padding((padding))) {
                 items(state.exercises) { exercise ->
-                        ExerciseListEntry(
+                        ExerciseKindListEntry(
                             exercise = exercise,
                             // should be replaced with proper screen
                             onClick = { navController.navigate("dummy_creator/${exercise.exerciseName}")}

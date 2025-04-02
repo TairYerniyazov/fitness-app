@@ -9,7 +9,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +25,7 @@ import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.ui.theme.*
 
 @Composable
-fun ExerciseListEntry(
+fun ExerciseKindListEntry(
     exercise: Exercise,
     onClick: () -> Unit
 ) {
@@ -91,7 +90,7 @@ fun ExerciseListEntry(
 @Preview(showBackground = true)
 @Composable
 fun ExerciseListEntryPreview() {
-    ExerciseListEntry(
+    ExerciseKindListEntry(
         exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
         onClick = {}
     )
