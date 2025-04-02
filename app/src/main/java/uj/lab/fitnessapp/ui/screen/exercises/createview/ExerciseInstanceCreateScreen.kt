@@ -30,18 +30,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import uj.lab.fitnessapp.ui.theme.backgroundColorProposal
-import uj.lab.fitnessapp.ui.theme.buttonGrey
+import uj.lab.fitnessapp.ui.theme.backgroundColor
+import uj.lab.fitnessapp.ui.theme.green1
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 
 @Composable
-fun ExerciseInstanceCreateScreen(navController: NavController) {
+fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { padding ->
         Column(
             modifier = Modifier
-                .background(backgroundColorProposal)
+                .background(backgroundColor)
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 16.dp),
@@ -52,11 +52,11 @@ fun ExerciseInstanceCreateScreen(navController: NavController) {
             Surface(
                 modifier = Modifier
                     .padding(bottom = 16.dp),
-                color = Color(0xFF6c757d),
+                color = backgroundColor,
                 shape = RoundedCornerShape(4.dp),
             ) {
                 Text(
-                    text = "Exercise Name",
+                    text = exerciseKind,
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.Black,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -97,34 +97,34 @@ fun ExerciseInstanceCreateScreen(navController: NavController) {
                     onClick = {
                         //TODO: Implement save instance logic
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = buttonGrey
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = green1),
+                    shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 8.dp)
+                        .height(56.dp)
+                        .padding(end=8.dp)
                 ) {
                     Text(
-                        text = "Save",
-                        color = Color.Black,
+                        text = "Zapisz",
+                        color = Color.White,
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
 
                 Button(
                     onClick = {
-                        //TODO: Implement close screen logic
+                        navController.popBackStack()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = buttonGrey
-                    ),
+                    colors = ButtonDefaults.buttonColors(containerColor = green1),
+                    shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 8.dp)
+                        .height(56.dp)
+                        .padding(start=8.dp)
                 ) {
                     Text(
-                        text = "Close",
-                        color = Color.Black,
+                        text = "Anuluj",
+                        color = Color.White,
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
@@ -136,5 +136,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController) {
 @Preview
 @Composable
 fun ExerciseInstanceCreateScreenPreview() {
-    ExerciseInstanceCreateScreen(navController = NavController(LocalContext.current))
+    ExerciseInstanceCreateScreen(
+        navController = NavController(LocalContext.current),
+        exerciseKind = "Exercise Name")
 }
