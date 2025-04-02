@@ -1,0 +1,247 @@
+[
+    {
+        "exerciseId": 1,
+        "exerciseName": "Back Extension",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 2,
+        "exerciseName": "Biceps Curl",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 3,
+        "exerciseName": "Calf Raise",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 4,
+        "exerciseName": "Chin-Up",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 5,
+        "exerciseName": "Crunch",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 6,
+        "exerciseName": "Cycling",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 7,
+        "exerciseName": "Deadlift",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 8,
+        "exerciseName": "Dip",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 9,
+        "exerciseName": "Flat Bench Press",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 10,
+        "exerciseName": "Fly",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 11,
+        "exerciseName": "Hammer Curl",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 12,
+        "exerciseName": "Incline Bench Press",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 13,
+        "exerciseName": "Lat Pulldown",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 14,
+        "exerciseName": "Lateral Raise",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 15,
+        "exerciseName": "Leg Curl",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 16,
+        "exerciseName": "Leg Extension",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 17,
+        "exerciseName": "Leg Press",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 18,
+        "exerciseName": "Lunge",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 19,
+        "exerciseName": "Plank",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 20,
+        "exerciseName": "Preacher Curl",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 21,
+        "exerciseName": "Pull-Down",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 22,
+        "exerciseName": "Pull-Up",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 23,
+        "exerciseName": "Push-Up",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 24,
+        "exerciseName": "Pushdown",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 25,
+        "exerciseName": "Reverse Fly",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 26,
+        "exerciseName": "Row",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 27,
+        "exerciseName": "Rowing Machine",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 28,
+        "exerciseName": "Running (Outdoor)",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 29,
+        "exerciseName": "Running (Treadmill)",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 30,
+        "exerciseName": "Shoulder Press",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 31,
+        "exerciseName": "Shrug",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 32,
+        "exerciseName": "Squat",
+        "workoutType": "Strength",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 33,
+        "exerciseName": "Stationary Bike",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 34,
+        "exerciseName": "Swimming",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    },
+    {
+        "exerciseId": 35,
+        "exerciseName": "Walking",
+        "workoutType": "Cardio",
+        "canModify": false,
+        "isFavourite": false
+    }
+]
