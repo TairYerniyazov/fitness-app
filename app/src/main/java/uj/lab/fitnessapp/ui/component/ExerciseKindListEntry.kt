@@ -89,7 +89,7 @@ fun ExerciseKindListEntry(
 
 @Preview(showBackground = true)
 @Composable
-fun ExerciseListEntryPreview() {
+fun ExerciseKindListEntryPreview() {
     ExerciseKindListEntry(
         exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
         onClick = {}
