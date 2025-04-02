@@ -20,19 +20,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import uj.lab.fitnessapp.data.model.ExerciseKind
+import uj.lab.fitnessapp.data.model.Exercise
 import androidx.compose.runtime.*
+import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.ui.theme.*
 
 @Composable
-fun ExerciseKindListEntry(
-    exerciseKind: ExerciseKind,
+fun ExerciseListEntry(
+    exercise: Exercise,
     onClick: () -> Unit
 ) {
 
     // depends on mock data model, will change soon.
     var isFavorite by remember { mutableStateOf(false) }
-    val baseColor = if (exerciseKind.category == 1) strengthColor else cardioColor
+    val baseColor = if (exercise.workoutType == WorkoutType.Strength) strengthColor else cardioColor
 
     Button(
         onClick = { onClick() },
@@ -54,7 +55,7 @@ fun ExerciseKindListEntry(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = exerciseKind.name,
+                    text = exercise.exerciseName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -100,9 +101,9 @@ fun DummyCreatorScreen(exerciseName: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun ExerciseKindListEntryPreview() {
-    ExerciseKindListEntry(
-        exerciseKind = ExerciseKind(1, "Running",0),
+fun ExerciseListEntryPreview() {
+    ExerciseListEntry(
+        exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
         onClick = {}
     )
 }
