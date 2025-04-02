@@ -9,7 +9,7 @@ import uj.lab.fitnessapp.data.model.Exercise
 
 @Dao
 interface ExerciseDao {
-    //TODO: ogarnąć suspend
+
     @Insert
     suspend fun insertExercise(exercise: Exercise)
 
@@ -19,7 +19,6 @@ interface ExerciseDao {
     @Delete
     suspend fun unsafeDeleteExercise(exercise: Exercise)
 
-    //TODO: zastanowic się, czy tutaj tego nie robić inaczej
     @Query("DELETE FROM exercises WHERE ID = :id AND canModify = 1")
     suspend fun deleteExercise(id: Int)
 
