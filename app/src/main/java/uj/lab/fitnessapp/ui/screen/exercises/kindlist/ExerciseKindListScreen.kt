@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
+import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 
 /**
@@ -36,7 +37,7 @@ fun ExerciseKindListScreen(navController: NavController) {
                         ExerciseKindListEntry(
                             exercise = exercise,
                             // should be replaced with proper screen
-                            onClick = { navController.navigate("dummy_creator/${exercise.exerciseName}")}
+                            onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName))}
                         )
                 }
             }

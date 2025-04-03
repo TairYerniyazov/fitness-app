@@ -20,7 +20,7 @@ fun Navigation(navController: NavHostController) {
             ExerciseKindListScreen(navController)
         }
         composable(
-            "exercise_instance_create/{exerciseKind}",
+            Screen.ExerciseInstanceCreate.route,
             arguments = listOf(navArgument("exerciseKind") { type = NavType.StringType })
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
