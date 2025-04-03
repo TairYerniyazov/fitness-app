@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -53,22 +57,23 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Surface(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth(),
-                color = backgroundColor,
-                shape = RoundedCornerShape(4.dp),
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = exerciseKind,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
+            TopAppBar(title = {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(4.dp),
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = exerciseKind,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color.Black,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
                 }
-            }
+            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = backgroundColor))
         },
         content = { padding ->
             Column(
@@ -111,46 +116,50 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
             }
         },
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+            BottomAppBar(
+                containerColor = backgroundColor
             ) {
-                Button(
-                    onClick = {
-                        //TODO: Implement save instance logic
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = green1),
-                    shape = MaterialTheme.shapes.small,
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .padding(end=8.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text(
-                        text = "Zapisz",
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+                    Button(
+                        onClick = {
+                            //TODO: Implement save instance logic
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp)
+                            .padding(end = 8.dp)
+                    ) {
+                        Text(
+                            text = "Zapisz",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
 
-                Button(
-                    onClick = {
-                        navController.popBackStack()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = green1),
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp)
-                        .padding(start=8.dp)
-                ) {
-                    Text(
-                        text = "Anuluj",
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Button(
+                        onClick = {
+                            navController.popBackStack()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(56.dp)
+                            .padding(start = 8.dp)
+                    ) {
+                        Text(
+                            text = "Anuluj",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
         }
@@ -176,7 +185,7 @@ fun WorkoutSetCreator(showBottomSheet: MutableState<Boolean>) {
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp)
-                    .padding(end=8.dp)
+                    .padding(end = 8.dp)
             ) {
                 Text(
                     text = "Dodaj",
@@ -192,7 +201,7 @@ fun WorkoutSetCreator(showBottomSheet: MutableState<Boolean>) {
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp)
-                    .padding(start=8.dp)
+                    .padding(start = 8.dp)
             ) {
                 Text(
                     text = "Anuluj",
@@ -205,16 +214,17 @@ fun WorkoutSetCreator(showBottomSheet: MutableState<Boolean>) {
 }
 
 @Composable
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 fun WorkoutSetCreatorPreview() {
     val showBottomSheet = remember { mutableStateOf(true) }
     WorkoutSetCreator(showBottomSheet)
 }
 
-//@Preview
+@Preview
 @Composable
 fun ExerciseInstanceCreateScreenPreview() {
     ExerciseInstanceCreateScreen(
         navController = NavController(LocalContext.current),
-        exerciseKind = "Exercise Name")
+        exerciseKind = "Exercise Name"
+    )
 }

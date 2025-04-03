@@ -20,6 +20,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import androidx.core.content.edit
 
 
 @Database(
@@ -35,6 +36,13 @@ abstract class AppDatabase : RoomDatabase() {
         if (IS_POPULATED.get()) {
             return
         }
+        val prefs = context.getSharedPreferences("uj.lab.fitnessapp", Context.MODE_PRIVATE)
+        val isInitialized = prefs.getBoolean("isInitialized", false)
+        if (isInitialized) {
+            return
+        }
+
+        prefs.edit() { putBoolean("isInitialized", true) }
 
         val exerciseDao = exerciseDao()
         val exerciseList: JSONArray =
