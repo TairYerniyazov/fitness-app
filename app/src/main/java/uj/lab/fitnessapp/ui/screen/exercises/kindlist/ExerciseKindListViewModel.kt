@@ -30,6 +30,7 @@ class ExerciseListViewModel @Inject constructor(
                 Log.d("DEBUG", "ExerciseListViewModel: ${allExercises.size} exercises loaded")
                 ExercisesUiState(allExercises,allExercises)
             }
+            filterExercises(currentFilter) // filter is preserved when navigating back
         }
     }
     fun filterExercises(filter: (Exercise) -> Boolean) {
