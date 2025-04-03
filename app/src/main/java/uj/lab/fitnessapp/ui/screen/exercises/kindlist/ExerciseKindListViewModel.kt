@@ -19,20 +19,44 @@ class ExerciseListViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(ExercisesUiState(emptyList()))
+    private val _uiState = MutableStateFlow(ExercisesUiState(emptyList(), emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState
+    private var currentFilter: (Exercise) -> Boolean = { true }
 
     fun loadExercises() {
         viewModelScope.launch {
-            val exercises = exerciseRepository.getAllExercises()
+            val allExercises = exerciseRepository.getAllExercises()
             _uiState.update {
-                Log.d("DEBUG", "ExerciseListViewModel: ${exercises.size} exercises loaded")
-                ExercisesUiState(exercises)
+                Log.d("DEBUG", "ExerciseListViewModel: ${allExercises.size} exercises loaded")
+                ExercisesUiState(allExercises,allExercises)
             }
+        }
+    }
+    fun filterExercises(filter: (Exercise) -> Boolean) {
+        currentFilter = filter
+        _uiState.value = _uiState.value.copy(
+            filteredExercises = _uiState.value.allExercises.filter(filter)
+        )
+    }
+    fun toggleFavorite(exercise: Exercise) {
+        viewModelScope.launch {
+            val updatedExercise = exercise.copy(isFavourite = !exercise.isFavourite)
+            exerciseRepository.updateExercise(updatedExercise)
+
+            val updatedExercises  = _uiState.value.allExercises.map {
+                if (it.exerciseName == updatedExercise.exerciseName) updatedExercise else it
+            }
+
+
+            _uiState.value = _uiState.value.copy(
+                allExercises = updatedExercises,
+                filteredExercises = updatedExercises.filter(currentFilter)
+            )
         }
     }
 }
 
 data class ExercisesUiState(
-    val exercises: List<Exercise>
+    val allExercises: List<Exercise>,
+    val filteredExercises: List<Exercise>
 )

@@ -27,7 +27,8 @@ import uj.lab.fitnessapp.ui.theme.*
 @Composable
 fun ExerciseKindListEntry(
     exercise: Exercise,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onFavoriteClick: (Exercise) -> Unit
 ) {
 
     // depends on mock data model, will change soon.
@@ -40,7 +41,7 @@ fun ExerciseKindListEntry(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = if (isFavorite) ButtonDefaults.buttonColors(containerColor = favoriteColor)
+        colors = if (exercise.isFavourite) ButtonDefaults.buttonColors(containerColor = favoriteColor)
                 else ButtonDefaults.buttonColors(containerColor = baseColor)
     ) {
         Row(
@@ -73,7 +74,7 @@ fun ExerciseKindListEntry(
                 )
             }
             // attach function to handle favorites
-            IconButton(onClick = { isFavorite = !isFavorite }) {
+            IconButton(onClick = { onFavoriteClick(exercise) }) {
                 Icon(
                     modifier = Modifier
                         .size(40.dp)
@@ -87,11 +88,11 @@ fun ExerciseKindListEntry(
         }
     }
 
-@Preview(showBackground = true)
-@Composable
-fun ExerciseKindListEntryPreview() {
-    ExerciseKindListEntry(
-        exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
-        onClick = {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ExerciseKindListEntryPreview() {
+//    ExerciseKindListEntry(
+//        exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
+//        onClick = {}
+//    )
+//}
