@@ -16,13 +16,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,63 +43,78 @@ import uj.lab.fitnessapp.ui.theme.backgroundColor
 import uj.lab.fitnessapp.ui.theme.green1
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet = remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .background(backgroundColor)
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(48.dp))
-
+        topBar = {
             Surface(
                 modifier = Modifier
-                    .padding(bottom = 16.dp),
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth(),
                 color = backgroundColor,
                 shape = RoundedCornerShape(4.dp),
             ) {
-                Text(
-                    text = exerciseKind,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.Black,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        //TODO: Implement add series logic
-                    },
-                    containerColor = lovelyPink,
-                    shape = CircleShape,
-                    modifier = Modifier.size(56.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        tint = Color.Black
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = exerciseKind,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.Black,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }
+        },
+        content = { padding ->
+            Column(
+                modifier = Modifier
+                    .background(backgroundColor)
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (showBottomSheet.value) {
+                    ModalBottomSheet(onDismissRequest = {
+                        showBottomSheet.value = false
+                    }, sheetState = sheetState) { }
+                }
 
+                Spacer(modifier = Modifier.weight(1f))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            //TODO: Implement add series logic
+                        },
+                        containerColor = lovelyPink,
+                        shape = CircleShape,
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            tint = Color.Black
+                        )
+                    }
+                }
+
+            }
+        },
+        bottomBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
@@ -130,10 +154,64 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 }
             }
         }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WorkoutSetCreator(showBottomSheet: MutableState<Boolean>) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = {
+                    //TODO: Implement save instance logic
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp)
+                    .padding(end=8.dp)
+            ) {
+                Text(
+                    text = "Dodaj",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+            Button(
+                onClick = {
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp)
+                    .padding(start=8.dp)
+            ) {
+                Text(
+                    text = "Anuluj",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
     }
 }
 
-@Preview
+@Composable
+@Preview(showBackground = true)
+fun WorkoutSetCreatorPreview() {
+    val showBottomSheet = remember { mutableStateOf(true) }
+    WorkoutSetCreator(showBottomSheet)
+}
+
+//@Preview
 @Composable
 fun ExerciseInstanceCreateScreenPreview() {
     ExerciseInstanceCreateScreen(

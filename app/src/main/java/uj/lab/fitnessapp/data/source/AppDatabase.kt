@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import uj.lab.fitnessapp.R
 
@@ -16,6 +17,9 @@ import uj.lab.fitnessapp.data.repository.ExerciseDao
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceDao
 import uj.lab.fitnessapp.data.repository.WorkoutSetDao
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 
 
 @Database(
@@ -23,67 +27,38 @@ import java.util.concurrent.Executors
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun exerciseDao() : ExerciseDao
-    abstract fun exerciseInstanceDao() : ExerciseInstanceDao
-    abstract fun workoutSetDao() : WorkoutSetDao
+    abstract fun exerciseDao(): ExerciseDao
+    abstract fun exerciseInstanceDao(): ExerciseInstanceDao
+    abstract fun workoutSetDao(): WorkoutSetDao
 
+    suspend fun populateDatabase(context: Context) {
+        if (IS_POPULATED.get()) {
+            return
+        }
 
-    companion object{
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
+        val exerciseDao = exerciseDao()
+        val exerciseList: JSONArray =
+            context.resources.openRawResource(R.raw.default_exercises).bufferedReader().use {
+                JSONArray(it.readText())
+            }
 
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "appDatabase"
+        exerciseList.takeIf { it.length() > 0 }?.let { list ->
+            for (index in 0 until list.length()) {
+                val exerciseObj = list.getJSONObject(index)
+                exerciseDao.insertExercise(
+                    Exercise(
+                        exerciseObj.getInt("exerciseId"),
+                        exerciseObj.getString("exerciseName"),
+                        WorkoutType.valueOf(exerciseObj.getString("workoutType")),
+                        exerciseObj.getBoolean("canModify"),
+                        exerciseObj.getBoolean("isFavourite")
+                    )
                 )
-                .setQueryCallback(QueryCallback { sqlQuery, bindArgs ->
-                    println("SQL Query: $sqlQuery SQL Args: $bindArgs")
-                }, Executors.newSingleThreadExecutor())
-                .fallbackToDestructiveMigration() //TODO: to może być nienajlepsze wyjście, chociaż dla nas może być ok
-                .addCallback(object : Callback(){
-                    override fun onCreate(db: SupportSQLiteDatabase) {
-                        super.onCreate(db)
-                        CoroutineScope(Dispatchers.IO).launch{
-                            populateDatabase(context)
-                        }
-                    }
-                })
-                .build()
-                INSTANCE = instance
-                instance
+
             }
         }
 
-        private suspend fun populateDatabase(context: Context) {
-            //TODO:
-            // Problem - przy pierwszym uruchomieniu aplikacji baza najpierw robi query np. po naciśnięciu przycisku,
-            // a inicjalizację bazy robi dopiero potem, przez co to query jest puste!!!
-
-            val exerciseDao = getDatabase(context).exerciseDao()
-
-            val exerciseList: JSONArray =
-                context.resources.openRawResource(R.raw.default_exercises).bufferedReader().use{
-                    JSONArray(it.readText())
-                }
-
-            exerciseList.takeIf { it.length() > 0 }?.let { list ->
-                for (index in 0 until list.length()) {
-                    val exerciseObj = list.getJSONObject(index)
-                    exerciseDao.insertExercise(
-                        Exercise(
-                            exerciseObj.getInt("exerciseId"),
-                            exerciseObj.getString("exerciseName"),
-                            WorkoutType.valueOf(exerciseObj.getString("workoutType")),
-                            exerciseObj.getBoolean("canModify"),
-                            exerciseObj.getBoolean("isFavourite")
-                        )
-                    )
-
-                }
-            }
+        IS_POPULATED.set(true)
 
 //            val exerciseInstanceDao = db.exerciseInstanceDao()
 //            val workoutSetDao = db.workoutSetDao()
@@ -108,9 +83,30 @@ abstract class AppDatabase : RoomDatabase() {
 //
 //            Log.i("_____TESTING_____", exerciseInstanceDao.getExerciseInstanceWithDetails(exInst.id).toString())
 
+    }
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        val IS_POPULATED = AtomicBoolean(false)
+
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "appDatabase"
+                )
+                    .setQueryCallback(QueryCallback { sqlQuery, bindArgs ->
+                        println("SQL Query: $sqlQuery SQL Args: $bindArgs")
+                    }, Executors.newSingleThreadExecutor())
+                    .fallbackToDestructiveMigration() //TODO: to może być nienajlepsze wyjście, chociaż dla nas może być ok
+                    .build()
+                INSTANCE = instance
+                instance
+            }
         }
-
-
     }
 
 }

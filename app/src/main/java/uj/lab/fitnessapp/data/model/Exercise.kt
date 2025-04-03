@@ -11,7 +11,7 @@ enum class WorkoutType { Strength, Cardio }
 data class Exercise(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID") val id: Int,
-    @ColumnInfo(name = "exerciseName")val exerciseName: String,
+    @ColumnInfo(name = "exerciseName") val exerciseName: String,
     @ColumnInfo(name = "workoutType") val workoutType: WorkoutType,
     @ColumnInfo(name = "canModify") val canModify: Boolean,
     @ColumnInfo(name = "isFavourite") val isFavourite: Boolean
