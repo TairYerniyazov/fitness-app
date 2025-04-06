@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.exercises.kindlist
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
+//import uj.lab.fitnessapp.ui.screen.exercises.kindlist.getFilters
 import javax.inject.Inject
 
 
@@ -21,7 +23,8 @@ class ExerciseListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList(), emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState
-    private var currentFilter: (Exercise) -> Boolean = { true }
+    private val filters = getFilters()
+    private var currentFilter = filters.filter{ it.description == "All" }[0]
 
     fun loadExercises() {
         viewModelScope.launch {
@@ -33,10 +36,9 @@ class ExerciseListViewModel @Inject constructor(
             filterExercises(currentFilter) // filter is preserved when navigating back
         }
     }
-    fun filterExercises(filter: (Exercise) -> Boolean) {
-        currentFilter = filter
+    fun filterExercises(filter: Filter) {
         _uiState.value = _uiState.value.copy(
-            filteredExercises = _uiState.value.allExercises.filter(filter)
+            filteredExercises = _uiState.value.allExercises.filter(filter.predicate)
         )
     }
     fun toggleFavorite(exercise: Exercise) {
@@ -51,9 +53,15 @@ class ExerciseListViewModel @Inject constructor(
 
             _uiState.value = _uiState.value.copy(
                 allExercises = updatedExercises,
-                filteredExercises = updatedExercises.filter(currentFilter)
+                filteredExercises = updatedExercises.filter(currentFilter.predicate)
             )
         }
+    }
+    fun setSelectedFilter(filter: Filter) {
+        currentFilter = filter
+    }
+    fun getSelectedFilter(): Filter {
+        return currentFilter
     }
 }
 

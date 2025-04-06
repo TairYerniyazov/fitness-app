@@ -36,8 +36,7 @@ fun ExerciseKindListEntry(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = if (exercise.isFavourite) ButtonDefaults.buttonColors(containerColor = favoriteColor)
-                else ButtonDefaults.buttonColors(containerColor = baseColor)
+        colors = ButtonDefaults.buttonColors(containerColor = baseColor)
     ) {
         Row(
             modifier = Modifier
@@ -53,7 +52,7 @@ fun ExerciseKindListEntry(
                     text = exercise.exerciseName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = if (exercise.isFavourite) goldColor else Color.White
                 )
 
             }
@@ -65,7 +64,7 @@ fun ExerciseKindListEntry(
                         ,
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More Options",
-                    tint = Color.White
+                    tint = if (exercise.isFavourite) goldColor else Color.White
                 )
             }
             // attach function to handle favorites
@@ -76,7 +75,7 @@ fun ExerciseKindListEntry(
                     ,
                     imageVector = Icons.Default.Star,
                     contentDescription = "Add to favorites",
-                    tint = Color.White
+                    tint = if (exercise.isFavourite) goldColor else Color.White
                 )
             }
             }

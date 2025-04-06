@@ -32,6 +32,13 @@ import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 import uj.lab.fitnessapp.ui.theme.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import uj.lab.fitnessapp.R
 
 /**
@@ -42,6 +49,7 @@ import uj.lab.fitnessapp.R
 fun ExerciseKindListScreen(navController: NavController) {
     val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
+    var selectedFilter by remember { mutableIntStateOf(0) }
     val filterIconSize = 32.dp
 
     LaunchedEffect(Unit) {
@@ -69,58 +77,105 @@ fun ExerciseKindListScreen(navController: NavController) {
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(
-                    onClick = { viewModel.filterExercises { it.workoutType == WorkoutType.Cardio } },
-                    colors = ButtonDefaults.buttonColors(containerColor = cardioColor)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.directions_run_24px),
-                        contentDescription = "Cardio",
-                        modifier = Modifier.size(filterIconSize)
-                    )
-//                    Text(
-//                        text = "Cardio"
-//                    )
-                }
-                Button(
-                    onClick = { viewModel.filterExercises { it.workoutType == WorkoutType.Strength } },
-                    colors = ButtonDefaults.buttonColors(containerColor = strengthColor)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.exercise_24px),
-                        contentDescription = "Strength",
-                        modifier = Modifier.size(filterIconSize)
-                    )
-//                    Text(
-//                        text = "Strength"
-//                    )
-                }
-                Button(
-                    onClick = { viewModel.filterExercises { it.isFavourite } },
-                    colors = ButtonDefaults.buttonColors(containerColor = favoriteColor)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Favorites",
-                        modifier = Modifier.size(filterIconSize)
-                    )
-//                    Text(
-//                        text = "Favorites"
-//                    )
-                }
-                Button(
-                    onClick = { viewModel.filterExercises { true } },
-                    colors = ButtonDefaults.buttonColors(containerColor = lovelyPink)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "All",
-                        modifier = Modifier.size(filterIconSize)
-                    )
-//                    Text(
-//                        text = "All"
-//                    )
-                }
+               SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                   getFilters().forEach { filter ->
+                   SegmentedButton(
+                       shape = SegmentedButtonDefaults.itemShape(
+                           index = filter.index,
+                           count = getFilters().size
+                       ),
+                       onClick = {
+                           viewModel.setSelectedFilter(filter)
+                           viewModel.filterExercises(filter)
+                                 },
+                       selected = filter == viewModel.getSelectedFilter(),
+                       label = { Icon(
+                           imageVector = filter.icon(),
+                           contentDescription = filter.description,
+                           modifier = Modifier.size(filterIconSize)
+                       )},
+                       colors = SegmentedButtonDefaults.colors(
+                           inactiveContainerColor = filter.color
+                       )
+                   )
+                   }
+//                   SegmentedButton(
+//                       shape = SegmentedButtonDefaults.itemShape(
+//                           index = 0,
+//                           count = 3
+//                       ),
+//                       onClick = {
+//                           viewModel.setSelectedFilter(0)
+//                           viewModel.filterExercises { it.workoutType == WorkoutType.Strength }
+//                                 },
+//                       selected = 0 == viewModel.getSelectedFilter(),
+//                       label = { Icon(
+//                           painter = painterResource(R.drawable.exercise_24px),
+//                           contentDescription = "Strength",
+//                           modifier = Modifier.size(filterIconSize)
+//                       )},
+//                       colors = SegmentedButtonDefaults.colors(
+//                           inactiveContainerColor = strengthColor
+//                       )
+//                   )
+//                   SegmentedButton(
+//                       shape = SegmentedButtonDefaults.itemShape(
+//                           index = 1,
+//                           count = 4
+//                       ),
+//                       onClick = {
+//                           viewModel.setSelectedFilter(1)
+//                           viewModel.filterExercises { it.workoutType == WorkoutType.Cardio }
+//                                 },
+//                       selected = 1 == viewModel.getSelectedFilter(),
+//                       label = { Icon(
+//                           painter = painterResource(R.drawable.directions_run_24px),
+//                           contentDescription = "Cardio",
+//                           modifier = Modifier.size(filterIconSize)
+//                       )},
+//                       colors = SegmentedButtonDefaults.colors(
+//                           inactiveContainerColor = cardioColor
+//                       )
+//                   )
+//                   SegmentedButton(
+//                       shape = SegmentedButtonDefaults.itemShape(
+//                           index = 2,
+//                           count = 4
+//                       ),
+//                       onClick = {
+//                           viewModel.setSelectedFilter(2)
+//                           viewModel.filterExercises { it.isFavourite }
+//                                 },
+//                       selected = 2 == viewModel.getSelectedFilter(),
+//                       label = { Icon(
+//                           imageVector = Icons.Default.Favorite,
+//                           contentDescription = "Favorites",
+//                           modifier = Modifier.size(filterIconSize)
+//                       )},
+//                       colors = SegmentedButtonDefaults.colors(
+//                           inactiveContainerColor = goldColor
+//                       )
+//                   )
+//                   SegmentedButton(
+//                       shape = SegmentedButtonDefaults.itemShape(
+//                           index = 3,
+//                           count = 4
+//                       ),
+//                       onClick = {
+//                           viewModel.setSelectedFilter(3)
+//                           viewModel.filterExercises { true }
+//                                 },
+//                       selected = 3 == viewModel.getSelectedFilter(),
+//                       label = { Icon(
+//                           imageVector = Icons.Default.MoreVert,
+//                           contentDescription = "All",
+//                           modifier = Modifier.size(filterIconSize)
+//                       )},
+//                       colors = SegmentedButtonDefaults.colors(
+//                           inactiveContainerColor = lovelyPink
+//                       )
+//                   )
+               }
             }
         }
     }
