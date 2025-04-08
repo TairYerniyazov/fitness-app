@@ -32,6 +32,7 @@ import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 import uj.lab.fitnessapp.ui.theme.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -77,18 +78,18 @@ fun ExerciseKindListScreen(navController: NavController) {
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-               SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+               MultiChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                    getFilters().forEach { filter ->
                    SegmentedButton(
                        shape = SegmentedButtonDefaults.itemShape(
                            index = filter.index,
                            count = getFilters().size
                        ),
-                       onClick = {
-                           viewModel.setSelectedFilter(filter)
-                           viewModel.filterExercises(filter)
+                       onCheckedChange = {
+                           viewModel.toggleFilter(filter)
+                           viewModel.filterExercises()
                                  },
-                       selected = filter == viewModel.getSelectedFilter(),
+                       checked = viewModel.isFilterSelected(filter),
                        label = { Icon(
                            imageVector = filter.icon(),
                            contentDescription = filter.description,

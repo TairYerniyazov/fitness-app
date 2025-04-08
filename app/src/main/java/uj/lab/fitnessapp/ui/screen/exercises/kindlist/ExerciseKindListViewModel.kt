@@ -24,7 +24,7 @@ class ExerciseListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList(), emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState
     private val filters = getFilters()
-    private var currentFilter = filters.filter{ it.description == "All" }[0]
+    private var currentFilters = mutableListOf<Filter>()
 
     fun loadExercises() {
         viewModelScope.launch {
@@ -33,12 +33,14 @@ class ExerciseListViewModel @Inject constructor(
                 Log.d("DEBUG", "ExerciseListViewModel: ${allExercises.size} exercises loaded")
                 ExercisesUiState(allExercises,allExercises)
             }
-            filterExercises(currentFilter) // filter is preserved when navigating back
+            filterExercises() // filter is preserved when navigating back
         }
     }
-    fun filterExercises(filter: Filter) {
+    fun filterExercises() {
         _uiState.value = _uiState.value.copy(
-            filteredExercises = _uiState.value.allExercises.filter(filter.predicate)
+            filteredExercises = _uiState.value.allExercises.filter { exercise ->
+                currentFilters.all { filter -> filter.predicate(exercise) }
+            }
         )
     }
     fun toggleFavorite(exercise: Exercise) {
@@ -53,15 +55,37 @@ class ExerciseListViewModel @Inject constructor(
 
             _uiState.value = _uiState.value.copy(
                 allExercises = updatedExercises,
-                filteredExercises = updatedExercises.filter(currentFilter.predicate)
+                filteredExercises = updatedExercises.filter { exercise ->
+                    currentFilters.all { filter -> filter.predicate(exercise) }
+                }
             )
         }
     }
-    fun setSelectedFilter(filter: Filter) {
-        currentFilter = filter
+//    fun setSelectedFilter(filter: Filter) {
+//        currentFilter = filter
+//    }
+//    fun getSelectedFilter(): Filter {
+//        return currentFilter
+//    }
+    fun isFilterSelected(filter: Filter): Boolean {
+        return currentFilters.contains(filter)
     }
-    fun getSelectedFilter(): Filter {
-        return currentFilter
+    fun toggleFilter(filter: Filter) {
+
+        // can't select both cardio and strength
+        if (filter.description == "Cardio") {
+            currentFilters.removeIf { it.description == "Strength" }
+        }
+        if (filter.description == "Strength") {
+            currentFilters.removeIf { it.description == "Cardio" }
+        }
+
+        if (currentFilters.contains(filter)) {
+            currentFilters.remove(filter)
+        }
+        else {
+            currentFilters += filter
+        }
     }
 }
 

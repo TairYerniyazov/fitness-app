@@ -52,13 +52,13 @@ val exerciseFilters = listOf(
         color = favoriteColor,
         predicate ={ it.isFavourite }
     ),
-    Filter(
-        index = 3,
-        icon = { Icons.Default.MoreVert },
-        description = "All",
-        color = lovelyPink,
-        predicate ={ true }
-    ),
+//    Filter(
+//        index = 3,
+//        icon = { Icons.Default.MoreVert },
+//        description = "All",
+//        color = lovelyPink,
+//        predicate ={ true }
+//    ),
 )
 fun getFilters(): List<Filter> {
     return exerciseFilters
