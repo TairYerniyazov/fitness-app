@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseKindListScreen
 import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateScreen
+import uj.lab.fitnessapp.ui.screen.settings.SettingsScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -25,6 +26,9 @@ fun Navigation(navController: NavHostController) {
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
             ExerciseInstanceCreateScreen(navController, exerciseKind)
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen(navController)
         }
     }
 }
