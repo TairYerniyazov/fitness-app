@@ -6,41 +6,37 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
-import uj.lab.fitnessapp.ui.theme.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.ImageVector
-import uj.lab.fitnessapp.R
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextAlign
+import uj.lab.fitnessapp.ui.theme.favoriteColor
+import uj.lab.fitnessapp.ui.theme.green1
 
 /**
  * Screen displaying a list of exercise kinds.
@@ -50,7 +46,6 @@ import uj.lab.fitnessapp.R
 fun ExerciseKindListScreen(navController: NavController) {
     val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
-    var selectedFilter by remember { mutableIntStateOf(0) }
     val filterIconSize = 32.dp
 
     LaunchedEffect(Unit) {
@@ -63,13 +58,49 @@ fun ExerciseKindListScreen(navController: NavController) {
             .fillMaxSize()
             .padding(padding)) {
             LazyColumn(Modifier.weight(1f)) {
+                if (state.filteredExercises.isEmpty()) {
+                    item {
+                        Text(
+                            "No exercises match the selected filters.",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                } else
                 items(state.filteredExercises) { exercise ->
                         ExerciseKindListEntry(
                             exercise = exercise,
-                            // should be replaced with proper screen
                             onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName))},
                             onFavoriteClick = { viewModel.toggleFavorite(exercise) }
                         )
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 18.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                // TODO: create exercise kind
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = favoriteColor),
+                            shape = MaterialTheme.shapes.small,
+                            modifier = Modifier
+                                .height(56.dp)
+                                .fillMaxWidth(0.6f)
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = "Add",
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                            Text("Add Exercise")
+                        }
+                    }
                 }
             }
             Row(
@@ -100,82 +131,6 @@ fun ExerciseKindListScreen(navController: NavController) {
                        )
                    )
                    }
-//                   SegmentedButton(
-//                       shape = SegmentedButtonDefaults.itemShape(
-//                           index = 0,
-//                           count = 3
-//                       ),
-//                       onClick = {
-//                           viewModel.setSelectedFilter(0)
-//                           viewModel.filterExercises { it.workoutType == WorkoutType.Strength }
-//                                 },
-//                       selected = 0 == viewModel.getSelectedFilter(),
-//                       label = { Icon(
-//                           painter = painterResource(R.drawable.exercise_24px),
-//                           contentDescription = "Strength",
-//                           modifier = Modifier.size(filterIconSize)
-//                       )},
-//                       colors = SegmentedButtonDefaults.colors(
-//                           inactiveContainerColor = strengthColor
-//                       )
-//                   )
-//                   SegmentedButton(
-//                       shape = SegmentedButtonDefaults.itemShape(
-//                           index = 1,
-//                           count = 4
-//                       ),
-//                       onClick = {
-//                           viewModel.setSelectedFilter(1)
-//                           viewModel.filterExercises { it.workoutType == WorkoutType.Cardio }
-//                                 },
-//                       selected = 1 == viewModel.getSelectedFilter(),
-//                       label = { Icon(
-//                           painter = painterResource(R.drawable.directions_run_24px),
-//                           contentDescription = "Cardio",
-//                           modifier = Modifier.size(filterIconSize)
-//                       )},
-//                       colors = SegmentedButtonDefaults.colors(
-//                           inactiveContainerColor = cardioColor
-//                       )
-//                   )
-//                   SegmentedButton(
-//                       shape = SegmentedButtonDefaults.itemShape(
-//                           index = 2,
-//                           count = 4
-//                       ),
-//                       onClick = {
-//                           viewModel.setSelectedFilter(2)
-//                           viewModel.filterExercises { it.isFavourite }
-//                                 },
-//                       selected = 2 == viewModel.getSelectedFilter(),
-//                       label = { Icon(
-//                           imageVector = Icons.Default.Favorite,
-//                           contentDescription = "Favorites",
-//                           modifier = Modifier.size(filterIconSize)
-//                       )},
-//                       colors = SegmentedButtonDefaults.colors(
-//                           inactiveContainerColor = goldColor
-//                       )
-//                   )
-//                   SegmentedButton(
-//                       shape = SegmentedButtonDefaults.itemShape(
-//                           index = 3,
-//                           count = 4
-//                       ),
-//                       onClick = {
-//                           viewModel.setSelectedFilter(3)
-//                           viewModel.filterExercises { true }
-//                                 },
-//                       selected = 3 == viewModel.getSelectedFilter(),
-//                       label = { Icon(
-//                           imageVector = Icons.Default.MoreVert,
-//                           contentDescription = "All",
-//                           modifier = Modifier.size(filterIconSize)
-//                       )},
-//                       colors = SegmentedButtonDefaults.colors(
-//                           inactiveContainerColor = lovelyPink
-//                       )
-//                   )
                }
             }
         }
