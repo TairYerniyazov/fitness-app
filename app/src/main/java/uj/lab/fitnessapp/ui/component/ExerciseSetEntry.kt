@@ -23,10 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.ui.theme.FitnessAppTheme
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
+
 
 @Composable
 fun ExerciseSetEntry(setIndex: Int, distance: Float, time: Duration) {
@@ -93,3 +98,10 @@ fun ExerciseSetEntry(setIndex: Int, distance: Float, time: Duration) {
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+internal fun ExerciseSetEntryPreview(){
+    ExerciseSetEntry(0, 2.5F, 200.minutes)
+}
+
