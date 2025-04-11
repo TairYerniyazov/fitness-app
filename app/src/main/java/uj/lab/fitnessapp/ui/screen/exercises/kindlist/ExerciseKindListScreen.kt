@@ -36,7 +36,6 @@ fun ExerciseKindListScreen(navController: NavController) {
                 items(state.exercises) { exercise ->
                         ExerciseKindListEntry(
                             exercise = exercise,
-                            // should be replaced with proper screen
                             onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName))}
                         )
                 }
