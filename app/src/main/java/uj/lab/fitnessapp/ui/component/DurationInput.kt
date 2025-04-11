@@ -18,71 +18,82 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 data class DurationInputState(
-    var hour: UInt = 0u,
-    var minute: UInt = 0u,
-    var second: UInt = 0u
-)
+    var hour: String = "0",
+    var minute: String = "0",
+    var second: String = "0",
+) {
+    fun toDuration(): Duration {
+        return hour.toInt().hours + minute.toInt().minutes + second.toInt().seconds
+    }
+
+    fun fromDuration(duration: Duration) {
+        hour = duration.inWholeHours.toString()
+        minute = (duration.inWholeMinutes % 60).toString()
+        second = (duration.inWholeSeconds % 60).toString()
+    }
+}
 
 @Composable
 fun DurationInput(
     state: MutableState<DurationInputState>,
 ) {
-    val state by state
-
+    var state by state
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = state.hour.toString(),
+            value = state.hour,
             onValueChange = { newHour ->
-                state.hour = try {
-                    newHour.toUInt()
-                } catch (e: NumberFormatException) {
-                    0u
-                }
+                state = state.copy(hour = newHour)
             },
             label = { Text("Hour") },
             suffix = { Text("h") },
+            isError = state.hour.toIntOrNull() == null || state.hour.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         )
         Text(":")
         OutlinedTextField(
-            value = state.minute.toString(),
+            value = state.minute,
             onValueChange = { newMinute ->
-                state.minute = try {
-                    newMinute.toUInt()
-                } catch (e: NumberFormatException) {
-                    0u
-                }
+                state = state.copy(minute = newMinute)
             },
             label = { Text("Minute") },
             suffix = { Text("m") },
+            isError = state.minute.toIntOrNull() == null || state.minute.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         )
         Text(":")
         OutlinedTextField(
-            value = state.second.toString(),
+            value = state.second,
             onValueChange = { newSecond ->
-                state.second = try {
-                    newSecond.toUInt()
-                } catch (e: NumberFormatException) {
-                    0u
-                }
+                state = state.copy(second = newSecond)
             },
             label = { Text("Second") },
             suffix = { Text("s") },
+            isError = state.second.toIntOrNull() == null || state.second.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth().weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         )
     }
 }
@@ -91,7 +102,6 @@ fun DurationInput(
 @Composable
 internal fun DurationInputPreview() {
     var state = remember { mutableStateOf(DurationInputState()) }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
