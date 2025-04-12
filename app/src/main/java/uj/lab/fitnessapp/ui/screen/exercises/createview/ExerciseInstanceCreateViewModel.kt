@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.ExerciseInstance
-import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutSet
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
-import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExercisesUiState
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +30,12 @@ internal class ExerciseInstanceCreateViewModel @Inject constructor(
     fun loadExercise(name: String) {
         viewModelScope.launch {
             val exercise = exerciseRepository.getExerciseByName(name)
-            _uiState.update { ExerciseInstanceCreateUiState(workoutType = exercise.workoutType) }
+            _uiState.update {
+                ExerciseInstanceCreateUiState(
+                    exerciseId = exercise.id,
+                    workoutType = exercise.workoutType
+                )
+            }
         }
     }
 
@@ -47,9 +52,28 @@ internal class ExerciseInstanceCreateViewModel @Inject constructor(
             currentState.copy(workoutSets = newWorkoutSets)
         }
     }
+
+    fun saveExerciseInstance() {
+        viewModelScope.launch {
+            val state = _uiState.value
+            val instanceId = exerciseInstanceRepository.insertInstance(
+                ExerciseInstance(
+                    id = 0,
+                    exerciseID = state.exerciseId,
+                    date = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE)
+                )
+            )
+            state.workoutSets.forEach { workoutSet ->
+                workoutSetRepository.insertWorkoutSet(
+                    workoutSet.copy(instanceID = instanceId)
+                )
+            }
+        }
+    }
 }
 
 data class ExerciseInstanceCreateUiState(
+    val exerciseId: Int = 0,
     val workoutType: WorkoutType = WorkoutType.Strength,
     val workoutSets: List<WorkoutSet> = emptyList(),
 )
