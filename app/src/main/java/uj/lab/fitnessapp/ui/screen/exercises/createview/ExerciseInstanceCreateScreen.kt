@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.data.model.WorkoutSet
 import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.CardioWorkoutSetEntry
 import uj.lab.fitnessapp.ui.component.DurationInput
 import uj.lab.fitnessapp.ui.component.DurationInputState
@@ -182,7 +183,8 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 ) {
                     Button(
                         onClick = {
-                            //TODO: Implement save instance logic
+                            viewModel.saveExerciseInstance()
+                            navController.popBackStack(Screen.Home.route, false)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = green1),
                         shape = MaterialTheme.shapes.small,

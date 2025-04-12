@@ -14,7 +14,7 @@ import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 interface ExerciseInstanceDao {
 
     @Insert
-    suspend fun insertInstance(instance: ExerciseInstance)
+    suspend fun insertInstance(instance: ExerciseInstance): Long
 
     @Update
     suspend fun updateInstance(instance: ExerciseInstance)
@@ -23,10 +23,14 @@ interface ExerciseInstanceDao {
     suspend fun deleteInstance(instance: ExerciseInstance)
 
     @Query("SELECT * FROM exerciseInstances Where exerciseID = :exerciseID")
-    suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): ExerciseInstance
+    suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance>
 
     @Transaction
     @Query("SELECT * FROM exerciseInstances WHERE ID = :instanceID")
     suspend fun getExerciseInstanceWithDetails(instanceID: Int): ExerciseInstanceWithDetails
+
+    @Transaction
+    @Query("SELECT * FROM exerciseInstances WHERE date = :date")
+    suspend fun getAllExerciseInstanceWithDetailsForDate(date: String): List<ExerciseInstanceWithDetails>
 
 }
