@@ -3,6 +3,8 @@ package uj.lab.fitnessapp.ui.screen.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -11,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,9 +22,18 @@ import androidx.compose.ui.graphics.Color
 import uj.lab.fitnessapp.ui.theme.backgroundColor
 import uj.lab.fitnessapp.ui.theme.green1
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
+import uj.lab.fitnessapp.ui.theme.backgroundColor
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,10 +42,13 @@ import kotlin.time.Duration.Companion.seconds
  * Home screen.
  * Screen 1 in figma.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val state by viewModel.uiState.collectAsState()
+
+    val exerciseInstanceListState = rememberLazyListState()
 
     LaunchedEffect(Unit) {
         viewModel.loadExerciseInstances()
@@ -43,20 +56,27 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         containerColor = backgroundColor,
-        content = { padding ->
-            LazyColumn(Modifier.padding(padding)) {
-                items(state.exerciseInstances) {
-                    Column{
-                        Text("${it.exercise?.exerciseName} (${it.exerciseInstance?.date})")
-                        it.seriesList?.forEachIndexed { index, set ->
-                            when (it.exercise!!.workoutType) {
-                                WorkoutType.Cardio ->
-                                    Text("Seria ${index + 1} - ${set.distance} m, ${set.time?.seconds}")
-                                WorkoutType.Strength ->
-                                    Text("Seria ${index + 1} - ${set.reps} powtórzeń, ${set.load} kg")
-                            }
-                        }
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp)
                     }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(backgroundColor)
+            )
+        },
+        content = { padding ->
+            LazyColumn(
+                Modifier.padding(padding),
+                state = exerciseInstanceListState,
+                contentPadding = PaddingValues(bottom = 100.dp)
+            ) {
+                itemsIndexed(state.exerciseInstances) { index, instance ->
+                    ExerciseInstanceEntry(index, instance)
                 }
             }
         },
