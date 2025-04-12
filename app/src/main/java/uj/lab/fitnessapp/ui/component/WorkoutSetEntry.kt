@@ -29,7 +29,7 @@ import uj.lab.fitnessapp.ui.theme.FitnessAppTheme
 import kotlin.time.Duration
 
 @Composable
-fun CardioWorkoutSetEntry(setIndex: Int, distance: Int, time: Duration, onDelete: () -> Unit) {
+fun CardioWorkoutSetEntry(setIndex: Int, distance: Int, time: Duration, onDelete: (() -> Unit)? = null) {
     FitnessAppTheme {
         Card(
             modifier = Modifier
@@ -48,15 +48,17 @@ fun CardioWorkoutSetEntry(setIndex: Int, distance: Int, time: Duration, onDelete
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = onDelete,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error
-                        )
+                    if (onDelete != null) {
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -95,7 +97,7 @@ fun CardioWorkoutSetEntry(setIndex: Int, distance: Int, time: Duration, onDelete
 }
 
 @Composable
-fun StrengthWorkoutSetEntry(setIndex: Int, load: Double, reps: Int, onDelete: () -> Unit) {
+fun StrengthWorkoutSetEntry(setIndex: Int, load: Double, reps: Int, onDelete: (() -> Unit)? = null) {
     FitnessAppTheme {
         Card(
             modifier = Modifier
@@ -114,15 +116,17 @@ fun StrengthWorkoutSetEntry(setIndex: Int, load: Double, reps: Int, onDelete: ()
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = onDelete,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete",
-                            tint = MaterialTheme.colorScheme.error
-                        )
+                    if (onDelete != null) {
+                        IconButton(
+                            onClick = onDelete,
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))

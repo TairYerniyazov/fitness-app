@@ -328,6 +328,7 @@ fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit
                 load = it
             },
             label = { Text("Obciążenie") },
+            suffix = { Text("kg") },
             isError = load.toDoubleOrNull() == null || load.toDouble() < 0,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
