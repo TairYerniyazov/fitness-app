@@ -14,11 +14,11 @@ class ExerciseInstanceRepositoryImpl @Inject constructor(
 
     private val exerciseInstanceDao = db.exerciseInstanceDao()
 
-    override suspend fun insertInstance(instance: ExerciseInstance) = exerciseInstanceDao.insertInstance(instance)
+    override suspend fun insertInstance(instance: ExerciseInstance) = exerciseInstanceDao.insertInstance(instance).toInt()
     override suspend fun updateInstance(instance: ExerciseInstance) = exerciseInstanceDao.updateInstance(instance)
     override suspend fun deleteInstance(instance: ExerciseInstance) = exerciseInstanceDao.deleteInstance(instance)
 
-    override suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): ExerciseInstance {
+    override suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance> {
         return exerciseInstanceDao.getExerciseInstanceByExerciseID(exerciseID)
     }
 
@@ -26,4 +26,7 @@ class ExerciseInstanceRepositoryImpl @Inject constructor(
         return exerciseInstanceDao.getExerciseInstanceWithDetails(instanceID)
     }
 
+    override suspend fun getAllExerciseInstanceWithDetailsForDate(date: String): List<ExerciseInstanceWithDetails> {
+        return exerciseInstanceDao.getAllExerciseInstanceWithDetailsForDate(date)
+    }
 }
