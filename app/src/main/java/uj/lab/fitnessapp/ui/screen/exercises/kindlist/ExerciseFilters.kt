@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.exercises.kindlist
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
@@ -43,6 +44,13 @@ val exerciseFilters = listOf(
         description = "Favorites",
         color = goldColor,
         predicate ={ it.isFavourite }
+    ),
+    Filter(
+        index = 3,
+        icon = { Icons.Default.AccountCircle },
+        description = "User Created",
+        color = favoriteColor,
+        predicate ={ it.canModify }
     ),
 )
 fun getFilters(): List<Filter> {
