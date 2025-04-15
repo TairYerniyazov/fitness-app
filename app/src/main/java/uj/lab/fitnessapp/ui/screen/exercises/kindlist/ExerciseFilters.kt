@@ -1,0 +1,58 @@
+package uj.lab.fitnessapp.ui.screen.exercises.kindlist
+
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import uj.lab.fitnessapp.R
+import uj.lab.fitnessapp.data.model.Exercise
+import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.ui.theme.cardioColor
+import uj.lab.fitnessapp.ui.theme.favoriteColor
+import uj.lab.fitnessapp.ui.theme.goldColor
+import uj.lab.fitnessapp.ui.theme.strengthColor
+
+data class Filter(
+    val index: Int,
+    val icon: @Composable () -> ImageVector,
+    val description: String,
+    val color: androidx.compose.ui.graphics.Color,
+    val predicate: (Exercise) -> Boolean
+)
+
+val exerciseFilters = listOf(
+    Filter(
+        index = 0,
+        icon = { ImageVector.vectorResource(R.drawable.exercise_24px) },
+        description = "Strength",
+        color = strengthColor,
+        predicate ={ it.workoutType == WorkoutType.Strength }
+    ),
+    Filter(
+        index = 1,
+        icon = { ImageVector.vectorResource(R.drawable.directions_run_24px) },
+        description = "Cardio",
+        color = cardioColor,
+        predicate ={ it.workoutType == WorkoutType.Cardio }
+    ),
+    Filter(
+        index = 2,
+        icon = { Icons.Default.Star },
+        description = "Favorites",
+        color = goldColor,
+        predicate ={ it.isFavourite }
+    ),
+    Filter(
+        index = 3,
+        icon = { Icons.Default.AccountCircle },
+        description = "User Created",
+        color = favoriteColor,
+        predicate ={ it.canModify }
+    ),
+)
+fun getFilters(): List<Filter> {
+    return exerciseFilters
+}
