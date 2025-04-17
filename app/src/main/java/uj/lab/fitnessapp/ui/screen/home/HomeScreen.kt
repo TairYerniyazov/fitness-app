@@ -106,7 +106,7 @@ fun HomeScreen(navController: NavController) {
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
                     Icons.Default.Info to null,
-                    Icons.Default.Settings to null
+                    Icons.Default.Settings to Screen.Settings
                 )
                 routes.forEach {
                     NavigationBarItem(
