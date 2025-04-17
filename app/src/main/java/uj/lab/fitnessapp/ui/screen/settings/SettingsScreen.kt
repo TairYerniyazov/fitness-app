@@ -24,9 +24,10 @@ import uj.lab.fitnessapp.ui.theme.backgroundColor
 import uj.lab.fitnessapp.ui.theme.green1
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.text.font.FontWeight
+
 
 /**
  * Settings screen.
@@ -175,6 +176,55 @@ fun SettingsScreen(navController: NavController) {
                                 )
                             }
                         }
+                    }
+                }
+                // Synchronization Data Row
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Synchronizacja danych", fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+                // Export/Import Buttons Column
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            // TODO: data export logic
+                            println("Export Data Clicked")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "Eksportuj dane",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            // TODO: data import logic
+                            println("Import Data Clicked")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "Importuj dane",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 }
             }
