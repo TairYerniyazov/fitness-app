@@ -17,34 +17,49 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
 ) : ViewModel() {
+
     private val _isDarkTheme = mutableStateOf(false)
     val isDarkTheme: State<Boolean> = _isDarkTheme
-    private val _themeText = mutableStateOf("Light Mode")
+    private val _themeText = mutableStateOf("Tryb jasny")
     val themeText: State<String> = _themeText
-    private val _distanceUnit = MutableStateFlow(DistanceUnit("Kilometers", "metric"))
-    val distanceUnit: StateFlow<DistanceUnit> = _distanceUnit.asStateFlow() // Use asStateFlow
 
     val distanceUnits = listOf(
-        DistanceUnit("Kilometers", "metric"),
-        DistanceUnit("Miles", "imperial")
+        MetricUnit("Kilometry (km)", "metric"),
+        MetricUnit("Mile (mi)", "imperial")
     )
+    private val _distanceUnit = MutableStateFlow(distanceUnits[0])
+    val distanceUnit: StateFlow<MetricUnit> = _distanceUnit.asStateFlow()
+
+    val weightUnits = listOf(
+        MetricUnit("Kilogramy (kg)", "metric"),
+        MetricUnit("Funty (lb)", "imperial")
+    )
+    private val _weightUnit = MutableStateFlow(weightUnits[0])
+    val weightUnit: StateFlow<MetricUnit> = _weightUnit.asStateFlow()
+
 
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState.asStateFlow()
 
     fun toggleTheme(newValue: Boolean) {
         _isDarkTheme.value = newValue
-        _themeText.value = if (newValue) "Dark Mode" else "Light Mode"
+        _themeText.value = if (newValue) "Tryb ciemny" else "Tryb jasny"
     }
 
-    fun setDistanceUnit(unit: DistanceUnit) {
+    fun setDistanceUnit(unit: MetricUnit) {
         _distanceUnit.update { unit }
+        Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
+        // TODO: Save this preference (e.g., using DataStore)
+    }
+
+    fun setWeightUnit(unit: MetricUnit) {
+        _weightUnit.update { unit }
         Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
         // TODO: Save this preference (e.g., using DataStore)
     }
 }
 
-data class DistanceUnit(
+data class MetricUnit(
     val displayName: String,
     val systemName: String
 )
