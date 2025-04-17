@@ -11,27 +11,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uj.lab.fitnessapp.data.model.Exercise
-import androidx.compose.runtime.*
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.ui.theme.*
 
 @Composable
 fun ExerciseKindListEntry(
     exercise: Exercise,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onFavoriteClick: (Exercise) -> Unit
 ) {
 
-    // depends on mock data model, will change soon.
-    var isFavorite by remember { mutableStateOf(false) }
     val baseColor = if (exercise.workoutType == WorkoutType.Strength) strengthColor else cardioColor
 
     Button(
@@ -40,8 +36,7 @@ fun ExerciseKindListEntry(
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = if (isFavorite) ButtonDefaults.buttonColors(containerColor = favoriteColor)
-                else ButtonDefaults.buttonColors(containerColor = baseColor)
+        colors = ButtonDefaults.buttonColors(containerColor = baseColor)
     ) {
         Row(
             modifier = Modifier
@@ -57,7 +52,7 @@ fun ExerciseKindListEntry(
                     text = exercise.exerciseName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = if (exercise.isFavourite) goldColor else Color.White
                 )
 
             }
@@ -69,29 +64,29 @@ fun ExerciseKindListEntry(
                         ,
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "More Options",
-                    tint = Color.White
+                    tint = if (exercise.isFavourite) goldColor else Color.White
                 )
             }
             // attach function to handle favorites
-            IconButton(onClick = { isFavorite = !isFavorite }) {
+            IconButton(onClick = { onFavoriteClick(exercise) }) {
                 Icon(
                     modifier = Modifier
                         .size(40.dp)
                     ,
                     imageVector = Icons.Default.Star,
                     contentDescription = "Add to favorites",
-                    tint = Color.White
+                    tint = if (exercise.isFavourite) goldColor else Color.White
                 )
             }
             }
         }
     }
 
-@Preview(showBackground = true)
-@Composable
-fun ExerciseKindListEntryPreview() {
-    ExerciseKindListEntry(
-        exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
-        onClick = {}
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ExerciseKindListEntryPreview() {
+//    ExerciseKindListEntry(
+//        exercise = Exercise(0, "Running", WorkoutType.Cardio, false, false),
+//        onClick = {}
+//    )
+//}
