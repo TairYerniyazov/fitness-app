@@ -1,8 +1,11 @@
 package uj.lab.fitnessapp.ui.screen.settings
 
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,9 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewmodel.compose.viewModel
-import uj.lab.fitnessapp.ui.theme.green1
+
 
 /**
  * Settings screen.
@@ -33,17 +34,38 @@ fun SettingsScreen(navController: NavController) {
     val currentDistanceUnit by viewModel.distanceUnit.collectAsState()
     val themeText by viewModel.themeText
     var expanded by remember { mutableStateOf(false) }
-    val bottomNavItems = listOf(Screen.Home, Screen.Settings)
 
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Settings") })
         },
-        content = { padding ->
+        bottomBar = {
+            NavigationBar {
+                val routes = listOf(
+                    Icons.Default.Home to Screen.Home,
+                    Icons.Default.Info to null,
+                    Icons.Default.Settings to Screen.Settings
+                )
+                routes.forEach {
+                    NavigationBarItem(
+                        icon = { Icon(it.first, contentDescription = null) },
+                        selected = navController.currentDestination?.route == it.second?.route,
+                        onClick = {
+                            it.second?.let { screen ->
+                                if (navController.currentDestination?.route != screen.route) {
+                                    navController.navigate(screen.route)
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        },
+        content = { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
+                    .padding(innerPadding)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -89,6 +111,7 @@ fun SettingsScreen(navController: NavController) {
                         }
                     }
                 }
+
             }
         }
     )
