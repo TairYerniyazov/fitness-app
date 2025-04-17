@@ -15,11 +15,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-
+import uj.lab.fitnessapp.ui.theme.backgroundColor
+import uj.lab.fitnessapp.ui.theme.green1
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.material.icons.filled.ArrowDropDown
 
 /**
  * Settings screen.
@@ -32,12 +39,24 @@ fun SettingsScreen(navController: NavController) {
     val viewModel: SettingsViewModel = hiltViewModel()
     val isDarkTheme by viewModel.isDarkTheme
     val currentDistanceUnit by viewModel.distanceUnit.collectAsState()
+    val currentWeightUnit by viewModel.weightUnit.collectAsState()
     val themeText by viewModel.themeText
-    var expanded by remember { mutableStateOf(false) }
+    var expandedDistanceUnits by remember { mutableStateOf(false) }
+    var expandedWeightUnits by remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = backgroundColor,
         topBar = {
-            TopAppBar(title = { Text("Settings") })
+            TopAppBar(
+                title = { Text("Ustawienia") },
+                colors = TopAppBarColors(
+                    containerColor = green1,
+                    scrolledContainerColor = green1,
+                    navigationIconContentColor = Color.White,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                )
+            )
         },
         bottomBar = {
             NavigationBar {
@@ -90,28 +109,74 @@ fun SettingsScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Distance Unit")
+                    Text(text = "Jednostki dystansu")
                     Box {
-                        TextButton(onClick = { expanded = true }) {
-                            Text(currentDistanceUnit.displayName)
+                        TextButton(
+                            onClick = { expandedDistanceUnits = true },
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(currentDistanceUnit.displayName)
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowDropDown,
+                                    contentDescription = "Otwórz menu jednostek dystansu",
+                                    tint = green1
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                            }
                         }
                         DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
+                            expanded = expandedDistanceUnits,
+                            onDismissRequest = { expandedDistanceUnits = false }
                         ) {
                             viewModel.distanceUnits.forEach { unit ->
                                 DropdownMenuItem(
                                     text = { Text(unit.displayName) },
                                     onClick = {
                                         viewModel.setDistanceUnit(unit)
-                                        expanded = false
+                                        expandedDistanceUnits = false
                                     }
                                 )
                             }
                         }
                     }
                 }
-
+                // Weight Unit Setting
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Jednostki wagi")
+                    Box {
+                        TextButton(
+                            onClick = { expandedWeightUnits = true },
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(currentWeightUnit.displayName)
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowDropDown,
+                                    contentDescription = "Otwórz menu jednostek wagi",
+                                    tint = green1
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                            }
+                        }
+                        DropdownMenu(
+                            expanded = expandedWeightUnits,
+                            onDismissRequest = { expandedWeightUnits = false }
+                        ) {
+                            viewModel.weightUnits.forEach { unit ->
+                                DropdownMenuItem(
+                                    text = { Text(unit.displayName) },
+                                    onClick = {
+                                        viewModel.setWeightUnit(unit)
+                                        expandedWeightUnits = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     )
