@@ -32,6 +32,20 @@ internal class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateExerciseFavoriteStatus(exerciseName: String, isFavorite: Boolean) {
+        _uiState.update { currentState ->
+            val updatedInstances = currentState.exerciseInstances.map { instance ->
+                if (instance.exercise?.exerciseName == exerciseName) {
+                    val updatedExercise = instance.exercise!!.copy(isFavourite = isFavorite)
+                    instance.copy(exercise = updatedExercise)
+                } else {
+                    instance
+                }
+            }
+            currentState.copy(exerciseInstances = updatedInstances)
+        }
+    }
 }
 
 data class HomeUiState(
