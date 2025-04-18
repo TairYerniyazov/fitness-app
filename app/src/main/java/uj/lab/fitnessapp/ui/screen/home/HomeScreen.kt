@@ -2,6 +2,7 @@ package uj.lab.fitnessapp.ui.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
+import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
+import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
 
 
 /**
@@ -35,6 +38,7 @@ import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
+    val exerciseListViewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
 
     val exerciseInstanceListState = rememberLazyListState()
@@ -65,7 +69,11 @@ fun HomeScreen(navController: NavController) {
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
                 itemsIndexed(state.exerciseInstances) { index, instance ->
-                    ExerciseInstanceEntry(index, instance)
+                    ExerciseInstanceEntry(index, instance) {
+                        exerciseListViewModel.toggleFavorite(
+                            instance.exercise!!
+                        )
+                    }
                 }
             }
         },
