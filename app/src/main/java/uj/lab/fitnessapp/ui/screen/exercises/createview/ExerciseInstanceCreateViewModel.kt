@@ -13,19 +13,51 @@ import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
-import java.time.LocalDate
+import uj.lab.fitnessapp.data.utils.UnitConverter
+import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-internal class ExerciseInstanceCreateViewModel @Inject constructor(
+class ExerciseInstanceCreateViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
     private val exerciseInstanceRepository: ExerciseInstanceRepository,
     private val workoutSetRepository: WorkoutSetRepository,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ExerciseInstanceCreateUiState())
     val uiState: StateFlow<ExerciseInstanceCreateUiState> get() = _uiState
+
+    private val _weightUnit = MutableStateFlow("kg")
+    val weightUnit: StateFlow<String> = _weightUnit
+
+    private val _distanceUnit = MutableStateFlow("m")
+    val distanceUnit: StateFlow<String> = _distanceUnit
+
+    private val _isImperialWeight = MutableStateFlow(false)
+    val isImperialWeight: StateFlow<Boolean> = _isImperialWeight
+
+    private val _isImperialDistance = MutableStateFlow(false)
+    val isImperialDistance: StateFlow<Boolean> = _isImperialDistance
+
+    init {
+        viewModelScope.launch {
+            settingsManager.weightUnit.collect { unit ->
+                _isImperialWeight.value = unit == "imperial"
+                _weightUnit.value = if (unit == "imperial") "lbs" else "kg"
+                refreshWorkoutSets()
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.distanceUnit.collect { unit ->
+                _isImperialDistance.value = unit == "imperial"
+                _distanceUnit.value = if (unit == "imperial") "mi" else "m"
+                refreshWorkoutSets()
+            }
+        }
+    }
 
     fun loadExercise(name: String) {
         viewModelScope.launch {
@@ -40,8 +72,9 @@ internal class ExerciseInstanceCreateViewModel @Inject constructor(
     }
 
     fun addWorkoutSet(workoutSet: WorkoutSet) {
+        val convertedSet = convertToMetric(workoutSet)
         _uiState.update { currentState ->
-            val newWorkoutSets = currentState.workoutSets + workoutSet
+            val newWorkoutSets = currentState.workoutSets + convertedSet
             currentState.copy(workoutSets = newWorkoutSets)
         }
     }
@@ -69,6 +102,29 @@ internal class ExerciseInstanceCreateViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun convertToMetric(workoutSet: WorkoutSet): WorkoutSet {
+        val metricLoad = if (workoutSet.load != null && _isImperialWeight.value) {
+            UnitConverter.storeWeight(workoutSet.load, true)
+        } else {
+            workoutSet.load
+        }
+
+        val metricDistance = if (workoutSet.distance != null && workoutSet.distance > 0 && _isImperialDistance.value) {
+            UnitConverter.storeDistance(workoutSet.distance.toDouble(), true)
+        } else {
+            workoutSet.distance
+        }
+
+        return workoutSet.copy(
+            load = metricLoad,
+            distance = metricDistance
+        )
+    }
+
+    private fun refreshWorkoutSets() {
+        _uiState.update { it.copy() }
     }
 }
 
