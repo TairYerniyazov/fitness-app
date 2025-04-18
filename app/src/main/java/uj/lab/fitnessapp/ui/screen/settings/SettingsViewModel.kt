@@ -4,11 +4,12 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     private val _isDarkTheme = mutableStateOf(false)
@@ -37,6 +39,22 @@ class SettingsViewModel @Inject constructor(
     private val _weightUnit = MutableStateFlow(weightUnits[0])
     val weightUnit: StateFlow<MetricUnit> = _weightUnit.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            settingsManager.distanceUnit.collect { systemName ->
+                _distanceUnit.value =
+                    distanceUnits.find { it.systemName == systemName } ?: distanceUnits[0]
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.weightUnit.collect { systemName ->
+                _weightUnit.value =
+                    weightUnits.find { it.systemName == systemName } ?: weightUnits[0]
+            }
+        }
+    }
+
 
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState.asStateFlow()
@@ -46,17 +64,21 @@ class SettingsViewModel @Inject constructor(
         _themeText.value = if (newValue) "Tryb ciemny" else "Tryb jasny"
     }
 
-    fun setDistanceUnit(unit: MetricUnit) {
-        _distanceUnit.update { unit }
-        Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
-        // TODO: Save this preference (e.g., using DataStore)
-    }
+        fun setDistanceUnit(unit: MetricUnit) {
+            _distanceUnit.value = unit
+            viewModelScope.launch {
+                settingsManager.setDistanceUnit(unit.systemName)
+            }
+            Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
+        }
 
-    fun setWeightUnit(unit: MetricUnit) {
-        _weightUnit.update { unit }
-        Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
-        // TODO: Save this preference (e.g., using DataStore)
-    }
+        fun setWeightUnit(unit: MetricUnit) {
+            _weightUnit.value = unit
+            viewModelScope.launch {
+                settingsManager.setWeightUnit(unit.systemName)
+            }
+            Log.d("SettingsViewModel", "Weight unit set to: ${unit.displayName}")
+        }
 }
 
 data class MetricUnit(
