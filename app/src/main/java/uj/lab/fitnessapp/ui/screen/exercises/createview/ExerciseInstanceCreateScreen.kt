@@ -56,7 +56,7 @@ import uj.lab.fitnessapp.ui.component.DurationInput
 import uj.lab.fitnessapp.ui.component.DurationInputState
 import uj.lab.fitnessapp.ui.component.StrengthWorkoutSetEntry
 import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.green1
+import uj.lab.fitnessapp.ui.theme.darkGreen
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -171,7 +171,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                             viewModel.saveExerciseInstance()
                             navController.popBackStack(Screen.Home.route, false)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -189,7 +189,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         onClick = {
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -267,7 +267,7 @@ fun CardioWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -288,7 +288,7 @@ fun CardioWorkoutSetCreator(
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -355,7 +355,7 @@ fun StrengthWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -372,7 +372,7 @@ fun StrengthWorkoutSetCreator(
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)

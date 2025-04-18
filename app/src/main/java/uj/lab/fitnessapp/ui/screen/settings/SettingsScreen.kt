@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.green1
+import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -51,8 +51,8 @@ fun SettingsScreen(navController: NavController) {
             TopAppBar(
                 title = { Text("Ustawienia") },
                 colors = TopAppBarColors(
-                    containerColor = green1,
-                    scrolledContainerColor = green1,
+                    containerColor = darkGreen,
+                    scrolledContainerColor = darkGreen,
                     navigationIconContentColor = Color.White,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
@@ -63,15 +63,15 @@ fun SettingsScreen(navController: NavController) {
             NavigationBar {
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
-                    Icons.Default.Info to null,
+                    Icons.Default.Info to Screen.Analytics,
                     Icons.Default.Settings to Screen.Settings
                 )
                 routes.forEach {
                     NavigationBarItem(
                         icon = { Icon(it.first, contentDescription = null) },
-                        selected = navController.currentDestination?.route == it.second?.route,
+                        selected = navController.currentDestination?.route == it.second.route,
                         onClick = {
-                            it.second?.let { screen ->
+                            it.second.let { screen ->
                                 if (navController.currentDestination?.route != screen.route) {
                                     navController.navigate(screen.route)
                                 }
@@ -120,7 +120,7 @@ fun SettingsScreen(navController: NavController) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Otwórz menu jednostek dystansu",
-                                    tint = green1
+                                    tint = darkGreen
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
                             }
@@ -157,7 +157,7 @@ fun SettingsScreen(navController: NavController) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Otwórz menu jednostek wagi",
-                                    tint = green1
+                                    tint = darkGreen
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
                             }
@@ -202,7 +202,7 @@ fun SettingsScreen(navController: NavController) {
                             // TODO: data export logic
                             println("Export Data Clicked")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(
@@ -217,7 +217,7 @@ fun SettingsScreen(navController: NavController) {
                             // TODO: data import logic
                             println("Import Data Clicked")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(

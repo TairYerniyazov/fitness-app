@@ -10,6 +10,7 @@ import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseKindListScreen
 import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateScreen
 import uj.lab.fitnessapp.ui.screen.settings.SettingsScreen
+import uj.lab.fitnessapp.ui.screen.analytics.AnalyticsScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -29,6 +30,9 @@ fun Navigation(navController: NavHostController) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController)
+        }
+        composable(Screen.Analytics.route) {
+            AnalyticsScreen(navController)
         }
     }
 }

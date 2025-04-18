@@ -11,12 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
-import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val exerciseRepository: ExerciseRepository,
     private val settingsManager: SettingsManager
 ) : ViewModel() {
 

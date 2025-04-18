@@ -7,12 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.ExerciseInstance
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
-import uj.lab.fitnessapp.data.repository.ExerciseRepository
-import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
-import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateUiState
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject

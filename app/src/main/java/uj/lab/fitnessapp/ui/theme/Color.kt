@@ -15,7 +15,7 @@ val cardioColor = Color(0xFFA3B18A)
 val strengthColor = Color(0xFF344E41)
 
 val lovelyPink = Color(0xFFFF8FAB)
-val backgroundColor = Color(0xFFDAD7CD)
-val green1 = Color(0xFF344E41)
 
+val backgroundColor = Color(0xFFDAD7CD)
+val darkGreen = Color(0xFF344E41)
 val goldColor = Color(0xFFFFBF00)
