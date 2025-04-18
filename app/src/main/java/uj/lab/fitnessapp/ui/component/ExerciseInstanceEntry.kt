@@ -1,6 +1,5 @@
 package uj.lab.fitnessapp.ui.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,11 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +25,6 @@ import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
-import uj.lab.fitnessapp.ui.theme.goldColor
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -59,11 +53,10 @@ fun ExerciseInstanceEntry(
                         modifier = Modifier
                             .size(32.dp),
                         painter = painterResource(id = if (instance.exercise!!.isFavourite)
-                            R.drawable.baseline_star_outline_32 else R.drawable.baseline_star_32),
+                            R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32),
                         contentDescription = "Add to favorites",
                         tint = Color.Black
                     )
-
                 }
             }
             LazyColumn(
