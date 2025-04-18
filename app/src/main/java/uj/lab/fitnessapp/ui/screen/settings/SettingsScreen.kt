@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun SettingsScreen(navController: NavController) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    val isDarkTheme by viewModel.isDarkTheme
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
     val currentDistanceUnit by viewModel.distanceUnit.collectAsState()
     val currentWeightUnit by viewModel.weightUnit.collectAsState()
     val themeText by viewModel.themeText

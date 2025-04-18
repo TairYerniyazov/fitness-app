@@ -20,8 +20,8 @@ class SettingsViewModel @Inject constructor(
     private val settingsManager: SettingsManager
 ) : ViewModel() {
 
-    private val _isDarkTheme = mutableStateOf(false)
-    val isDarkTheme: State<Boolean> = _isDarkTheme
+    private val _isDarkTheme = MutableStateFlow(false)
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
     private val _themeText = mutableStateOf("Tryb jasny")
     val themeText: State<String> = _themeText
 
@@ -53,32 +53,38 @@ class SettingsViewModel @Inject constructor(
                     weightUnits.find { it.systemName == systemName } ?: weightUnits[0]
             }
         }
+
+        viewModelScope.launch {
+            settingsManager.isDarkTheme.collect { isDark ->
+                _isDarkTheme.value = isDark
+                _themeText.value = if (isDark) "Tryb ciemny" else "Tryb jasny"
+            }
+        }
     }
-
-
-    private val _uiState = MutableStateFlow(ExercisesUiState(emptyList()))
-    val uiState: StateFlow<ExercisesUiState> get() = _uiState.asStateFlow()
 
     fun toggleTheme(newValue: Boolean) {
         _isDarkTheme.value = newValue
         _themeText.value = if (newValue) "Tryb ciemny" else "Tryb jasny"
+        viewModelScope.launch {
+            settingsManager.toggleTheme(newValue)
+        }
     }
 
-        fun setDistanceUnit(unit: MetricUnit) {
-            _distanceUnit.value = unit
-            viewModelScope.launch {
-                settingsManager.setDistanceUnit(unit.systemName)
-            }
-            Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
+    fun setDistanceUnit(unit: MetricUnit) {
+        _distanceUnit.value = unit
+        viewModelScope.launch {
+            settingsManager.setDistanceUnit(unit.systemName)
         }
+        Log.d("SettingsViewModel", "Distance unit set to: ${unit.displayName}")
+    }
 
-        fun setWeightUnit(unit: MetricUnit) {
-            _weightUnit.value = unit
-            viewModelScope.launch {
-                settingsManager.setWeightUnit(unit.systemName)
-            }
-            Log.d("SettingsViewModel", "Weight unit set to: ${unit.displayName}")
+    fun setWeightUnit(unit: MetricUnit) {
+        _weightUnit.value = unit
+        viewModelScope.launch {
+            settingsManager.setWeightUnit(unit.systemName)
         }
+        Log.d("SettingsViewModel", "Weight unit set to: ${unit.displayName}")
+    }
 }
 
 data class MetricUnit(

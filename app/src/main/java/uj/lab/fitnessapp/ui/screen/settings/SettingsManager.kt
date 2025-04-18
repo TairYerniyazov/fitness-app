@@ -3,6 +3,7 @@ package uj.lab.fitnessapp.ui.screen.settings
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -20,8 +21,9 @@ class SettingsManager @Inject constructor(
 ) {
     private val dataStore = context.dataStore
 
-    private val distanceUnitKey = stringPreferencesKey("distance_unit")
     private val weightUnitKey = stringPreferencesKey("weight_unit")
+    private val isDarkThemeKey = booleanPreferencesKey("is_dark_theme")
+    private val distanceUnitKey = stringPreferencesKey("distance_unit")
 
     val distanceUnit: Flow<String> = dataStore.data.map { prefs ->
         prefs[distanceUnitKey] ?: "metric"
@@ -29,6 +31,10 @@ class SettingsManager @Inject constructor(
 
     val weightUnit: Flow<String> = dataStore.data.map { prefs ->
         prefs[weightUnitKey] ?: "metric"
+    }
+
+    val isDarkTheme: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[isDarkThemeKey] ?: false
     }
 
     suspend fun setDistanceUnit(unit: String) {
@@ -40,6 +46,12 @@ class SettingsManager @Inject constructor(
     suspend fun setWeightUnit(unit: String) {
         dataStore.edit { prefs ->
             prefs[weightUnitKey] = unit
+        }
+    }
+
+    suspend fun toggleTheme(newValue: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[isDarkThemeKey] = newValue
         }
     }
 }
