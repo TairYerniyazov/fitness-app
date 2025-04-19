@@ -169,20 +169,22 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 ) {
                     Button(
                         onClick = {
-                            viewModel.saveExerciseInstance()
-                            navController.popBackStack(Screen.Home.route, false)
+                            viewModel.saveExerciseInstance {
+                                navController.popBackStack(Screen.Home.route, false)
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
                             .height(56.dp)
-                            .padding(end = 8.dp)
+                            .padding(end = 8.dp),
+                        enabled = !state.isSaving
                     ) {
                         Text(
                             text = "Zapisz",
                             color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
 
