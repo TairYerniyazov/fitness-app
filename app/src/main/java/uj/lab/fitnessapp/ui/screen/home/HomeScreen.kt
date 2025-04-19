@@ -2,6 +2,7 @@ package uj.lab.fitnessapp.ui.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -21,10 +22,13 @@ import androidx.compose.ui.graphics.Color
 import uj.lab.fitnessapp.ui.theme.backgroundColor
 import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
+import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
 
 
 /**
@@ -35,7 +39,9 @@ import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
+    val exerciseListViewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     val exerciseInstanceListState = rememberLazyListState()
 
@@ -65,7 +71,18 @@ fun HomeScreen(navController: NavController) {
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
                 itemsIndexed(state.exerciseInstances) { index, instance ->
-                    ExerciseInstanceEntry(index, instance)
+                    ExerciseInstanceEntry(
+                        index = index,
+                        instance = instance,
+                        onFavoriteClick = { clickedExercise ->
+                            val newFavoriteState = !clickedExercise.isFavourite
+                            scope.launch {
+                                exerciseListViewModel.toggleFavorite(clickedExercise)
+                            }
+                            viewModel.updateExerciseFavoriteStatus(clickedExercise.exerciseName,
+                                newFavoriteState)
+                        }
+                    )
                 }
             }
         },
