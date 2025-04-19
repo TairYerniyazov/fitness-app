@@ -88,17 +88,14 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 val backgroundColor = Color(0xFFDAD7CD)
-// Zachowajmy specyficzne kolory aplikacji, ale dodajmy ich wersje dla ciemnego motywu
 val favoriteColor = Color(0xFFbc4749)
 val cardioColor = Color(0xFFA3B18A)
 val strengthColor = Color(0xFF344E41)
 val strengthColorLight = Color(0xFF344E41)
-val strengthColorDark = Color(0xFF588157) // Ciemniejsza wersja dla dark theme
+val strengthColorDark = Color(0xFF588157)
 val darkGreen = Color(0xFF344E41)
 val lovelyPink = Color(0xFFFF8FAB)
 
-// Usuwamy stałe kolory tła i zastępujemy je referencjami do motywu
-// val backgroundColor = Color(0xFFDAD7CD) // Usuń tę linię
 val darkGreenLight = Color(0xFF344E41)
-val darkGreenDark = Color(0xFF2D3E2D) // Ciemniejsza wersja dla dark theme
+val darkGreenDark = Color(0xFF2D3E2D)
 val goldColor = Color(0xFFFFBF00)
