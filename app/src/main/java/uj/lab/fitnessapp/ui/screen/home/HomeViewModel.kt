@@ -7,12 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.ExerciseInstance
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
-import uj.lab.fitnessapp.data.repository.ExerciseRepository
-import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
-import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateUiState
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -34,6 +30,20 @@ internal class HomeViewModel @Inject constructor(
                     exerciseInstances = exerciseInstances
                 )
             }
+        }
+    }
+
+    fun updateExerciseFavoriteStatus(exerciseName: String, isFavorite: Boolean) {
+        _uiState.update { currentState ->
+            val updatedInstances = currentState.exerciseInstances.map { instance ->
+                if (instance.exercise?.exerciseName == exerciseName) {
+                    val updatedExercise = instance.exercise!!.copy(isFavourite = isFavorite)
+                    instance.copy(exercise = updatedExercise)
+                } else {
+                    instance
+                }
+            }
+            currentState.copy(exerciseInstances = updatedInstances)
         }
     }
 }

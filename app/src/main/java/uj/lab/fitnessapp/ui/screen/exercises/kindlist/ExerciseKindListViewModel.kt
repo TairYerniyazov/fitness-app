@@ -48,7 +48,6 @@ class ExerciseListViewModel @Inject constructor(
                 if (it.exerciseName == updatedExercise.exerciseName) updatedExercise else it
             }
 
-
             _uiState.value = _uiState.value.copy(
                 allExercises = updatedExercises,
                 filteredExercises = updatedExercises.filter { exercise ->

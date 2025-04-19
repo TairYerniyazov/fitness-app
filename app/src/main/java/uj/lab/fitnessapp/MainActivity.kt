@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import uj.lab.fitnessapp.navigation.NavigationWrapper
+import uj.lab.fitnessapp.ui.screen.settings.SettingsViewModel
 import uj.lab.fitnessapp.ui.theme.FitnessAppTheme
 
 @AndroidEntryPoint
@@ -20,14 +21,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val viewModel = hiltViewModel<MainActivityViewModel>();
-            val state by viewModel.uiState.collectAsState();
+            val viewModel = hiltViewModel<MainActivityViewModel>()
+            val state by viewModel.uiState.collectAsState()
+            val settingsViewModel = hiltViewModel<SettingsViewModel>()
+            val isDarkTheme = settingsViewModel.isDarkTheme
+
             LaunchedEffect(Unit) {
                 viewModel.populateDatabase()
             }
 
             if (state.isDatabaseInitialized) {
-                FitnessAppTheme {
+                FitnessAppTheme(darkTheme = isDarkTheme) {
                     NavigationWrapper()
                 }
             } else {

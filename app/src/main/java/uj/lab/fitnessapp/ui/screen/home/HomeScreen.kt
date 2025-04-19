@@ -20,24 +20,15 @@ import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
 import androidx.compose.ui.graphics.Color
 import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.green1
+import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
-import uj.lab.fitnessapp.data.model.WorkoutType
-import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
+import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
-import uj.lab.fitnessapp.ui.theme.backgroundColor
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
 
 
 /**
@@ -48,37 +39,31 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = hiltViewModel<HomeViewModel>()
+    val exerciseListViewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
 
     val exerciseInstanceListState = rememberLazyListState()
-
-    val selectedDate = Date().time
 
     LaunchedEffect(Unit) {
         viewModel.loadExerciseInstances()
     }
 
-
     Scaffold(
-        containerColor = backgroundColor,
-
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            DatePickerFieldToModal(
-                modifier = Modifier.padding(0.dp,40.dp)
+            TopAppBar(
+                title = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
             )
-//            TopAppBar(
-//                title = {
-//                    Column(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(backgroundColor)
-//            )
         },
-
         content = { padding ->
             LazyColumn(
                 Modifier.padding(padding),
@@ -86,7 +71,18 @@ fun HomeScreen(navController: NavController) {
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
                 itemsIndexed(state.exerciseInstances) { index, instance ->
-                    ExerciseInstanceEntry(index, instance)
+                    ExerciseInstanceEntry(
+                        index = index,
+                        instance = instance,
+                        onFavoriteClick = { clickedExercise ->
+                            val newFavoriteState = !clickedExercise.isFavourite
+                            scope.launch {
+                                exerciseListViewModel.toggleFavorite(clickedExercise)
+                            }
+                            viewModel.updateExerciseFavoriteStatus(clickedExercise.exerciseName,
+                                newFavoriteState)
+                        }
+                    )
                 }
             }
         },
@@ -95,7 +91,7 @@ fun HomeScreen(navController: NavController) {
                 onClick = {
                     navController.navigate(Screen.ExerciseKindList.route)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .padding(18.dp)
@@ -104,7 +100,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Text(
                     "Dodaj instancję ćwiczenia",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -115,15 +111,15 @@ fun HomeScreen(navController: NavController) {
                 // TODO(noituri): This is just a placeholder
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
-                    Icons.Default.Info to null,
-                    Icons.Default.Settings to null
+                    Icons.Default.Info to Screen.Analytics,
+                    Icons.Default.Settings to Screen.Settings
                 )
                 routes.forEach {
                     NavigationBarItem(
                         icon = { Icon(it.first, contentDescription = null) },
-                        selected = navController.currentDestination?.route == it.second?.route,
+                        selected = navController.currentDestination?.route == it.second.route,
                         onClick = {
-                            it.second?.let { screen ->
+                            it.second.let { screen ->
                                 if (navController.currentDestination?.route != screen.route) {
                                     navController.navigate(screen.route)
                                 }

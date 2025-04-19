@@ -1,10 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.exercises.createview
 
-import android.R.attr.label
-import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,24 +27,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.data.model.WorkoutSet
@@ -68,7 +56,7 @@ import uj.lab.fitnessapp.ui.component.DurationInput
 import uj.lab.fitnessapp.ui.component.DurationInputState
 import uj.lab.fitnessapp.ui.component.StrengthWorkoutSetEntry
 import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.green1
+import uj.lab.fitnessapp.ui.theme.darkGreen
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -86,30 +74,31 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(title = {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    color = backgroundColor,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(4.dp),
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = exerciseKind,
                             style = MaterialTheme.typography.headlineMedium,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                 }
-            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = backgroundColor))
+            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.background))
         },
         content = { padding ->
             Column(
                 modifier = Modifier
-                    .background(backgroundColor)
+                    .background(MaterialTheme.colorScheme.background)
                     .fillMaxSize()
                     .padding(padding)
                     .padding(horizontal = 16.dp),
@@ -120,27 +109,24 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         showBottomSheet.value = false
                     }, sheetState = sheetState) {
                         when (state.workoutType) {
-                            // TODO: Deduplicate this code
                             WorkoutType.Cardio ->
                                 CardioWorkoutSetCreator(
-                                    onSave = {
-                                        viewModel.addWorkoutSet(it)
+                                    onSave = { workoutSet ->
+                                        viewModel.addWorkoutSet(workoutSet)
                                         showBottomSheet.value = false
                                     },
-                                    onCancel = {
-                                        showBottomSheet.value = false
-                                    },
+                                    onCancel = { showBottomSheet.value = false },
+                                    viewModel = viewModel
                                 )
 
                             WorkoutType.Strength ->
                                 StrengthWorkoutSetCreator(
-                                    onSave = {
-                                        viewModel.addWorkoutSet(it)
+                                    onSave = { workoutSet ->
+                                        viewModel.addWorkoutSet(workoutSet)
                                         showBottomSheet.value = false
                                     },
-                                    onCancel = {
-                                        showBottomSheet.value = false
-                                    },
+                                    onCancel = { showBottomSheet.value = false },
+                                    viewModel = viewModel
                                 )
                         }
                     }
@@ -153,10 +139,9 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                 CardioWorkoutSetEntry(
                                     index,
                                     workoutSet.distance!!,
-                                    workoutSet.time!!.toDuration(
-                                        DurationUnit.SECONDS
-                                    ),
-                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) }
+                                    workoutSet.time!!.toDuration(DurationUnit.SECONDS),
+                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                    viewModel = viewModel
                                 )
 
                             WorkoutType.Strength ->
@@ -164,7 +149,8 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                     index,
                                     workoutSet.load!!,
                                     workoutSet.reps!!,
-                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) }
+                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                    viewModel = viewModel
                                 )
                         }
                     }
@@ -173,7 +159,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
         },
         bottomBar = {
             BottomAppBar(
-                containerColor = backgroundColor
+                containerColor = MaterialTheme.colorScheme.background
             ) {
                 Row(
                     modifier = Modifier
@@ -186,7 +172,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                             viewModel.saveExerciseInstance()
                             navController.popBackStack(Screen.Home.route, false)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -195,7 +181,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ) {
                         Text(
                             text = "Zapisz",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -204,7 +190,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         onClick = {
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = green1),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -213,7 +199,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ) {
                         Text(
                             text = "Anuluj",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -241,11 +227,16 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) {
+fun CardioWorkoutSetCreator(
+    onSave: (WorkoutSet) -> Unit,
+    onCancel: () -> Unit,
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+) {
     var state = remember {
         mutableStateOf(DurationInputState())
     }
     var distance by remember { mutableStateOf("0") }
+    val distanceUnit by viewModel.distanceUnit.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         DurationInput(state)
@@ -257,7 +248,7 @@ fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) 
             },
             isError = distance.toIntOrNull() == null || distance.toInt() < 0,
             label = { Text("Distance") },
-            suffix = { Text("m") },
+            suffix = { Text(distanceUnit) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -277,7 +268,7 @@ fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) 
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -292,13 +283,13 @@ fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) 
             ) {
                 Text(
                     text = "Dodaj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -307,7 +298,7 @@ fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) 
             ) {
                 Text(
                     text = "Anuluj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -317,9 +308,14 @@ fun CardioWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit) {
+fun StrengthWorkoutSetCreator(
+    onSave: (WorkoutSet) -> Unit,
+    onCancel: () -> Unit,
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+) {
     var reps by remember { mutableStateOf("0") }
     var load by remember { mutableStateOf("0") }
+    val weightUnit by viewModel.weightUnit.collectAsState()
 
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(
@@ -328,7 +324,7 @@ fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit
                 load = it
             },
             label = { Text("Obciążenie") },
-            suffix = { Text("kg") },
+            suffix = { Text(weightUnit) },
             isError = load.toDoubleOrNull() == null || load.toDouble() < 0,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             modifier = Modifier.fillMaxWidth()
@@ -360,7 +356,7 @@ fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -371,13 +367,13 @@ fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit
             ) {
                 Text(
                     text = "Dodaj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = green1),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -386,7 +382,7 @@ fun StrengthWorkoutSetCreator(onSave: (WorkoutSet) -> Unit, onCancel: () -> Unit
             ) {
                 Text(
                     text = "Anuluj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
