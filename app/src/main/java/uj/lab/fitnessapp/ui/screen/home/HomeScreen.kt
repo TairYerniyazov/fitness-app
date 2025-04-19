@@ -30,10 +30,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.theme.backgroundColor
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -50,25 +52,33 @@ fun HomeScreen(navController: NavController) {
 
     val exerciseInstanceListState = rememberLazyListState()
 
+    val selectedDate = Date().time
+
     LaunchedEffect(Unit) {
         viewModel.loadExerciseInstances()
     }
 
+
     Scaffold(
         containerColor = backgroundColor,
+
         topBar = {
-            TopAppBar(
-                title = {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(backgroundColor)
+            DatePickerFieldToModal(
+                modifier = Modifier.padding(0.dp,40.dp)
             )
+//            TopAppBar(
+//                title = {
+//                    Column(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+//                    }
+//                },
+//                colors = TopAppBarDefaults.topAppBarColors(backgroundColor)
+//            )
         },
+
         content = { padding ->
             LazyColumn(
                 Modifier.padding(padding),
