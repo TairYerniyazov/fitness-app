@@ -67,30 +67,6 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         IS_POPULATED.set(true)
-
-//            val exerciseInstanceDao = db.exerciseInstanceDao()
-//            val workoutSetDao = db.workoutSetDao()
-//
-//            //tutaj wypełnienie bazy danymi przy pierwszym odpaleniu
-//            val ex1 = Exercise(0, "Bench Press", false, false, false)
-//            val ex2 = Exercise(0, "Squat", false, false, false)
-//            val ex3 = Exercise(0, "Bike", true, false, false)
-//
-//            exerciseDao.insertExercise(ex1)
-//            exerciseDao.insertExercise(ex2)
-//            exerciseDao.insertExercise(ex3)
-//
-//            val exInst = exerciseDao.getExerciseByName("Bench Press")
-//            exerciseInstanceDao.insertInstance(ExerciseInstance(0, exInst.id, "01.04.2025"))
-//
-//            val category = exInst.workoutType// warunkowe wybranie pól do wypełnienia na podstawie tego typu
-//            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 10, 80.0, null, null))
-//            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 8, 82.5, null, null))
-//            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 6, 85.0, null, null))
-//            workoutSetDao.insertWorkoutSet(WorkoutSet(0, exInst.id, 4, 90.0, null, null))
-//
-//            Log.i("_____TESTING_____", exerciseInstanceDao.getExerciseInstanceWithDetails(exInst.id).toString())
-
     }
 
     companion object {

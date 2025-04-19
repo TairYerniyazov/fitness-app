@@ -2,7 +2,6 @@ package uj.lab.fitnessapp.ui.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -18,17 +17,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-import androidx.compose.ui.graphics.Color
-import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
+import java.util.Date
 
 
 /**
@@ -49,19 +47,31 @@ fun HomeScreen(navController: NavController) {
         viewModel.loadExerciseInstances()
     }
 
+    val selectedDate = Date().time
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+
         topBar = {
             TopAppBar(
                 title = {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+//                            .fillMaxWidth()
+                            .height(200.dp),
+//                            .padding(10.dp,0.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        DatePickerFieldToModal(
+//                            colors = MaterialTheme.colorScheme.onPrimary
+//                            modifier = Modifier
+//                                .height(240.dp)
+//                                .padding(20.dp,10.dp)
+                        )
                         Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
+//                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
             )
         },
         content = { padding ->
