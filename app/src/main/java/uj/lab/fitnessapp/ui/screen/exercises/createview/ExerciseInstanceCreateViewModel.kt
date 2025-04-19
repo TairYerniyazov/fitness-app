@@ -86,7 +86,8 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
-    fun saveExerciseInstance() {
+    fun saveExerciseInstance(onSave : () -> Unit) {
+        _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val state = _uiState.value
             val instanceId = exerciseInstanceRepository.insertInstance(
@@ -101,6 +102,8 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                     workoutSet.copy(instanceID = instanceId)
                 )
             }
+            _uiState.update { it.copy(isSaving = false) }
+            onSave()
         }
     }
 
@@ -132,4 +135,5 @@ data class ExerciseInstanceCreateUiState(
     val exerciseId: Int = 0,
     val workoutType: WorkoutType = WorkoutType.Strength,
     val workoutSets: List<WorkoutSet> = emptyList(),
+    val isSaving: Boolean = false,
 )

@@ -65,13 +65,14 @@ fun ExerciseKindListScreen(navController: NavController) {
                             textAlign = TextAlign.Center
                         )
                     }
-                } else
-                items(state.filteredExercises) { exercise ->
+                } else {
+                    items(state.filteredExercises) { exercise ->
                         ExerciseKindListEntry(
                             exercise = exercise,
                             onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName))},
                             onFavoriteClick = { viewModel.toggleFavorite(exercise) }
                         )
+                    }
                 }
                 item {
                     Row(
