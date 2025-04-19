@@ -74,30 +74,31 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
     }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(title = {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    color = backgroundColor,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(4.dp),
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = exerciseKind,
                             style = MaterialTheme.typography.headlineMedium,
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
                     }
                 }
-            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = backgroundColor))
+            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.background))
         },
         content = { padding ->
             Column(
                 modifier = Modifier
-                    .background(backgroundColor)
+                    .background(MaterialTheme.colorScheme.background)
                     .fillMaxSize()
                     .padding(padding)
                     .padding(horizontal = 16.dp),
@@ -158,7 +159,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
         },
         bottomBar = {
             BottomAppBar(
-                containerColor = backgroundColor
+                containerColor = MaterialTheme.colorScheme.background
             ) {
                 Row(
                     modifier = Modifier
@@ -171,7 +172,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                             viewModel.saveExerciseInstance()
                             navController.popBackStack(Screen.Home.route, false)
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -180,7 +181,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ) {
                         Text(
                             text = "Zapisz",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -189,7 +190,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         onClick = {
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -198,7 +199,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ) {
                         Text(
                             text = "Anuluj",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSecondary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -267,7 +268,7 @@ fun CardioWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -282,13 +283,13 @@ fun CardioWorkoutSetCreator(
             ) {
                 Text(
                     text = "Dodaj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -297,7 +298,7 @@ fun CardioWorkoutSetCreator(
             ) {
                 Text(
                     text = "Anuluj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -355,7 +356,7 @@ fun StrengthWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -366,13 +367,13 @@ fun StrengthWorkoutSetCreator(
             ) {
                 Text(
                     text = "Dodaj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -381,7 +382,7 @@ fun StrengthWorkoutSetCreator(
             ) {
                 Text(
                     text = "Anuluj",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }

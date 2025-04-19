@@ -13,15 +13,17 @@ import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
 import javax.inject.Inject
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsManager: SettingsManager
 ) : ViewModel() {
 
-    private val _isDarkTheme = MutableStateFlow(false)
-    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
-    private val _themeText = mutableStateOf("Tryb jasny")
-    val themeText: State<String> = _themeText
+    var isDarkTheme by mutableStateOf(false)
+        private set
+
 
     val distanceUnits = listOf(
         MetricUnit("Kilometry (km)", "metric"),
@@ -39,32 +41,15 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            settingsManager.distanceUnit.collect { systemName ->
-                _distanceUnit.value =
-                    distanceUnits.find { it.systemName == systemName } ?: distanceUnits[0]
-            }
-        }
-
-        viewModelScope.launch {
-            settingsManager.weightUnit.collect { systemName ->
-                _weightUnit.value =
-                    weightUnits.find { it.systemName == systemName } ?: weightUnits[0]
-            }
-        }
-
-        viewModelScope.launch {
-            settingsManager.isDarkTheme.collect { isDark ->
-                _isDarkTheme.value = isDark
-                _themeText.value = if (isDark) "Tryb ciemny" else "Tryb jasny"
+            settingsManager.isDarkThemeEnabled.collect { isDark ->
+                isDarkTheme = isDark
             }
         }
     }
 
-    fun toggleTheme(newValue: Boolean) {
-        _isDarkTheme.value = newValue
-        _themeText.value = if (newValue) "Tryb ciemny" else "Tryb jasny"
+    fun toggleTheme() {
         viewModelScope.launch {
-            settingsManager.toggleTheme(newValue)
+            settingsManager.setDarkThemeEnabled(!isDarkTheme)
         }
     }
 

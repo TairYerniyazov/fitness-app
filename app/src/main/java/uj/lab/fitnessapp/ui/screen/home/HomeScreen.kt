@@ -44,7 +44,7 @@ fun HomeScreen(navController: NavController) {
     }
 
     Scaffold(
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -52,10 +52,10 @@ fun HomeScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(backgroundColor)
+                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
             )
         },
         content = { padding ->
@@ -74,7 +74,7 @@ fun HomeScreen(navController: NavController) {
                 onClick = {
                     navController.navigate(Screen.ExerciseKindList.route)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .padding(18.dp)
@@ -83,7 +83,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Text(
                     "Dodaj instancję ćwiczenia",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }

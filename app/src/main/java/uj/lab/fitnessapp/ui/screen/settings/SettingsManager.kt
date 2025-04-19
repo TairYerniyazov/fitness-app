@@ -19,6 +19,21 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 class SettingsManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+
+    companion object {
+        private val THEME_KEY = booleanPreferencesKey("dark_theme_enabled")
+    }
+
+    val isDarkThemeEnabled: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[THEME_KEY] ?: false
+        }
+
+    suspend fun setDarkThemeEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[THEME_KEY] = enabled
+        }
+    }
     private val dataStore = context.dataStore
 
     private val weightUnitKey = stringPreferencesKey("weight_unit")

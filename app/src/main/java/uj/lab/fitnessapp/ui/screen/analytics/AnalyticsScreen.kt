@@ -27,16 +27,16 @@ import androidx.compose.material3.TopAppBarColors
 fun AnalyticsScreen(navController: NavController) {
     val viewModel: AnalyticsViewModel = hiltViewModel()
     Scaffold(
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("Analityka") },
                 colors = TopAppBarColors(
-                    containerColor = darkGreen,
-                    scrolledContainerColor = darkGreen,
-                    navigationIconContentColor = Color.White,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },

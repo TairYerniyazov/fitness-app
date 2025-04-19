@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.darkGreen
+import uj.lab.fitnessapp.ui.theme.darkGreenDark
+import uj.lab.fitnessapp.ui.theme.darkGreenLight
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -38,24 +38,25 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun SettingsScreen(navController: NavController) {
     val viewModel: SettingsViewModel = hiltViewModel()
-    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+    val isDarkTheme = viewModel.isDarkTheme
     val currentDistanceUnit by viewModel.distanceUnit.collectAsState()
     val currentWeightUnit by viewModel.weightUnit.collectAsState()
-    val themeText by viewModel.themeText
     var expandedDistanceUnits by remember { mutableStateOf(false) }
     var expandedWeightUnits by remember { mutableStateOf(false) }
 
+    // KOLOR = MaterialTheme.colorScheme.cośtam
     Scaffold(
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
+
         topBar = {
             TopAppBar(
                 title = { Text("Ustawienia") },
-                colors = TopAppBarColors(
-                    containerColor = darkGreen,
-                    scrolledContainerColor = darkGreen,
-                    navigationIconContentColor = Color.White,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -92,16 +93,17 @@ fun SettingsScreen(navController: NavController) {
             ) {
                 // Dark Mode Setting
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(themeText)
+                    Text(
+                        text = "Tryb ciemny",
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                     Switch(
                         checked = isDarkTheme,
-                        onCheckedChange = { newValue ->
-                            viewModel.toggleTheme(newValue)
-                        }
+                        onCheckedChange = { viewModel.toggleTheme() }
                     )
                 }
                 // Distance Unit Setting
@@ -120,7 +122,7 @@ fun SettingsScreen(navController: NavController) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Otwórz menu jednostek dystansu",
-                                    tint = darkGreen
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
                             }
@@ -157,7 +159,7 @@ fun SettingsScreen(navController: NavController) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Otwórz menu jednostek wagi",
-                                    tint = darkGreen
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
                             }
@@ -188,7 +190,7 @@ fun SettingsScreen(navController: NavController) {
                     Text(text = "Synchronizacja danych", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.weight(1f))
                 }
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = Color.Black)
+                HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onBackground)
                 // Export/Import Buttons Column
                 Column(
                     modifier = Modifier
@@ -202,12 +204,12 @@ fun SettingsScreen(navController: NavController) {
                             // TODO: data export logic
                             println("Export Data Clicked")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(
                             text = "Eksportuj dane",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -217,12 +219,12 @@ fun SettingsScreen(navController: NavController) {
                             // TODO: data import logic
                             println("Import Data Clicked")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small
                     ) {
                         Text(
                             text = "Importuj dane",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
