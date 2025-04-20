@@ -8,17 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDefaults.dateFormatter
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SelectableDates
@@ -34,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.text.SimpleDateFormat
@@ -50,25 +44,19 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerFieldToModal(
-
     modifier: Modifier = Modifier,
-    colors: TextFieldColors =  OutlinedTextFieldDefaults.colors()
-
+    colors: TextFieldColors =  OutlinedTextFieldDefaults.colors(),
+    selectedDate: Long?,
+    onDateChange: (Long?) -> Unit
 ) {
-
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
     val currentDate = Date()
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val defaultDate = formatter.format(currentDate)
 
     val dateOnly = formatter.parse(defaultDate)
     val dateOnlyMillis = dateOnly!!.time
-
-    if (selectedDate == null) {
-        selectedDate = dateOnlyMillis
-    }
 
     OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: defaultDate,
@@ -81,13 +69,10 @@ fun DatePickerFieldToModal(
                 else if (it < dateOnlyMillis){
                     Text("Poprzedni Trening")
                 }
-//                else{
-//                    Text("Przyszły Trening")
-//                }
             }
         },
         readOnly = true,
-        placeholder = { Text("DD/MM/YYYY") },
+        placeholder = { Text("DD-MM-YYYY") },
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Wybierz datę")
         },
@@ -110,7 +95,7 @@ fun DatePickerFieldToModal(
 
     if (showModal) {
         DatePickerModal(
-            onDateSelected = { selectedDate = it },
+            onDateSelected = { onDateChange(it) },
             onDismiss = { showModal = false },
             initialSelectedDateMillis = selectedDate
         )
@@ -118,20 +103,10 @@ fun DatePickerFieldToModal(
 }
 
 fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     return formatter.format(Date(millis))
 }
 
-fun convertDateToMillis(dateString: String): Long? {
-    return try {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val date = formatter.parse(dateString)
-        date?.time
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,7 +127,7 @@ fun DatePickerModal(
                 val today = LocalDate.now(ZoneId.systemDefault())
                 return !selectedDate.isAfter(today)
             }
-//            Można to ustawić na jakiś 2022 albo 2023, bo po co więcej lat
+//            TODO: Można to ustawić na jakiś 2022 albo 2023, bo po co więcej lat
 //            override fun isSelectableYear(year: Int): Boolean {
 //                val currentYear = LocalDate.now(ZoneId.systemDefault()).year
 //                return year <= currentYear && year >= 2023
@@ -207,7 +182,10 @@ fun DatePickerModal(
                     return DateTimeFormatter.ofPattern("LLLL yyyy", this.locale).format(date)
                 }
             },
-            showModeToggle = false, //TODO: wywaliłem opcję ręcznego wpisania daty, bo nie da się zmodyfikować okna do wpisywania
+
+            //TODO: wywaliłem opcję ręcznego wpisania daty, bo nie da się zmodyfikować okna do jej wpisywania
+            showModeToggle = false,
+
             title = {
                 Text(
                     text = "Wybierz datę",
@@ -218,52 +196,8 @@ fun DatePickerModal(
     }
 }
 
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//internal fun DisplayModeToggleButton(
-//    modifier: Modifier,
-//    displayMode: DisplayMode,
-//    onDisplayModeChange: (DisplayMode) -> Unit
-//) {
-//    if (displayMode == DisplayMode.Picker) {
-//        IconButton(onClick = { onDisplayModeChange(DisplayMode.Input) }, modifier = modifier) {
-//            Icon(
-//                imageVector = Icons.Filled.Edit,
-//                contentDescription = getString(Strings.DatePickerSwitchToInputMode)
-//            )
-//        }
-//    } else {
-//        IconButton(onClick = { onDisplayModeChange(DisplayMode.Picker) }, modifier = modifier) {
-//            Icon(
-//                imageVector = Icons.Filled.DateRange,
-//                contentDescription = getString(Strings.DatePickerSwitchToCalendarMode)
-//            )
-//        }
-//    }
-//}
-
-
 //@Preview(showBackground = true)
 //@Composable
-//internal fun DatePickerModalPreview(){
-//    DatePickerModal(
-//        onDateSelected = {},
-//        onDismiss = {},
-//        initialSelectedDateMillis = null
-//    )
+//internal fun DatePickerFieldToModalPreview(){
+//    DatePickerFieldToModal(initialSelectedDate = Date().time)
 //}
-
-
-//@Preview(showBackground = true)
-//@Composable
-//internal fun DatePickerDockedPreview(){
-//    DatePickerDocked()
-//}
-
-
-@Preview(showBackground = true)
-@Composable
-internal fun DatePickerFieldToModalPreview(){
-    DatePickerFieldToModal()
-}

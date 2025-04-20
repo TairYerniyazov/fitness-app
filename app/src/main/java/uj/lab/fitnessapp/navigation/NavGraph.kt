@@ -18,15 +18,22 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeScreen(navController)
         }
-        composable(Screen.ExerciseKindList.route) {
-            ExerciseKindListScreen(navController)
+        composable(
+            Screen.ExerciseKindList.route,
+            arguments = listOf(navArgument("workoutDate") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: ""
+            ExerciseKindListScreen(navController, workoutDate)
         }
         composable(
             Screen.ExerciseInstanceCreate.route,
-            arguments = listOf(navArgument("exerciseKind") { type = NavType.StringType })
+            arguments = listOf(
+                navArgument("exerciseKind") { type = NavType.StringType },
+                navArgument("workoutDate") { type = NavType.StringType })
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
-            ExerciseInstanceCreateScreen(navController, exerciseKind)
+            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: "Nieznana data"
+            ExerciseInstanceCreateScreen(navController, exerciseKind, workoutDate)
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController)

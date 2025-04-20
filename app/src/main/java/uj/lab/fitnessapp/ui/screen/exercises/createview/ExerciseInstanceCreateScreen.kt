@@ -63,7 +63,7 @@ import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String) {
+fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String, workoutDate: String) {
     val viewModel = hiltViewModel<ExerciseInstanceCreateViewModel>()
     val state by viewModel.uiState.collectAsState()
     val sheetState = rememberModalBottomSheetState()
@@ -169,7 +169,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 ) {
                     Button(
                         onClick = {
-                            viewModel.saveExerciseInstance {
+                            viewModel.saveExerciseInstance(workoutDate = workoutDate) {
                                 navController.popBackStack(Screen.Home.route, false)
                             }
                         },
@@ -399,11 +399,12 @@ fun WorkoutSetCreatorPreview() {
     StrengthWorkoutSetCreator(onSave = {}, onCancel = {})
 }
 
-@Preview
-@Composable
-fun ExerciseInstanceCreateScreenPreview() {
-    ExerciseInstanceCreateScreen(
-        navController = NavController(LocalContext.current),
-        exerciseKind = "Exercise Name"
-    )
-}
+//@Preview
+//@Composable
+//fun ExerciseInstanceCreateScreenPreview() {
+//    ExerciseInstanceCreateScreen(
+//        navController = NavController(LocalContext.current),
+//        exerciseKind = "Exercise Name",
+//        workoutDate =
+//    )
+//}

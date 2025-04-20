@@ -15,8 +15,11 @@ import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
 import uj.lab.fitnessapp.data.utils.UnitConverter
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
+import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -86,7 +89,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
-    fun saveExerciseInstance(onSave : () -> Unit) {
+    fun saveExerciseInstance(workoutDate: String, onSave : () -> Unit) {
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             val state = _uiState.value
@@ -94,7 +97,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                 ExerciseInstance(
                     id = 0,
                     exerciseID = state.exerciseId,
-                    date = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE)
+                    date = workoutDate
                 )
             )
             state.workoutSets.forEach { workoutSet ->

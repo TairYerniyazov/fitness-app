@@ -1,5 +1,6 @@
 package uj.lab.fitnessapp.ui.screen.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,10 +21,10 @@ internal class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> get() = _uiState
 
-    fun loadExerciseInstances() {
+    fun loadExerciseInstances(workoutDate: String) {
         viewModelScope.launch {
             val exerciseInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsForDate(
-                ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE)
+                workoutDate
             )
             _uiState.update {
                 HomeUiState(

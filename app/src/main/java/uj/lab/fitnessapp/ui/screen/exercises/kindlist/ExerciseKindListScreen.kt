@@ -40,7 +40,7 @@ import uj.lab.fitnessapp.ui.theme.favoriteColor
  * Screen 2 in figma.
  */
 @Composable
-fun ExerciseKindListScreen(navController: NavController) {
+fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
     val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
     val filterIconSize = 32.dp
@@ -69,7 +69,7 @@ fun ExerciseKindListScreen(navController: NavController) {
                     items(state.filteredExercises) { exercise ->
                         ExerciseKindListEntry(
                             exercise = exercise,
-                            onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName))},
+                            onClick = { navController.navigate(Screen.ExerciseInstanceCreate.withArgs(exercise.exerciseName, workoutDate))},
                             onFavoriteClick = { viewModel.toggleFavorite(exercise) }
                         )
                     }

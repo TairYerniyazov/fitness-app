@@ -1,5 +1,6 @@
 package uj.lab.fitnessapp.ui.screen.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,15 +19,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 /**
@@ -42,43 +45,58 @@ fun HomeScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     val exerciseInstanceListState = rememberLazyListState()
+    var selectedDate by remember { mutableStateOf<Long?>(Date().time) }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadExerciseInstances()
+    val currentDate = Date()
+    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val defaultDate = formatter.format(currentDate)
+
+    val dateOnly = formatter.parse(defaultDate)
+    val dateOnlyMillis = dateOnly!!.time
+
+    if (selectedDate == null) {
+        selectedDate = dateOnlyMillis
     }
 
-    val selectedDate = Date().time
+    LaunchedEffect(selectedDate) {
+        val date = selectedDate
+        val stringDate = formatter.format(Date(date!!))
+        Log.d("Test","Changing date to $stringDate")
+        viewModel.loadExerciseInstances(stringDate)
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
 
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column(
-                        modifier = Modifier
-//                            .fillMaxWidth()
-                            .height(200.dp),
-//                            .padding(10.dp,0.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        DatePickerFieldToModal(
-//                            colors = MaterialTheme.colorScheme.onPrimary
-//                            modifier = Modifier
-//                                .height(240.dp)
-//                                .padding(20.dp,10.dp)
-                        )
-                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
-                    }
-                },
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Column(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
+//                    }
+//                },
 //                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
+//            )
+//        },
+
+        topBar = {
+            DatePickerFieldToModal(
+//                            colors = MaterialTheme.colorScheme.onPrimary //TODO: Nie działa, trzeba ogarnąć kolory w DatePicker.kt
+                modifier = Modifier
+                    .height(130.dp)
+                    .padding(PaddingValues(start = 25.dp, end = 25.dp, top = 40.dp, bottom = 25.dp)),
+                onDateChange = { selectedDate = it },
+                selectedDate = selectedDate
             )
         },
         content = { padding ->
             LazyColumn(
                 Modifier.padding(padding),
                 state = exerciseInstanceListState,
-                contentPadding = PaddingValues(bottom = 100.dp)
+                contentPadding = PaddingValues(bottom = 100.dp),
             ) {
                 itemsIndexed(state.exerciseInstances) { index, instance ->
                     ExerciseInstanceEntry(
@@ -96,10 +114,13 @@ fun HomeScreen(navController: NavController) {
                 }
             }
         },
+
         floatingActionButton = {
             Button(
                 onClick = {
-                    navController.navigate(Screen.ExerciseKindList.route)
+                    val date = selectedDate
+                    val stringDate = formatter.format(Date(date!!))
+                    navController.navigate(Screen.ExerciseKindList.withArgs(stringDate))
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
