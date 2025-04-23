@@ -41,6 +41,20 @@ class SettingsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            settingsManager.distanceUnit.collect { systemName ->
+                _distanceUnit.value =
+                    distanceUnits.find { it.systemName == systemName } ?: distanceUnits[0]
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.weightUnit.collect { systemName ->
+                _weightUnit.value =
+                    weightUnits.find { it.systemName == systemName } ?: weightUnits[0]
+            }
+        }
+
+        viewModelScope.launch {
             settingsManager.isDarkThemeEnabled.collect { isDark ->
                 isDarkTheme = isDark
             }
