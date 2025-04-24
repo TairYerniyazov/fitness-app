@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,7 +30,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -42,9 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -55,11 +53,10 @@ import uj.lab.fitnessapp.ui.component.CardioWorkoutSetEntry
 import uj.lab.fitnessapp.ui.component.DurationInput
 import uj.lab.fitnessapp.ui.component.DurationInputState
 import uj.lab.fitnessapp.ui.component.StrengthWorkoutSetEntry
-import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.darkGreen
 import uj.lab.fitnessapp.ui.theme.lovelyPink
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +74,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = {
+            CenterAlignedTopAppBar(title = {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -192,7 +189,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         onClick = {
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -201,7 +198,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ) {
                         Text(
                             text = "Anuluj",
-                            color = MaterialTheme.colorScheme.onSecondary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -270,7 +267,12 @@ fun CardioWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 1.0f),
+                    disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 1.0f)
+                ),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -291,7 +293,7 @@ fun CardioWorkoutSetCreator(
             }
             Button(
                 onClick = onCancel,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)
@@ -300,7 +302,7 @@ fun CardioWorkoutSetCreator(
             ) {
                 Text(
                     text = "Anuluj",
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -358,7 +360,12 @@ fun StrengthWorkoutSetCreator(
                         )
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 1.0f),
+                    disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 1.0f)
+                ),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
                     .weight(1f)

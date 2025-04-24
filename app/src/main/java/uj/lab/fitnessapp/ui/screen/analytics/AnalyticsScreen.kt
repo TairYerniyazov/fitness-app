@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -15,6 +16,10 @@ import uj.lab.fitnessapp.ui.theme.backgroundColor
 import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import uj.lab.fitnessapp.R
 
 
 /**
@@ -44,18 +49,34 @@ fun AnalyticsScreen(navController: NavController) {
             NavigationBar {
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
-                    Icons.Default.Info to Screen.Analytics,
+                    null to Screen.Analytics,
                     Icons.Default.Settings to Screen.Settings
                 )
-                routes.forEach {
+                routes.forEach { it ->
+                    val (icon, screen) = it
                     NavigationBarItem(
-                        icon = { Icon(it.first, contentDescription = null) },
-                        selected = navController.currentDestination?.route == it.second.route,
-                        onClick = {
-                            it.second.let { screen ->
-                                if (navController.currentDestination?.route != screen.route) {
-                                    navController.navigate(screen.route)
+                        icon = {
+                            if (screen == Screen.Analytics) {
+                                Icon(
+                                    painter = painterResource(R.drawable.baseline_auto_graph_24),
+                                    contentDescription = "Analytics",
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                icon?.let {
+                                    Icon(
+                                        it,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        contentDescription = null
+                                    )
                                 }
+                            }
+                        },
+                        selected = navController.currentDestination?.route == screen.route,
+                        onClick = {
+                            if (navController.currentDestination?.route != screen.route) {
+                                navController.navigate(screen.route)
                             }
                         }
                     )

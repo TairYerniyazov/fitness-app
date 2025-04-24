@@ -15,18 +15,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-import uj.lab.fitnessapp.ui.theme.darkGreenDark
-import uj.lab.fitnessapp.ui.theme.darkGreenLight
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import uj.lab.fitnessapp.R
 
 
 /**
@@ -64,18 +62,34 @@ fun SettingsScreen(navController: NavController) {
             NavigationBar {
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
-                    Icons.Default.Info to Screen.Analytics,
+                    null to Screen.Analytics,
                     Icons.Default.Settings to Screen.Settings
                 )
-                routes.forEach {
+                routes.forEach { it ->
+                    val (icon, screen) = it
                     NavigationBarItem(
-                        icon = { Icon(it.first, contentDescription = null) },
-                        selected = navController.currentDestination?.route == it.second.route,
-                        onClick = {
-                            it.second.let { screen ->
-                                if (navController.currentDestination?.route != screen.route) {
-                                    navController.navigate(screen.route)
+                        icon = {
+                            if (screen == Screen.Analytics) {
+                                Icon(
+                                    painter = painterResource(R.drawable.baseline_auto_graph_24),
+                                    contentDescription = "Analytics",
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                icon?.let {
+                                    Icon(
+                                        it,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        contentDescription = null
+                                    )
                                 }
+                            }
+                        },
+                        selected = navController.currentDestination?.route == screen.route,
+                        onClick = {
+                            if (navController.currentDestination?.route != screen.route) {
+                                navController.navigate(screen.route)
                             }
                         }
                     )
@@ -180,55 +194,24 @@ fun SettingsScreen(navController: NavController) {
                         }
                     }
                 }
-                // Synchronization Data Row
+                // App info
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Synchronizacja danych", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.weight(1f))
                 }
-                HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onBackground)
-                // Export/Import Buttons Column
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            // TODO: data export logic
-                            println("Export Data Clicked")
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Text(
-                            text = "Eksportuj dane",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            // TODO: data import logic
-                            println("Import Data Clicked")
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        shape = MaterialTheme.shapes.small
-                    ) {
-                        Text(
-                            text = "Importuj dane",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "April 2025, v1.2",
+                    modifier = Modifier.padding(top = 8.dp),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     )

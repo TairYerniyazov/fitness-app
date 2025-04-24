@@ -23,7 +23,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.launch
+import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
@@ -139,21 +142,36 @@ fun HomeScreen(navController: NavController) {
         floatingActionButtonPosition = FabPosition.Center,
         bottomBar = {
             NavigationBar {
-                // TODO(noituri): This is just a placeholder
                 val routes = listOf(
                     Icons.Default.Home to Screen.Home,
-                    Icons.Default.Info to Screen.Analytics,
+                    null to Screen.Analytics,
                     Icons.Default.Settings to Screen.Settings
                 )
-                routes.forEach {
+                routes.forEach { it ->
+                    val (icon, screen) = it
                     NavigationBarItem(
-                        icon = { Icon(it.first, contentDescription = null) },
-                        selected = navController.currentDestination?.route == it.second.route,
-                        onClick = {
-                            it.second.let { screen ->
-                                if (navController.currentDestination?.route != screen.route) {
-                                    navController.navigate(screen.route)
+                        icon = {
+                            if (screen == Screen.Analytics) {
+                                Icon(
+                                    painter = painterResource(R.drawable.baseline_auto_graph_24),
+                                    contentDescription = "Analytics",
+                                    tint = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                icon?.let {
+                                    Icon(
+                                        it,
+                                        tint = MaterialTheme.colorScheme.onBackground,
+                                        contentDescription = null
+                                    )
                                 }
+                            }
+                        },
+                        selected = navController.currentDestination?.route == screen.route,
+                        onClick = {
+                            if (navController.currentDestination?.route != screen.route) {
+                                navController.navigate(screen.route)
                             }
                         }
                     )
