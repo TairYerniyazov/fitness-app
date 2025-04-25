@@ -58,7 +58,7 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                 if (state.filteredExercises.isEmpty()) {
                     item {
                         Text(
-                            "No exercises match the selected filters.",
+                            "Brak ćwiczeń spełniających podane kryteria.",
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
@@ -85,7 +85,8 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                             onClick = {
                                 // TODO: create exercise kind
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = favoriteColor),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer),
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier
                                 .height(56.dp)
@@ -94,9 +95,12 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                             Icon(
                                 Icons.Default.Add,
                                 contentDescription = "Add",
-                                modifier = Modifier.padding(end = 8.dp)
+                                modifier = Modifier.padding(end = 8.dp),
+                                tint = MaterialTheme.colorScheme.onErrorContainer
                             )
-                            Text("Add Exercise")
+                            Text(
+                                text = "Dodaj rodzaj ćwiczenia",
+                                color = MaterialTheme.colorScheme.onErrorContainer)
                         }
                     }
                 }
@@ -109,6 +113,18 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
             ) {
                MultiChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                    getFilters().forEach { filter ->
+                       val resolvedBgColor = when (filter.color) {
+                           FilterColors.Strength -> MaterialTheme.colorScheme.primaryContainer
+                           FilterColors.Cardio -> MaterialTheme.colorScheme.secondaryContainer
+                           FilterColors.Favorite -> MaterialTheme.colorScheme.tertiaryContainer
+                           FilterColors.User -> MaterialTheme.colorScheme.errorContainer
+                       }
+                       val resolvedTextColor = when (filter.color) {
+                           FilterColors.Strength -> MaterialTheme.colorScheme.onPrimaryContainer
+                           FilterColors.Cardio -> MaterialTheme.colorScheme.onSecondaryContainer
+                           FilterColors.Favorite -> MaterialTheme.colorScheme.onTertiaryContainer
+                           FilterColors.User -> MaterialTheme.colorScheme.onErrorContainer
+                       }
                    SegmentedButton(
                        shape = SegmentedButtonDefaults.itemShape(
                            index = filter.index,
@@ -122,10 +138,14 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                        label = { Icon(
                            imageVector = filter.icon(),
                            contentDescription = filter.description,
-                           modifier = Modifier.size(filterIconSize)
+                           modifier = Modifier.size(filterIconSize),
+                           tint = resolvedTextColor
                        )},
                        colors = SegmentedButtonDefaults.colors(
-                           inactiveContainerColor = filter.color
+                           activeContainerColor = resolvedBgColor,
+                           activeContentColor =  resolvedTextColor,
+                           disabledInactiveContainerColor = MaterialTheme.colorScheme.surface,
+                           disabledInactiveContentColor = MaterialTheme.colorScheme.onSurface
                        )
                    )
                    }

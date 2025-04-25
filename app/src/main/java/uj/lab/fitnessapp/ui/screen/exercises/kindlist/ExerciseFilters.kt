@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -19,37 +20,40 @@ data class Filter(
     val index: Int,
     val icon: @Composable () -> ImageVector,
     val description: String,
-    val color: androidx.compose.ui.graphics.Color,
+    val color: FilterColors,
     val predicate: (Exercise) -> Boolean
 )
+enum class FilterColors {
+    Strength,Cardio,Favorite,User
+}
 
 val exerciseFilters = listOf(
     Filter(
         index = 0,
         icon = { ImageVector.vectorResource(R.drawable.exercise_24px) },
         description = "Strength",
-        color = strengthColor,
+        color = FilterColors.Strength,
         predicate ={ it.workoutType == WorkoutType.Strength }
     ),
     Filter(
         index = 1,
         icon = { ImageVector.vectorResource(R.drawable.directions_run_24px) },
         description = "Cardio",
-        color = cardioColor,
+        color = FilterColors.Cardio,
         predicate ={ it.workoutType == WorkoutType.Cardio }
     ),
     Filter(
         index = 2,
         icon = { Icons.Default.Star },
         description = "Favorites",
-        color = goldColor,
+        color = FilterColors.Favorite,
         predicate ={ it.isFavourite }
     ),
     Filter(
         index = 3,
         icon = { Icons.Default.AccountCircle },
         description = "User Created",
-        color = favoriteColor,
+        color = FilterColors.User,
         predicate ={ it.canModify }
     ),
 )
