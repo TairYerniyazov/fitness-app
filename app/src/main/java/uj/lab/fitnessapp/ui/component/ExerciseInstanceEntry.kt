@@ -31,7 +31,8 @@ import kotlin.time.Duration.Companion.seconds
 fun ExerciseInstanceEntry(
     index: Int,
     instance: ExerciseInstanceWithDetails,
-    onFavoriteClick: (Exercise) -> Unit
+    onFavoriteClick: (Exercise) -> Unit,
+    onAnaliyticsClick: (Exercise) -> Unit
 ) {
     val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
     val height = instance.seriesList!!.size * 122
@@ -48,15 +49,26 @@ fun ExerciseInstanceEntry(
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp
                 )
-                IconButton(onClick = { onFavoriteClick(instance.exercise!!) }) {
-                    Icon(
-                        modifier = Modifier
-                            .size(32.dp),
-                        painter = painterResource(id = if (instance.exercise!!.isFavourite)
-                            R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32),
-                        contentDescription = "Add to favorites",
-                        tint = Color.Black
-                    )
+                Row {
+                    IconButton(onClick = { onAnaliyticsClick(instance.exercise!!) }) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp),
+                            painter = painterResource(R.drawable.baseline_auto_graph_24),
+                            contentDescription = "Go to Analytics",
+                            tint = Color.Black
+                        )
+                    }
+                    IconButton(onClick = { onFavoriteClick(instance.exercise!!) }) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp),
+                            painter = painterResource(id = if (instance.exercise!!.isFavourite)
+                                R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32),
+                            contentDescription = "Add to favorites",
+                            tint = Color.Black
+                        )
+                    }
                 }
             }
             LazyColumn(

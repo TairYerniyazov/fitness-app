@@ -112,6 +112,9 @@ fun HomeScreen(navController: NavController) {
                             }
                             viewModel.updateExerciseFavoriteStatus(clickedExercise.exerciseName,
                                 newFavoriteState)
+                        },
+                        onAnaliyticsClick = { clickedExercise ->
+                            navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName))
                         }
                     )
                 }
