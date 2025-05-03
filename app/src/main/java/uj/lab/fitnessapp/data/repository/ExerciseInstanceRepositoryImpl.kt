@@ -16,7 +16,7 @@ class ExerciseInstanceRepositoryImpl @Inject constructor(
 
     override suspend fun insertInstance(instance: ExerciseInstance) = exerciseInstanceDao.insertInstance(instance).toInt()
     override suspend fun updateInstance(instance: ExerciseInstance) = exerciseInstanceDao.updateInstance(instance)
-    override suspend fun deleteInstance(instance: ExerciseInstance) = exerciseInstanceDao.deleteInstance(instance)
+    override suspend fun deleteInstance(exerciseID: Int) = exerciseInstanceDao.deleteInstance(exerciseID)
 
     override suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance> {
         return exerciseInstanceDao.getExerciseInstanceByExerciseID(exerciseID)

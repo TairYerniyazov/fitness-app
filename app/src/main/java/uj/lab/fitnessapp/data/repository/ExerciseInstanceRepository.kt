@@ -8,7 +8,7 @@ interface ExerciseInstanceRepository {
 
     suspend fun insertInstance(instance: ExerciseInstance): Int
     suspend fun updateInstance(instance: ExerciseInstance)
-    suspend fun deleteInstance(instance: ExerciseInstance)
+    suspend fun deleteInstance(exerciseID: Int)
     suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance>
     suspend fun getExerciseInstanceWithDetails(instanceID: Int): ExerciseInstanceWithDetails
     suspend fun getAllExerciseInstanceWithDetailsForDate(date: String): List<ExerciseInstanceWithDetails>
