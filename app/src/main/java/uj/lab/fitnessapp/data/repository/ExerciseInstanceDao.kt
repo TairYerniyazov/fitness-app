@@ -1,7 +1,6 @@
 package uj.lab.fitnessapp.data.repository
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -19,8 +18,8 @@ interface ExerciseInstanceDao {
     @Update
     suspend fun updateInstance(instance: ExerciseInstance)
 
-    @Delete
-    suspend fun deleteInstance(instance: ExerciseInstance)
+    @Query("DELETE FROM exerciseInstances WHERE ID = :exerciseID")
+    suspend fun deleteInstance(exerciseID: Int)
 
     @Query("SELECT * FROM exerciseInstances Where exerciseID = :exerciseID")
     suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance>
