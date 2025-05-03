@@ -15,11 +15,6 @@ import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
 import uj.lab.fitnessapp.data.utils.UnitConverter
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
-import java.text.SimpleDateFormat
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,7 +51,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         viewModelScope.launch {
             settingsManager.distanceUnit.collect { unit ->
                 _isImperialDistance.value = unit == "imperial"
-                _distanceUnit.value = if (unit == "imperial") "mi" else "m"
+                _distanceUnit.value = if (unit == "imperial") "mi" else "km"
                 refreshWorkoutSets()
             }
         }
@@ -111,14 +106,14 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
     }
 
     private fun convertToMetric(workoutSet: WorkoutSet): WorkoutSet {
-        val metricLoad = if (workoutSet.load != null && _isImperialWeight.value) {
-            UnitConverter.storeWeight(workoutSet.load, true)
+        val metricLoad = if (workoutSet.load != null) {
+            UnitConverter.storeWeight(workoutSet.load, _isImperialWeight.value)
         } else {
             workoutSet.load
         }
 
-        val metricDistance = if (workoutSet.distance != null && workoutSet.distance > 0 && _isImperialDistance.value) {
-            UnitConverter.storeDistance(workoutSet.distance.toDouble(), true)
+        val metricDistance = if (workoutSet.distance != null && workoutSet.distance > 0) {
+            UnitConverter.storeDistance(workoutSet.distance.toDouble(), _isImperialDistance.value)
         } else {
             workoutSet.distance
         }
