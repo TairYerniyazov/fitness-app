@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -29,7 +30,7 @@ import uj.lab.fitnessapp.R
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnalyticsScreen(navController: NavController) {
+fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
     val viewModel: AnalyticsViewModel = hiltViewModel()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -83,8 +84,11 @@ fun AnalyticsScreen(navController: NavController) {
                 }
             }
         },
-        content = {
-            // TODO: Add analytics screen content
+        content = { padding ->
+            Text(
+                text = exerciseKind,
+                modifier = Modifier.padding(padding)
+            )
         }
     )
 }

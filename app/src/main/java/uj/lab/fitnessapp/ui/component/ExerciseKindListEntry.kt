@@ -9,14 +9,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.ui.theme.*
@@ -28,15 +31,19 @@ fun ExerciseKindListEntry(
     onFavoriteClick: (Exercise) -> Unit
 ) {
 
-    val baseColor = if (exercise.workoutType == WorkoutType.Strength) strengthColor else cardioColor
-
+    val bgColor = if (exercise.workoutType == WorkoutType.Strength)
+        MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.secondaryContainer
+    val textColor = if (exercise.workoutType == WorkoutType.Strength)
+        MaterialTheme.colorScheme.onPrimaryContainer
+    else MaterialTheme.colorScheme.onSecondaryContainer
     Button(
         onClick = { onClick() },
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = baseColor)
+        colors = ButtonDefaults.buttonColors(containerColor = bgColor)
     ) {
         Row(
             modifier = Modifier
@@ -52,20 +59,9 @@ fun ExerciseKindListEntry(
                     text = exercise.exerciseName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (exercise.isFavourite) goldColor else Color.White
+                    color = textColor
                 )
 
-            }
-            // attach function to handle tri-dot menu (if needed)
-            IconButton(onClick = {  }) {
-                Icon(
-                    modifier = Modifier
-                        .size(40.dp)
-                        ,
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More Options",
-                    tint = if (exercise.isFavourite) goldColor else Color.White
-                )
             }
             // attach function to handle favorites
             IconButton(onClick = { onFavoriteClick(exercise) }) {
@@ -73,9 +69,10 @@ fun ExerciseKindListEntry(
                     modifier = Modifier
                         .size(40.dp)
                     ,
-                    imageVector = Icons.Default.Star,
+                    painter = painterResource(id = if (exercise.isFavourite)
+                        R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32),
                     contentDescription = "Add to favorites",
-                    tint = if (exercise.isFavourite) goldColor else Color.White
+                    tint = textColor
                 )
             }
             }

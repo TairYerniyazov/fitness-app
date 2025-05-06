@@ -35,6 +35,7 @@ fun ExerciseInstanceEntry(
     index: Int,
     instance: ExerciseInstanceWithDetails,
     onFavoriteClick: (Exercise) -> Unit,
+    onAnalyticsClick: (Exercise) -> Unit,
     onDelete: () -> Unit
 ) {
     val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
@@ -53,6 +54,13 @@ fun ExerciseInstanceEntry(
                     fontSize = 22.sp
                 )
                 Row {
+                    IconButton(onClick = { onAnalyticsClick(instance.exercise!!) }) {
+                        Icon(
+                            modifier = Modifier
+                                .size(32.dp),
+                            painter = painterResource(R.drawable.baseline_auto_graph_24),
+                            contentDescription = "Go to Analytics",
+                            tint = Color.Black
                     IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Default.Delete,

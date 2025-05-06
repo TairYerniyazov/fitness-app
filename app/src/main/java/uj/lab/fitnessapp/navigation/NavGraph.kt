@@ -38,8 +38,13 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Settings.route) {
             SettingsScreen(navController)
         }
-        composable(Screen.Analytics.route) {
-            AnalyticsScreen(navController)
+        composable(
+            Screen.Analytics.route,
+            arguments = listOf(
+                navArgument("exerciseKind") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
+            AnalyticsScreen(navController, exerciseKind)
         }
     }
 }
