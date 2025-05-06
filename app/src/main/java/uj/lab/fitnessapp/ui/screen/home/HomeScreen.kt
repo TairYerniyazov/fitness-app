@@ -112,7 +112,7 @@ fun HomeScreen(navController: NavController) {
                                 newFavoriteState)
                         },
                         onAnalyticsClick = { clickedExercise ->
-                            navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)),
+                            navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)) },
                         onDelete = {
                             viewModel.deleteExerciseInstance(instance.exerciseInstance!!.id)
                         }
