@@ -61,6 +61,8 @@ fun ExerciseInstanceEntry(
                             painter = painterResource(R.drawable.baseline_auto_graph_24),
                             contentDescription = "Go to Analytics",
                             tint = Color.Black
+                        )
+                    }
                     IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Default.Delete,
