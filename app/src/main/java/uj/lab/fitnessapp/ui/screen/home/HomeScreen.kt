@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.R
@@ -113,8 +111,10 @@ fun HomeScreen(navController: NavController) {
                             viewModel.updateExerciseFavoriteStatus(clickedExercise.exerciseName,
                                 newFavoriteState)
                         },
-                        onAnaliyticsClick = { clickedExercise ->
-                            navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName))
+                        onAnalyticsClick = { clickedExercise ->
+                            navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)),
+                        onDelete = {
+                            viewModel.deleteExerciseInstance(instance.exerciseInstance!!.id)
                         }
                     )
                 }
