@@ -46,5 +46,24 @@ fun Navigation(navController: NavHostController) {
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
             AnalyticsScreen(navController, exerciseKind)
         }
+        composable(
+            route = Screen.EditExerciseInstance.route,
+            arguments = listOf(
+                navArgument("exerciseKind") { type = NavType.StringType },
+                navArgument("workoutDate") { type = NavType.StringType },
+                navArgument("instanceId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: ""
+            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: ""
+            val instanceId = backStackEntry.arguments?.getInt("instanceId")
+
+            ExerciseInstanceCreateScreen(
+                navController = navController,
+                exerciseKind = exerciseKind,
+                workoutDate = workoutDate,
+                instanceId = instanceId
+            )
+        }
     }
 }

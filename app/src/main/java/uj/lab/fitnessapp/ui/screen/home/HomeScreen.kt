@@ -115,6 +115,15 @@ fun HomeScreen(navController: NavController) {
                             navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)) },
                         onDelete = {
                             viewModel.deleteExerciseInstance(instance.exerciseInstance!!.id)
+                        },
+                        onEditClick = { clickedExercise ->
+                            navController.navigate(
+                                Screen.EditExerciseInstance.createRoute(
+                                    exerciseKind = clickedExercise.exercise!!.exerciseName,
+                                    workoutDate = state.currentDate ?: "",
+                                    instanceId = clickedExercise.exerciseInstance!!.id
+                                )
+                            )
                         }
                     )
                 }

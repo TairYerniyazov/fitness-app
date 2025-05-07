@@ -60,14 +60,18 @@ import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String, workoutDate: String) {
+fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: String, workoutDate: String, instanceId: Int? = null) {
     val viewModel = hiltViewModel<ExerciseInstanceCreateViewModel>()
     val state by viewModel.uiState.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.loadExercise(exerciseKind)
+        if (instanceId != null) {
+            viewModel.loadExistingInstance(instanceId)
+        } else {
+            viewModel.loadExercise(exerciseKind)
+        }
     }
 
     Scaffold(

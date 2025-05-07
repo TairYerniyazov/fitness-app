@@ -39,6 +39,11 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
     private val _isImperialDistance = MutableStateFlow(false)
     val isImperialDistance: StateFlow<Boolean> = _isImperialDistance
 
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode
+
+    private val _instanceId = MutableStateFlow<Int?>(null)
+
     init {
         viewModelScope.launch {
             settingsManager.weightUnit.collect { unit ->
@@ -84,24 +89,54 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
-    fun saveExerciseInstance(workoutDate: String, onSave : () -> Unit) {
+    fun saveExerciseInstance(workoutDate: String, onSave: () -> Unit) {
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
-            val state = _uiState.value
-            val instanceId = exerciseInstanceRepository.insertInstance(
-                ExerciseInstance(
-                    id = 0,
-                    exerciseID = state.exerciseId,
-                    date = workoutDate
+            if (_isEditMode.value && _instanceId.value != null) {
+                val instanceId = _instanceId.value!!
+                workoutSetRepository.deleteWorkoutSetsForInstance(instanceId)
+
+                _uiState.value.workoutSets.forEach { workoutSet ->
+                    workoutSetRepository.insertWorkoutSet(
+                        workoutSet.copy(instanceID = instanceId)
+                    )
+                }
+            } else {
+                val state = _uiState.value
+                val instanceId = exerciseInstanceRepository.insertInstance(
+                    ExerciseInstance(
+                        id = 0,
+                        exerciseID = state.exerciseId,
+                        date = workoutDate
+                    )
                 )
-            )
-            state.workoutSets.forEach { workoutSet ->
-                workoutSetRepository.insertWorkoutSet(
-                    workoutSet.copy(instanceID = instanceId)
-                )
+                state.workoutSets.forEach { workoutSet ->
+                    workoutSetRepository.insertWorkoutSet(
+                        workoutSet.copy(instanceID = instanceId)
+                    )
+                }
             }
             _uiState.update { it.copy(isSaving = false) }
             onSave()
+        }
+    }
+
+    fun loadExistingInstance(instanceId: Int) {
+        viewModelScope.launch {
+            _isEditMode.value = true
+            _instanceId.value = instanceId
+
+            val instance = exerciseInstanceRepository.getExerciseInstanceWithDetails(instanceId)
+            instance.let {
+                val exercise = exerciseRepository.getExerciseByName(it.exercise?.exerciseName ?: "")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        exerciseId = exercise.id,
+                        workoutType = exercise.workoutType,
+                        workoutSets = it.seriesList?.toList() ?: emptyList()
+                    )
+                }
+            }
         }
     }
 
