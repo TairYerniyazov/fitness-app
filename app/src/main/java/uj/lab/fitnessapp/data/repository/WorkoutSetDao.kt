@@ -3,6 +3,7 @@ package uj.lab.fitnessapp.data.repository
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.Query
 import androidx.room.Update
 import uj.lab.fitnessapp.data.model.WorkoutSet
 
@@ -18,5 +19,6 @@ interface WorkoutSetDao {
     @Delete
     suspend fun deleteWorkoutSet(workoutSet: WorkoutSet)
 
-
+    @Query("DELETE FROM workoutSets WHERE instanceID = :instanceId")
+    suspend fun deleteWorkoutSetsForInstance(instanceId: Int)
 }

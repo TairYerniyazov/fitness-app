@@ -36,7 +36,8 @@ fun ExerciseInstanceEntry(
     instance: ExerciseInstanceWithDetails,
     onFavoriteClick: (Exercise) -> Unit,
     onAnalyticsClick: (Exercise) -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEditClick: (ExerciseInstanceWithDetails) -> Unit
 ) {
     val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
     val height = instance.seriesList!!.size * 122
@@ -54,6 +55,14 @@ fun ExerciseInstanceEntry(
                     fontSize = 22.sp
                 )
                 Row {
+                    IconButton(onClick = { onEditClick(instance) }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.edit_24px),
+                            contentDescription = "Edit exercise",
+                            tint = Color.Black,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                     IconButton(onClick = { onAnalyticsClick(instance.exercise!!) }) {
                         Icon(
                             modifier = Modifier

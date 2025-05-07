@@ -16,5 +16,8 @@ class WorkoutSetRepositoryImpl @Inject constructor(
     override suspend fun insertWorkoutSet(workoutSet: WorkoutSet) = workoutSetDao.insertWorkoutSet(workoutSet)
     override suspend fun updateWorkoutSet(workoutSet: WorkoutSet) = workoutSetDao.updateWorkoutSet(workoutSet)
     override suspend fun deleteWorkoutSet(workoutSet: WorkoutSet) = workoutSetDao.deleteWorkoutSet(workoutSet)
+    override suspend fun deleteWorkoutSetsForInstance(instanceId: Int) {
+        workoutSetDao.deleteWorkoutSetsForInstance(instanceId)
+    }
 
 }

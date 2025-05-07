@@ -18,4 +18,9 @@ sealed class Screen(val route: String) {
             return "exercise_instance_create/$exerciseKind/$workoutDate"
         }
     }
+    data object EditExerciseInstance : Screen("edit_exercise_instance/{exerciseKind}/{workoutDate}/{instanceId}") {
+        fun createRoute(exerciseKind: String, workoutDate: String, instanceId: Int): String {
+            return "edit_exercise_instance/$exerciseKind/$workoutDate/$instanceId"
+        }
+    }
 }

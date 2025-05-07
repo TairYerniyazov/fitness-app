@@ -9,5 +9,6 @@ interface WorkoutSetRepository {
     suspend fun insertWorkoutSet(workoutSet: WorkoutSet)
     suspend fun updateWorkoutSet(workoutSet: WorkoutSet)
     suspend fun deleteWorkoutSet(workoutSet: WorkoutSet)
+    suspend fun deleteWorkoutSetsForInstance(instanceId: Int)
 
 }
