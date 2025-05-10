@@ -46,5 +46,7 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE exerciseName = :exerciseName")
     suspend fun getExerciseByName(exerciseName: String): Exercise
 
+    @Query("SELECT DISTINCT e.* FROM exercises e INNER JOIN exerciseInstances ei ON e.ID = ei.exerciseID")
+    suspend fun getExercisesWithInstances(): List<Exercise>
 
 }

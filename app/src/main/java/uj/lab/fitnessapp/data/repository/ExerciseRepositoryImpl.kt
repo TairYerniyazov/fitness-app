@@ -37,6 +37,7 @@ class ExerciseRepositoryImpl @Inject constructor(
     override suspend fun getCardioExercises(): List<Exercise> = exerciseDao.getCardioExercises()
     override suspend fun searchExercisesByName(queryName: String): List<Exercise> = exerciseDao.searchExercisesByName(queryName)
     override suspend fun getExerciseByName(exerciseName: String): Exercise = exerciseDao.getExerciseByName(exerciseName)
+    override suspend fun getExercisesWithInstances(): List<Exercise> = exerciseDao.getExercisesWithInstances()
 
 }
 
