@@ -16,5 +16,6 @@ interface ExerciseRepository {
     suspend fun getCardioExercises(): List<Exercise>
     suspend fun searchExercisesByName(queryName: String): List<Exercise>
     suspend fun getExerciseByName(exerciseName: String): Exercise
+    suspend fun getExercisesWithInstances(): List<Exercise>
 
 }
