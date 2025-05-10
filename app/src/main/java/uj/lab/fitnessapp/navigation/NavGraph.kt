@@ -11,6 +11,7 @@ import uj.lab.fitnessapp.ui.screen.home.HomeScreen
 import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateScreen
 import uj.lab.fitnessapp.ui.screen.settings.SettingsScreen
 import uj.lab.fitnessapp.ui.screen.analytics.AnalyticsScreen
+import uj.lab.fitnessapp.ui.screen.analytics.ExerciseToAnalyseListScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -44,7 +45,12 @@ fun Navigation(navController: NavHostController) {
                 navArgument("exerciseKind") { type = NavType.StringType })
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
-            AnalyticsScreen(navController, exerciseKind)
+            if (exerciseKind != "{exerciseKind}") {
+                AnalyticsScreen(navController, exerciseKind)
+            }
+            else {
+                ExerciseToAnalyseListScreen(navController)
+            }
         }
     }
 }
