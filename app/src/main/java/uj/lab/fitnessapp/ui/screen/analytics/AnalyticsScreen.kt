@@ -5,18 +5,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.navigation.Screen
-import uj.lab.fitnessapp.ui.theme.backgroundColor
-import uj.lab.fitnessapp.ui.theme.darkGreen
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,12 @@ import uj.lab.fitnessapp.R
 @Composable
 fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
     val viewModel: AnalyticsViewModel = hiltViewModel()
+    LaunchedEffect(exerciseKind) {
+        viewModel.getExerciseIDFromKind(exerciseKind)
+    }
+    val exerciseID by viewModel.exerciseID.collectAsState()
+    viewModel.getAllInstancesByExerciseID(exerciseID)
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -86,7 +91,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
         },
         content = { padding ->
             Text(
-                text = exerciseKind,
+                text = "$exerciseKind (ID to $exerciseID",
                 modifier = Modifier.padding(padding)
             )
         }
