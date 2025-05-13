@@ -109,7 +109,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
                     modifier = Modifier.padding(16.dp)
                 )
                 if (chartData.isNotEmpty()) {
-                    ChartView(chartData)
+                    ChartView(chartData, exerciseKind) // Pass exerciseKind
                 } else {
                     Text(
                         "Brak danych do wyświetlenia dla tego ćwiczenia.",
@@ -122,7 +122,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
 }
 
 @Composable
-fun ChartView(data: List<Pair<String, Int>>) {
+fun ChartView(data: List<Pair<String, Int>>, exerciseKind: String) { // Add exerciseKind parameter
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
@@ -144,7 +144,7 @@ fun ChartView(data: List<Pair<String, Int>>) {
 
             line.title("Postęp ćwiczenia")
 
-            line.yAxis(0).title("Wartość (np. dystans, suma obciążeń)")
+            line.yAxis(0).title("Wartość (np. dystans w metrach)") // Clarified unit for distance
             line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
 
             val seriesData = data.map { (date, value) ->
@@ -152,7 +152,7 @@ fun ChartView(data: List<Pair<String, Int>>) {
             }
 
             val series = line.line(seriesData)
-            series.name(data.firstOrNull()?.first?.substringBefore("-") ?: "Dane") // Example name
+            series.name(exerciseKind) // Use exerciseKind for series name
             series.hovered().markers().enabled(true)
             series.hovered().markers()
                 .type(com.anychart.enums.MarkerType.CIRCLE)
