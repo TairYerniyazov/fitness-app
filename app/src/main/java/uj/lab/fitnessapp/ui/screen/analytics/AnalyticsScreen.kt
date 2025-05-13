@@ -1,8 +1,13 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -25,22 +30,27 @@ import com.anychart.enums.HoverMode
 import com.anychart.enums.Position
 import com.anychart.enums.TooltipPositionMode
 import uj.lab.fitnessapp.R
+import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.navigation.Screen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
+    var selectedTab by remember { mutableStateOf(1) }
     val viewModel: AnalyticsViewModel = hiltViewModel()
     val exerciseID by viewModel.exerciseID.collectAsState()
     val chartData by viewModel.chartData.collectAsState()
+    val exerciseName by viewModel.exerciseName.collectAsState()
+    val metrics by viewModel.metricsData.collectAsState()
+    val exerciseType by viewModel.exerciseType.collectAsState()
 
     LaunchedEffect(exerciseKind) {
         viewModel.getExerciseIDFromKind(exerciseKind)
     }
 
     LaunchedEffect(exerciseID) {
-        if (exerciseID > 0) { // Ensure exerciseID is valid
+        if (exerciseID > 0) {
             viewModel.getAllInstancesByExerciseID(exerciseID)
         }
     }
@@ -50,12 +60,9 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
         topBar = {
             TopAppBar(
                 title = { Text("Analityka") },
-                colors = TopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -66,8 +73,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
                     null to Screen.Analytics,
                     Icons.Default.Settings to Screen.Settings
                 )
-                routes.forEach { it ->
-                    val (icon, screen) = it
+                routes.forEach { (icon, screen) ->
                     NavigationBarItem(
                         icon = {
                             if (screen == Screen.Analytics) {
@@ -96,33 +102,87 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String) {
                     )
                 }
             }
-        },
-        content = { padding ->
-            Column(
-                Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text = "Analiza dla: $exerciseKind",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(16.dp)
-                )
-                if (chartData.isNotEmpty()) {
-                    ChartView(chartData, exerciseKind) // Pass exerciseKind
-                } else {
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = exerciseName.uppercase(),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            if (metrics.isNotEmpty()) {
+                metrics.forEach { (label, value) ->
                     Text(
-                        "Brak danych do wyświetlenia dla tego ćwiczenia.",
-                        modifier = Modifier.padding(16.dp)
+                        text = "$label: $value",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = { selectedTab = 1 },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Wykres 1")
+                }
+                Button(
+                    onClick = { selectedTab = 2 },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Wykres 2")
+                }
+                Button(
+                    onClick = { selectedTab = 3 },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedTab == 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Wykres 3")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+                when (selectedTab) {
+                    1 -> if (exerciseType == WorkoutType.Cardio) {
+                        CardioChart1(chartData, exerciseName)
+                    } else {
+                        StrengthChart1(chartData, exerciseName)
+                    }
+                    2 -> if (exerciseType == WorkoutType.Cardio) {
+                        CardioChart2(chartData, exerciseName)
+                    } else {
+                        StrengthChart2(chartData, exerciseName)
+                    }
+                    3 -> if (exerciseType == WorkoutType.Cardio) {
+                        CardioChart3(chartData, exerciseName)
+                    } else {
+                        StrengthChart3(chartData, exerciseName)
+                    }
+                }
         }
-    )
+    }
 }
 
+
 @Composable
-fun ChartView(data: List<Pair<String, Int>>, exerciseKind: String) { // Add exerciseKind parameter
+fun CardioChart1(data: List<Pair<String, Any>>, exerciseName: String) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
@@ -132,40 +192,202 @@ fun ChartView(data: List<Pair<String, Int>>, exerciseKind: String) { // Add exer
             val line = AnyChart.line()
 
             line.animation(true)
-
             line.padding(10.0, 20.0, 5.0, 20.0)
-
             line.crosshair().enabled(true)
-            line.crosshair()
-                .yLabel(true)
-                .yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
-
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
             line.tooltip().positionMode(TooltipPositionMode.POINT)
-
-            line.title("Postęp ćwiczenia")
-
-            line.yAxis(0).title("Wartość (np. dystans w metrach)") // Clarified unit for distance
+            line.title("Postęp dystansu")
+            line.yAxis(0).title("Dystans (m)")
             line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
 
-            val seriesData = data.map { (date, value) ->
-                ValueDataEntry(date, value)
+            val seriesData = data.filter { it.second is Int }.map { (date, value) ->
+                ValueDataEntry(date, value as Int)
             }
 
             val series = line.line(seriesData)
-            series.name(exerciseKind) // Use exerciseKind for series name
+            series.name(exerciseName)
             series.hovered().markers().enabled(true)
-            series.hovered().markers()
-                .type(com.anychart.enums.MarkerType.CIRCLE)
-                .size(4.0)
-            series.tooltip()
-                .position("right")
-                .anchor(Anchor.LEFT_CENTER)
-                .offsetX(5.0)
-                .offsetY(5.0)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
 
-            line.legend().enabled(true)
-            line.legend().fontSize(13.0)
-            line.legend().padding(0.0, 0.0, 10.0, 0.0)
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
+
+            chartView.setChart(line)
+        }
+    )
+}
+
+@Composable
+fun CardioChart2(data: List<Pair<String, Any>>, exerciseName: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            AnyChartView(context)
+        },
+        update = { chartView ->
+            val line = AnyChart.line()
+
+            line.animation(true)
+            line.padding(10.0, 20.0, 5.0, 20.0)
+            line.crosshair().enabled(true)
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
+            line.tooltip().positionMode(TooltipPositionMode.POINT)
+            line.title("Postęp czasu")
+            line.yAxis(0).title("Czas (s)")
+            line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+
+            val seriesData = data.filter { it.second is Int }.map { (date, value) ->
+                ValueDataEntry(date, value as Int)
+            }
+
+            val series = line.line(seriesData)
+            series.name(exerciseName)
+            series.hovered().markers().enabled(true)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
+
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
+
+            chartView.setChart(line)
+        }
+    )
+}
+
+@Composable
+fun CardioChart3(data: List<Pair<String, Any>>, exerciseName: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            AnyChartView(context)
+        },
+        update = { chartView ->
+            val line = AnyChart.line()
+
+            line.animation(true)
+            line.padding(10.0, 20.0, 5.0, 20.0)
+            line.crosshair().enabled(true)
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
+            line.tooltip().positionMode(TooltipPositionMode.POINT)
+            line.title("Postęp maksymalnego dystansu")
+            line.yAxis(0).title("Maksymalny dystans (m)")
+            line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+
+            val seriesData = data.filter { it.second is Int }.map { (date, value) ->
+                ValueDataEntry(date, value as Int)
+            }
+
+            val series = line.line(seriesData)
+            series.name(exerciseName)
+            series.hovered().markers().enabled(true)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
+
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
+
+            chartView.setChart(line)
+        }
+    )
+}
+@Composable
+fun StrengthChart1(data: List<Pair<String, Any>>, exerciseName: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            AnyChartView(context)
+        },
+        update = { chartView ->
+            val line = AnyChart.line()
+
+            line.animation(true)
+            line.padding(10.0, 20.0, 5.0, 20.0)
+            line.crosshair().enabled(true)
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
+            line.tooltip().positionMode(TooltipPositionMode.POINT)
+            line.title("Postęp powtórzeń")
+            line.yAxis(0).title("Powtórzenia")
+            line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+
+            val seriesData = data.filter { it.second is Int }.map { (date, value) ->
+                ValueDataEntry(date, value as Int)
+            }
+
+            val series = line.line(seriesData)
+            series.name(exerciseName)
+            series.hovered().markers().enabled(true)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
+
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
+
+            chartView.setChart(line)
+        }
+    )
+}
+@Composable
+fun StrengthChart2(data: List<Pair<String, Any>>, exerciseName: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            AnyChartView(context)
+        },
+        update = { chartView ->
+            val line = AnyChart.line()
+
+            line.animation(true)
+            line.padding(10.0, 20.0, 5.0, 20.0)
+            line.crosshair().enabled(true)
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
+            line.tooltip().positionMode(TooltipPositionMode.POINT)
+            line.title("Postęp objętości treningu")
+            line.yAxis(0).title("Objętość treningu")
+            line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+
+            val seriesData = data.filter { it.second is Double }.map { (date, value) ->
+                ValueDataEntry(date, value as Double)
+            }
+
+            val series = line.line(seriesData)
+            series.name(exerciseName)
+            series.hovered().markers().enabled(true)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
+
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
+
+            chartView.setChart(line)
+        }
+    )
+}
+@Composable
+fun StrengthChart3(data: List<Pair<String, Any>>, exerciseName: String) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            AnyChartView(context)
+        },
+        update = { chartView ->
+            val line = AnyChart.line()
+
+            line.animation(true)
+            line.padding(10.0, 20.0, 5.0, 20.0)
+            line.crosshair().enabled(true)
+            line.crosshair().yLabel(true).yStroke(null as String?, null as Number?, null as String?, null as String?, null as String?)
+            line.tooltip().positionMode(TooltipPositionMode.POINT)
+            line.title("Postęp szacowanego 1RM")
+            line.yAxis(0).title("Szacowany 1RM")
+            line.xAxis(0).labels().padding(5.0, 5.0, 5.0, 5.0)
+
+            val seriesData = data.filter { it.second is Double }.map { (date, value) ->
+                ValueDataEntry(date, value as Double)
+            }
+
+            val series = line.line(seriesData)
+            series.name(exerciseName)
+            series.hovered().markers().enabled(true)
+            series.hovered().markers().type(com.anychart.enums.MarkerType.CIRCLE).size(4.0)
+            series.tooltip().position("right").anchor(Anchor.LEFT_CENTER).offsetX(5.0).offsetY(5.0)
+
+            line.legend().enabled(true).fontSize(13.0).padding(0.0, 0.0, 10.0, 0.0)
 
             chartView.setChart(line)
         }
