@@ -50,8 +50,8 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
     var selectedWorkoutType by remember { mutableStateOf(WorkoutType.Strength) }
     var selectedIsFavourite by remember { mutableStateOf(false) }
 
-    var isWorkoutTypeDropdownMenuExpanded by remember { mutableStateOf(false) }
-    var isFavouriteDropdownMenuExpanded by remember { mutableStateOf(false) }
+    var isWorkoutTypeMenuExpanded by remember { mutableStateOf(false) }
+    var isFavouriteMenuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedFilters) {
         // set selectedWorkoutType to Cardio if in selectedFilters, Strength is default
@@ -121,30 +121,37 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     modifier = Modifier.padding(start = 8.dp)
                 )
                 ExposedDropdownMenuBox(
-                    expanded = isWorkoutTypeDropdownMenuExpanded,
-                    onExpandedChange = { isWorkoutTypeDropdownMenuExpanded = !isWorkoutTypeDropdownMenuExpanded }
+                    expanded = isWorkoutTypeMenuExpanded,
+                    onExpandedChange = { isWorkoutTypeMenuExpanded = !isWorkoutTypeMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = selectedWorkoutType.toString(),
+                        value = when (selectedWorkoutType) {
+                            WorkoutType.Strength -> "Siłowe"
+                            WorkoutType.Cardio -> "Cardio"
+                        },
                         onValueChange = {},
                         readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWorkoutTypeDropdownMenuExpanded) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isWorkoutTypeMenuExpanded) },
                         modifier = Modifier.menuAnchor()
                     )
                     ExposedDropdownMenu(
-                        expanded = isWorkoutTypeDropdownMenuExpanded,
-                        onDismissRequest = { isWorkoutTypeDropdownMenuExpanded = false }
+                        expanded = isWorkoutTypeMenuExpanded,
+                        onDismissRequest = { isWorkoutTypeMenuExpanded = false }
                     ) {
-                        WorkoutType.entries.forEach { workoutType ->
-                            DropdownMenuItem(
-                                text = { Text(workoutType.toString()) },
-                                onClick = {
-                                    selectedWorkoutType = workoutType
-                                    isWorkoutTypeDropdownMenuExpanded = false
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
-                            )
+                        fun selectWorkoutTypeAndCloseMenu(workoutType: WorkoutType) {
+                            selectedWorkoutType = workoutType
+                            isWorkoutTypeMenuExpanded = false
                         }
+                        DropdownMenuItem(
+                            text = { Text("Siłowe") },
+                            onClick = {selectWorkoutTypeAndCloseMenu(WorkoutType.Strength)},
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Cardio") },
+                            onClick = {selectWorkoutTypeAndCloseMenu(WorkoutType.Cardio)},
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
                     }
                 }
                 // dropdown menu for favourite
@@ -155,34 +162,35 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     modifier = Modifier.padding(start = 8.dp)
                 )
                 ExposedDropdownMenuBox(
-                    expanded = isFavouriteDropdownMenuExpanded,
-                    onExpandedChange = { isFavouriteDropdownMenuExpanded = !isFavouriteDropdownMenuExpanded }
+                    expanded = isFavouriteMenuExpanded,
+                    onExpandedChange = { isFavouriteMenuExpanded = !isFavouriteMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = if (selectedIsFavourite) "Tak" else "Nie",
+                        value = when (selectedIsFavourite) {
+                            true -> "Tak"
+                            false -> "Nie"
+                        },
                         onValueChange = {},
                         readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isFavouriteDropdownMenuExpanded) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isFavouriteMenuExpanded) },
                         modifier = Modifier.menuAnchor()
                     )
                     ExposedDropdownMenu(
-                        expanded = isFavouriteDropdownMenuExpanded,
-                        onDismissRequest = { isFavouriteDropdownMenuExpanded = false }
+                        expanded = isFavouriteMenuExpanded,
+                        onDismissRequest = { isFavouriteMenuExpanded = false }
                     ) {
+                        fun selectFavouriteOptionAndCloseMenu(isFavourite: Boolean) {
+                            selectedIsFavourite = isFavourite
+                            isFavouriteMenuExpanded = false
+                        }
                         DropdownMenuItem(
                             text = { Text("Nie") },
-                            onClick = {
-                                selectedIsFavourite = false
-                                isFavouriteDropdownMenuExpanded = false
-                            },
+                            onClick = {selectFavouriteOptionAndCloseMenu(false)},
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                         DropdownMenuItem(
                             text = { Text("Tak") },
-                            onClick = {
-                                selectedIsFavourite = true
-                                isFavouriteDropdownMenuExpanded = false
-                            },
+                            onClick = {selectFavouriteOptionAndCloseMenu(true)},
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                     }
