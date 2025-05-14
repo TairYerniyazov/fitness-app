@@ -1,9 +1,12 @@
 package uj.lab.fitnessapp.ui.screen.exercises.createview
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
@@ -18,6 +21,16 @@ class ExerciseKindCreateViewModel @Inject constructor(
     val uiState: StateFlow<ExerciseKindCreateUiState> get() = _uiState
 
     fun saveNewExercise() {
+        viewModelScope.launch {
+            val newExercise = Exercise(
+                id = 0,
+                exerciseName = _uiState.value.exerciseName,
+                workoutType = _uiState.value.workoutType,
+                canModify = true,
+                isFavourite = _uiState.value.isFavorite
+            )
+            exerciseRepository.insertExercise(newExercise)
+        }
     }
 
     fun setNewExerciseName(it: String) {
@@ -25,7 +38,7 @@ class ExerciseKindCreateViewModel @Inject constructor(
     }
 
     fun setNewExerciseType(it: WorkoutType) {
-        _uiState.value = _uiState.value.copy(exerciseType = it)
+        _uiState.value = _uiState.value.copy(workoutType = it)
     }
 
     fun setNewExerciseFavorite(it: Boolean) {
@@ -36,6 +49,6 @@ class ExerciseKindCreateViewModel @Inject constructor(
 
 data class ExerciseKindCreateUiState(
     val exerciseName: String = "New Exercise",
-    val exerciseType: WorkoutType = WorkoutType.Strength,
+    val workoutType: WorkoutType = WorkoutType.Strength,
     val isFavorite: Boolean = false
 )

@@ -106,7 +106,6 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     value = selectedExerciseName,
                     onValueChange = {
                         selectedExerciseName = it
-                        //viewModel.setNewExerciseName(it)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -200,8 +199,11 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                 ) {
                     Button(
                         onClick = {
-                            //viewModel.saveExercise()
-                            //navController.popBackStack()
+                            viewModel.setNewExerciseName(selectedExerciseName)
+                            viewModel.setNewExerciseType(selectedWorkoutType)
+                            viewModel.setNewExerciseFavorite(selectedIsFavourite)
+                            viewModel.saveNewExercise()
+                            navController.popBackStack()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.small,
