@@ -32,9 +32,6 @@ class ExerciseKindCreateViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isFavorite = it)
     }
 
-    fun setOptionsFromSelectedFilters() {
-        
-    }
 }
 
 data class ExerciseKindCreateUiState(
