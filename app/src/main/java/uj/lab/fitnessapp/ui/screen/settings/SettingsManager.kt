@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,21 +25,22 @@ class SettingsManager @Inject constructor(
         private val THEME_KEY = booleanPreferencesKey("dark_theme_enabled")
     }
 
-    val isDarkThemeEnabled: Flow<Boolean> = context.dataStore.data
-        .map { preferences ->
-            preferences[THEME_KEY] ?: false
+    private val dataStore = context.dataStore
+
+    val isDarkThemeEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+            prefs[THEME_KEY] ?: false
         }
 
     suspend fun setDarkThemeEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[THEME_KEY] = enabled
+        dataStore.edit { prefs ->
+            prefs[THEME_KEY] = enabled
         }
     }
-    private val dataStore = context.dataStore
 
     private val weightUnitKey = stringPreferencesKey("weight_unit")
     private val isDarkThemeKey = booleanPreferencesKey("is_dark_theme")
     private val distanceUnitKey = stringPreferencesKey("distance_unit")
+    private val dateKey = longPreferencesKey("date")
 
     val distanceUnit: Flow<String> = dataStore.data.map { prefs ->
         prefs[distanceUnitKey] ?: "metric"
@@ -50,6 +52,11 @@ class SettingsManager @Inject constructor(
 
     val isDarkTheme: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[isDarkThemeKey] ?: false
+    }
+
+    // tutaj może ustawić na datę
+    val date: Flow<Long> = dataStore.data.map{ prefs ->
+        prefs[dateKey] ?: 0L
     }
 
     suspend fun setDistanceUnit(unit: String) {
@@ -67,6 +74,12 @@ class SettingsManager @Inject constructor(
     suspend fun toggleTheme(newValue: Boolean) {
         dataStore.edit { prefs ->
             prefs[isDarkThemeKey] = newValue
+        }
+    }
+
+    suspend fun setDate(date: Long){
+        dataStore.edit { prefs ->
+            prefs[dateKey] = date
         }
     }
 }

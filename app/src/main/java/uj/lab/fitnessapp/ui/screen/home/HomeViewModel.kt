@@ -1,24 +1,40 @@
 package uj.lab.fitnessapp.ui.screen.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
+import uj.lab.fitnessapp.ui.screen.settings.MetricUnit
+import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import javax.inject.Inject
 
 @HiltViewModel
 internal class HomeViewModel @Inject constructor(
     private val exerciseInstanceRepository: ExerciseInstanceRepository,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> get() = _uiState
 
-    fun loadExerciseInstances(workoutDate: String) {
+    private val _date = MutableStateFlow(0L)
+    val date: StateFlow<Long> = _date.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            settingsManager.date.collect { date ->
+                _date.value = date
+            }
+        }
+    }
+
+    fun loadExerciseInstances(workoutDate: Long) {
         viewModelScope.launch {
             val exerciseInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsForDate(
                 workoutDate
@@ -56,9 +72,17 @@ internal class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun setDate(date: Long) {
+        _date.value = date
+        viewModelScope.launch {
+            settingsManager.setDate(date)
+        }
+    }
+
 }
 
 data class HomeUiState(
     val exerciseInstances: List<ExerciseInstanceWithDetails> = emptyList(),
-    val currentDate: String? = null
+    val currentDate: Long? = null
 )

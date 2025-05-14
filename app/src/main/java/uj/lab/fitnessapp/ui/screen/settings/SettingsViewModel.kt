@@ -24,7 +24,6 @@ class SettingsViewModel @Inject constructor(
     var isDarkTheme by mutableStateOf(false)
         private set
 
-
     val distanceUnits = listOf(
         MetricUnit("Kilometry (km)", "metric"),
         MetricUnit("Mile (mi)", "imperial")
@@ -38,6 +37,9 @@ class SettingsViewModel @Inject constructor(
     )
     private val _weightUnit = MutableStateFlow(weightUnits[0])
     val weightUnit: StateFlow<MetricUnit> = _weightUnit.asStateFlow()
+
+    private val _date = MutableStateFlow(0L)
+    val date: StateFlow<Long> = _date.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -82,6 +84,15 @@ class SettingsViewModel @Inject constructor(
         }
         Log.d("SettingsViewModel", "Weight unit set to: ${unit.displayName}")
     }
+
+    fun setDate(date: Long) {
+        _date.value = date
+        viewModelScope.launch {
+            settingsManager.setDate(date)
+        }
+    }
+
+
 }
 
 data class MetricUnit(

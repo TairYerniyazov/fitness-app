@@ -28,7 +28,11 @@ import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
+import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -44,26 +48,14 @@ fun HomeScreen(navController: NavController) {
     val exerciseListViewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
+    val selectedDate by viewModel.date.collectAsState()
 
     val exerciseInstanceListState = rememberLazyListState()
-    var selectedDate by remember { mutableStateOf<Long?>(Date().time) }
-
-    val currentDate = Date()
-    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-    val defaultDate = formatter.format(currentDate)
-
-    val dateOnly = formatter.parse(defaultDate)
-    val dateOnlyMillis = dateOnly!!.time
-
-    if (selectedDate == null) {
-        selectedDate = dateOnlyMillis
-    }
 
     LaunchedEffect(selectedDate) {
-        val date = selectedDate
-        val stringDate = formatter.format(Date(date!!))
-        Log.d("Test","Changing date to $stringDate")
-        viewModel.loadExerciseInstances(stringDate)
+        selectedDate.let{
+            viewModel.loadExerciseInstances(it)
+        }
     }
 
     Scaffold(
@@ -89,7 +81,9 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .height(130.dp)
                     .padding(PaddingValues(start = 25.dp, end = 25.dp, top = 40.dp, bottom = 25.dp)),
-                onDateChange = { selectedDate = it },
+                onDateChange = {
+                    viewModel.setDate(it!!)
+                },
                 selectedDate = selectedDate
             )
         },
@@ -113,6 +107,7 @@ fun HomeScreen(navController: NavController) {
                         },
                         onAnalyticsClick = { clickedExercise ->
                             navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)) },
+                        //TODO: trzeba zrobić jakiś popup, który ostrzega przed usuwaniem
                         onDelete = {
                             viewModel.deleteExerciseInstance(instance.exerciseInstance!!.id)
                         },
@@ -120,7 +115,6 @@ fun HomeScreen(navController: NavController) {
                             navController.navigate(
                                 Screen.EditExerciseInstance.createRoute(
                                     exerciseKind = clickedExercise.exercise!!.exerciseName,
-                                    workoutDate = state.currentDate ?: "",
                                     instanceId = clickedExercise.exerciseInstance!!.id
                                 )
                             )
@@ -133,9 +127,7 @@ fun HomeScreen(navController: NavController) {
         floatingActionButton = {
             Button(
                 onClick = {
-                    val date = selectedDate
-                    val stringDate = formatter.format(Date(date!!))
-                    navController.navigate(Screen.ExerciseKindList.withArgs(stringDate))
+                    navController.navigate(Screen.ExerciseKindList.route)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
