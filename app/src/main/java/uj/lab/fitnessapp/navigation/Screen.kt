@@ -23,4 +23,10 @@ sealed class Screen(val route: String) {
             return "edit_exercise_instance/$exerciseKind/$workoutDate/$instanceId"
         }
     }
+    data object ExerciseKindCreate : Screen("exercise_kind_create/{selectedFilters}") {
+        fun withArgs(selectedFilters: List<String>): String {
+            val selectedFiltersString = selectedFilters.joinToString(",")
+            return "exercise_kind_create/$selectedFiltersString"
+        }
+    }
 }

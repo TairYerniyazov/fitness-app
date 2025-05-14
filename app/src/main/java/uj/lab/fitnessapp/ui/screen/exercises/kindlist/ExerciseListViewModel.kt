@@ -59,6 +59,9 @@ class ExerciseListViewModel @Inject constructor(
     fun isFilterSelected(filter: Filter): Boolean {
         return currentFilters.contains(filter)
     }
+    fun getSelectedFilters(): List<Filter> {
+        return currentFilters
+    }
     fun toggleFilter(filter: Filter) {
 
         // can't select both cardio and strength
