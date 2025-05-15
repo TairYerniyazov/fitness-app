@@ -11,6 +11,7 @@ interface ExerciseInstanceRepository {
     suspend fun deleteInstance(exerciseID: Int)
     suspend fun getExerciseInstanceByExerciseID(exerciseID: Int): List<ExerciseInstance>
     suspend fun getExerciseInstanceWithDetails(instanceID: Int): ExerciseInstanceWithDetails
+    suspend fun getExerciseInstanceWithDetailsByExerciseId(exerciseID: Int): List<ExerciseInstanceWithDetails>
     suspend fun getAllExerciseInstanceWithDetailsForDate(date: Long): List<ExerciseInstanceWithDetails>
     suspend fun getAllExerciseInstanceWithDetailsInRange(exerciseID: Int, startDate: Long, endDate: Long): List<ExerciseInstanceWithDetails>
 
