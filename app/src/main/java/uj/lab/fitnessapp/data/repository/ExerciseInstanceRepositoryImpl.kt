@@ -26,7 +26,21 @@ class ExerciseInstanceRepositoryImpl @Inject constructor(
         return exerciseInstanceDao.getExerciseInstanceWithDetails(instanceID)
     }
 
-    override suspend fun getAllExerciseInstanceWithDetailsForDate(date: String): List<ExerciseInstanceWithDetails> {
+    override suspend fun getExerciseInstanceWithDetailsByExerciseId(exerciseID: Int): List<ExerciseInstanceWithDetails> {
+        return exerciseInstanceDao.getExerciseInstanceWithDetailsByExerciseId(exerciseID)
+    }
+
+    override suspend fun getAllExerciseInstanceWithDetailsForDate(date: Long): List<ExerciseInstanceWithDetails> {
         return exerciseInstanceDao.getAllExerciseInstanceWithDetailsForDate(date)
     }
+
+    override suspend fun getAllExerciseInstanceWithDetailsInRange(
+        exerciseID: Int,
+        startDate: Long,
+        endDate: Long
+    ): List<ExerciseInstanceWithDetails> {
+        return exerciseInstanceDao.getAllExerciseInstanceWithDetailsInRange(exerciseID, startDate, endDate)
+    }
+
+
 }

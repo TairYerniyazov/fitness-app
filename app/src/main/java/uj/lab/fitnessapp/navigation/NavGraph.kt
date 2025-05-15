@@ -20,22 +20,17 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Home.route) {
             HomeScreen(navController)
         }
-        composable(
-            Screen.ExerciseKindList.route,
-            arguments = listOf(navArgument("workoutDate") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: ""
-            ExerciseKindListScreen(navController, workoutDate)
+        composable(Screen.ExerciseKindList.route) {
+            ExerciseKindListScreen(navController)
         }
         composable(
             Screen.ExerciseInstanceCreate.route,
             arguments = listOf(
-                navArgument("exerciseKind") { type = NavType.StringType },
-                navArgument("workoutDate") { type = NavType.StringType })
+                navArgument("exerciseKind") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: "Nieznane ćwiczenie"
-            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: "Nieznana data"
-            ExerciseInstanceCreateScreen(navController, exerciseKind, workoutDate)
+            ExerciseInstanceCreateScreen(navController, exerciseKind)
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController)
@@ -57,18 +52,15 @@ fun Navigation(navController: NavHostController) {
             route = Screen.EditExerciseInstance.route,
             arguments = listOf(
                 navArgument("exerciseKind") { type = NavType.StringType },
-                navArgument("workoutDate") { type = NavType.StringType },
                 navArgument("instanceId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: ""
-            val workoutDate = backStackEntry.arguments?.getString("workoutDate") ?: ""
             val instanceId = backStackEntry.arguments?.getInt("instanceId")
 
             ExerciseInstanceCreateScreen(
                 navController = navController,
                 exerciseKind = exerciseKind,
-                workoutDate = workoutDate,
                 instanceId = instanceId
             )
         }

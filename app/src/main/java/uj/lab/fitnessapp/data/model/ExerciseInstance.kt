@@ -22,5 +22,5 @@ data class ExerciseInstance(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "ID") val id: Int,
     @ColumnInfo(name = "exerciseID") val exerciseID: Int,
-    @ColumnInfo(name = "date") val date: String, // TODO: zamienić ten typ na D/M/Y
+    @ColumnInfo(name = "date") val date: Long, // TODO: zamienić ten typ na D/M/Y
 )

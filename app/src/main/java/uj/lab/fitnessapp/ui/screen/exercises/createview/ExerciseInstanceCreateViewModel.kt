@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.ExerciseInstance
@@ -44,6 +45,9 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
 
     private val _instanceId = MutableStateFlow<Int?>(null)
 
+    private val _date = MutableStateFlow(0L)
+
+
     init {
         viewModelScope.launch {
             settingsManager.weightUnit.collect { unit ->
@@ -58,6 +62,12 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                 _isImperialDistance.value = unit == "imperial"
                 _distanceUnit.value = if (unit == "imperial") "mi" else "km"
                 refreshWorkoutSets()
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.date.collect { date ->
+                _date.value = date
             }
         }
     }
@@ -89,7 +99,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
-    fun saveExerciseInstance(workoutDate: String, onSave: () -> Unit) {
+    fun saveExerciseInstance(onSave: () -> Unit) {
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
             if (_isEditMode.value && _instanceId.value != null) {
@@ -107,7 +117,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                     ExerciseInstance(
                         id = 0,
                         exerciseID = state.exerciseId,
-                        date = workoutDate
+                        date = _date.value
                     )
                 )
                 state.workoutSets.forEach { workoutSet ->

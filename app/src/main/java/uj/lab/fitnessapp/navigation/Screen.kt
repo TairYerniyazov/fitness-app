@@ -8,19 +8,16 @@ sealed class Screen(val route: String) {
             return "analytics/$exerciseKind"
         }
     }
-    data object ExerciseKindList : Screen("exercise_kind_list/{workoutDate}"){
-        fun withArgs(workoutDate: String): String {
-            return "exercise_kind_list/$workoutDate"
+    data object ExerciseKindList : Screen("exercise_kind_list")
+
+    data object ExerciseInstanceCreate : Screen("exercise_instance_create/{exerciseKind}") {
+        fun withArgs(exerciseKind: String): String {
+            return "exercise_instance_create/$exerciseKind"
         }
     }
-    data object ExerciseInstanceCreate : Screen("exercise_instance_create/{exerciseKind}/{workoutDate}") {
-        fun withArgs(exerciseKind: String, workoutDate: String): String {
-            return "exercise_instance_create/$exerciseKind/$workoutDate"
-        }
-    }
-    data object EditExerciseInstance : Screen("edit_exercise_instance/{exerciseKind}/{workoutDate}/{instanceId}") {
-        fun createRoute(exerciseKind: String, workoutDate: String, instanceId: Int): String {
-            return "edit_exercise_instance/$exerciseKind/$workoutDate/$instanceId"
+    data object EditExerciseInstance : Screen("edit_exercise_instance/{exerciseKind}/{instanceId}") {
+        fun createRoute(exerciseKind: String, instanceId: Int): String {
+            return "edit_exercise_instance/$exerciseKind/$instanceId"
         }
     }
     data object ExerciseKindCreate : Screen("exercise_kind_create/{selectedFilters}") {

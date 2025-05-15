@@ -6,10 +6,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import uj.lab.fitnessapp.data.model.Exercise
+import uj.lab.fitnessapp.data.model.ExerciseInstance
+import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import kotlin.collections.mutableListOf
+
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
@@ -31,6 +40,9 @@ class AnalyticsViewModel @Inject constructor(
     private val _metricsData = MutableStateFlow<Map<String, Any>>(emptyMap())
     val metricsData: StateFlow<Map<String, Any>> = _metricsData
 
+    private val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+
     fun getExerciseIDFromKind(exerciseKind: String) {
         viewModelScope.launch {
             val exercise = exerciseRepository.getExerciseByName(exerciseKind)
@@ -41,45 +53,69 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun getAllInstancesByExerciseID(exerciseID: Int) {
+    fun getInstancesInTimeRange(exerciseID: Int, startDate: LocalDate, endDate: LocalDate? = null){
         viewModelScope.launch {
-            val allInstances = exerciseInstanceRepository.getExerciseInstanceByExerciseID(exerciseID)
-            val result = mutableListOf<Pair<String, Any>>()
-            val exerciseType = exerciseInstanceRepository.getExerciseInstanceWithDetails(allInstances.firstOrNull()?.id ?: 0).exercise?.workoutType
+            val _endDate = endDate ?: LocalDate.now()
+            val startDateLong = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val endDateLong = _endDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-            for (instance in allInstances) {
-                val details = exerciseInstanceRepository.getExerciseInstanceWithDetails(instance.id)
-                val date = details.exerciseInstance?.date ?: "Unknown"
+            val allInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsInRange(exerciseID, startDateLong, endDateLong)
+            val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
 
-                when (exerciseType) {
-                    WorkoutType.Cardio -> {
-                        var totalDistance = 0
-                        var totalTime = 0
-                        details.seriesList?.forEach { set ->
-                            totalDistance += (set.distance ?: 0)
-                            totalTime += (set.time ?: 0)
-                        }
-                        result.add(Pair(date, totalDistance))
-                        result.add(Pair(date, totalTime))
-                    }
-                    WorkoutType.Strength -> {
-                        var totalReps = 0
-                        var trainingVolume = 0.0
-                        details.seriesList?.forEach { set ->
-                            totalReps += (set.reps ?: 0)
-                            trainingVolume += (set.reps ?: 0) * (set.load ?: 0.0)
-                        }
-                        result.add(Pair(date, totalReps))
-                        result.add(Pair(date, trainingVolume))
-                    }
-                    null -> {}
-                }
-            }
+            val result = computeStatistics(allInstances, exerciseType!!)
             _chartData.value = result.sortedBy { it.first }
         }
     }
 
+    fun getAllTimeInstances(exerciseID: Int) {
+        viewModelScope.launch {
+            val allInstances = exerciseInstanceRepository.getExerciseInstanceWithDetailsByExerciseId(exerciseID)
+            var result = mutableListOf<Pair<String, Any>>()
+            val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
 
+            result = computeStatistics(allInstances, exerciseType!!)
+            _chartData.value = result.sortedBy { it.first }
+        }
+    }
+
+    fun computeStatistics(allInstances: List<ExerciseInstanceWithDetails>, exerciseType: WorkoutType):
+        MutableList<Pair<String, Any>>
+    {
+        val result = mutableListOf<Pair<String, Any>>()
+
+        for (instance in allInstances) {
+            val dateMillis = instance.exerciseInstance?.date ?: 0L
+            val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+            val date = formatter.format(dateTime)
+
+            when (exerciseType) {
+                WorkoutType.Cardio -> {
+                    var totalDistance = 0
+                    var totalTime = 0
+                    instance.seriesList?.forEach { set ->
+                        totalDistance += (set.distance ?: 0)
+                        totalTime += (set.time ?: 0)
+                    }
+                    result.add(Pair(date, totalDistance))
+                    result.add(Pair(date, totalTime))
+                }
+                WorkoutType.Strength -> {
+                    var totalReps = 0
+                    var trainingVolume = 0.0
+                    instance.seriesList?.forEach { set ->
+                        totalReps += (set.reps ?: 0)
+                        trainingVolume += (set.reps ?: 0) * (set.load ?: 0.0)
+                    }
+                    result.add(Pair(date, totalReps))
+                    result.add(Pair(date, trainingVolume))
+                }
+                null -> {}
+            }
+        }
+        return result
+    }
+
+    // TODO: to też trzeba rozbić, no chyba, że chcemy bardziej ogólne info na górze Analityki
     fun calculateKeyMetrics(exerciseID: Int) {
         viewModelScope.launch {
             val allInstances = exerciseInstanceRepository.getExerciseInstanceByExerciseID(exerciseID)

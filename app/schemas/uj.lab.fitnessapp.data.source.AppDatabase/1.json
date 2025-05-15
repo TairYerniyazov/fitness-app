@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2a9dc0136181e8ac7094c52041c57e78",
+    "identityHash": "ffc55c4001e34b339efb1394ff8e1598",
     "entities": [
       {
         "tableName": "exercises",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "exerciseInstances",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `exerciseID` INTEGER NOT NULL, `date` TEXT NOT NULL, FOREIGN KEY(`exerciseID`) REFERENCES `exercises`(`ID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `exerciseID` INTEGER NOT NULL, `date` INTEGER NOT NULL, FOREIGN KEY(`exerciseID`) REFERENCES `exercises`(`ID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -67,7 +67,7 @@
           {
             "fieldPath": "date",
             "columnName": "date",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -168,7 +168,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a9dc0136181e8ac7094c52041c57e78')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ffc55c4001e34b339efb1394ff8e1598')"
     ]
   }
 }

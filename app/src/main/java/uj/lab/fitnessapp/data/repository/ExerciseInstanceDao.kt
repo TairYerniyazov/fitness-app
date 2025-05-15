@@ -29,7 +29,17 @@ interface ExerciseInstanceDao {
     suspend fun getExerciseInstanceWithDetails(instanceID: Int): ExerciseInstanceWithDetails
 
     @Transaction
+    @Query("SELECT * FROM exerciseInstances Where exerciseID = :exerciseID")
+    suspend fun getExerciseInstanceWithDetailsByExerciseId(exerciseID: Int): List<ExerciseInstanceWithDetails>
+
+    @Transaction
     @Query("SELECT * FROM exerciseInstances WHERE date = :date")
-    suspend fun getAllExerciseInstanceWithDetailsForDate(date: String): List<ExerciseInstanceWithDetails>
+    suspend fun getAllExerciseInstanceWithDetailsForDate(date: Long): List<ExerciseInstanceWithDetails>
+
+    @Transaction
+    @Query("SELECT * FROM exerciseInstances WHERE date BETWEEN :startDate AND :endDate AND exerciseID = :exerciseID")
+    suspend fun getAllExerciseInstanceWithDetailsInRange(exerciseID: Int, startDate: Long, endDate: Long): List<ExerciseInstanceWithDetails>
+
+
 
 }
