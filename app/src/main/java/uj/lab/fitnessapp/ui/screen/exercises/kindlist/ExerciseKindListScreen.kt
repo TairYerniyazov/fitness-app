@@ -83,7 +83,8 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                     ) {
                         Button(
                             onClick = {
-                                // TODO: create exercise kind
+                                val selectedFiltersDescriptions = viewModel.getSelectedFilters().map { it.description }
+                                navController.navigate(Screen.ExerciseKindCreate.withArgs(selectedFiltersDescriptions))
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer),
@@ -99,7 +100,7 @@ fun ExerciseKindListScreen(navController: NavController, workoutDate: String) {
                                 tint = MaterialTheme.colorScheme.onErrorContainer
                             )
                             Text(
-                                text = "Dodaj rodzaj ćwiczenia",
+                                text = "Dodaj nowe ćwiczenie",
                                 color = MaterialTheme.colorScheme.onErrorContainer)
                         }
                     }

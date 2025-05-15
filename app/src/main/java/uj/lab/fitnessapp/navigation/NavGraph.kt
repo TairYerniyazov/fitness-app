@@ -12,6 +12,7 @@ import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateSc
 import uj.lab.fitnessapp.ui.screen.settings.SettingsScreen
 import uj.lab.fitnessapp.ui.screen.analytics.AnalyticsScreen
 import uj.lab.fitnessapp.ui.screen.analytics.ExerciseToAnalyseListScreen
+import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseKindCreateScreen
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -70,6 +71,14 @@ fun Navigation(navController: NavHostController) {
                 workoutDate = workoutDate,
                 instanceId = instanceId
             )
+        }
+        composable(
+            Screen.ExerciseKindCreate.route,
+            arguments = listOf(navArgument("selectedFilters") { type = NavType.StringType})
+        ) { backStackEntry ->
+            val selectedFiltersString = backStackEntry.arguments?.getString("selectedFilters") ?: "Nieznany filtr ćwiczeń"
+            val selectedFilters = selectedFiltersString.split(",")
+            ExerciseKindCreateScreen(navController, selectedFilters)
         }
     }
 }
