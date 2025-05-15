@@ -114,17 +114,14 @@ class AnalyticsViewModel @Inject constructor(
         }
         return result
     }
-
-    // TODO: to też trzeba rozbić, no chyba, że chcemy bardziej ogólne info na górze Analityki
+    
     fun calculateKeyMetrics(exerciseID: Int) {
         viewModelScope.launch {
-            val allInstances = exerciseInstanceRepository.getExerciseInstanceByExerciseID(exerciseID)
+            val allInstances = exerciseInstanceRepository.getExerciseInstanceWithDetailsByExerciseId(exerciseID)
+            val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
             val metrics = mutableMapOf<String, Any>()
 
             for (instance in allInstances) {
-                val details = exerciseInstanceRepository.getExerciseInstanceWithDetails(instance.id)
-                val exerciseType = details.exercise?.workoutType
-
                 when (exerciseType) {
                     WorkoutType.Cardio -> {
                         var totalDistance = 0
@@ -133,7 +130,7 @@ class AnalyticsViewModel @Inject constructor(
                         var maxTime = 0
                         val sessionCount = allInstances.size
 
-                        details.seriesList?.forEach { set ->
+                        instance.seriesList?.forEach { set ->
                             val dist = set.distance ?: 0
                             val time = set.time ?: 0
                             totalDistance += dist
@@ -156,7 +153,7 @@ class AnalyticsViewModel @Inject constructor(
                         var maxReps = 0
                         val sessionCount = allInstances.size
 
-                        details.seriesList?.forEach { set ->
+                        instance.seriesList?.forEach { set ->
                             val reps = set.reps ?: 0
                             val load = set.load ?: 0.0
                             totalReps += reps
