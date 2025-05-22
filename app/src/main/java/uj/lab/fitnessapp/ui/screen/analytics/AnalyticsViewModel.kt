@@ -1,5 +1,6 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,7 +64,7 @@ class AnalyticsViewModel @Inject constructor(
             val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
 
             val result = computeStatistics(allInstances, exerciseType!!)
-            _chartData.value = result.sortedBy { it.first }
+            _chartData.value = result
         }
     }
 
@@ -74,7 +75,7 @@ class AnalyticsViewModel @Inject constructor(
             val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
 
             result = computeStatistics(allInstances, exerciseType!!)
-            _chartData.value = result.sortedBy { it.first }
+            _chartData.value = result
         }
     }
 
@@ -87,6 +88,8 @@ class AnalyticsViewModel @Inject constructor(
             val dateMillis = instance.exerciseInstance?.date ?: 0L
             val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
             val date = formatter.format(dateTime)
+
+//            Log.d("Analytics", "date: ${date}")
 
             when (exerciseType) {
                 WorkoutType.Cardio -> {

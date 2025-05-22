@@ -29,7 +29,7 @@ interface ExerciseInstanceDao {
     suspend fun getExerciseInstanceWithDetails(instanceID: Int): ExerciseInstanceWithDetails
 
     @Transaction
-    @Query("SELECT * FROM exerciseInstances Where exerciseID = :exerciseID")
+    @Query("SELECT * FROM exerciseInstances Where exerciseID = :exerciseID ORDER BY date")
     suspend fun getExerciseInstanceWithDetailsByExerciseId(exerciseID: Int): List<ExerciseInstanceWithDetails>
 
     @Transaction
@@ -37,7 +37,7 @@ interface ExerciseInstanceDao {
     suspend fun getAllExerciseInstanceWithDetailsForDate(date: Long): List<ExerciseInstanceWithDetails>
 
     @Transaction
-    @Query("SELECT * FROM exerciseInstances WHERE date BETWEEN :startDate AND :endDate AND exerciseID = :exerciseID")
+    @Query("SELECT * FROM exerciseInstances WHERE date BETWEEN :startDate AND :endDate AND exerciseID = :exerciseID ORDER BY date")
     suspend fun getAllExerciseInstanceWithDetailsInRange(exerciseID: Int, startDate: Long, endDate: Long): List<ExerciseInstanceWithDetails>
 
 

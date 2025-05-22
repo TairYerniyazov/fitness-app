@@ -22,22 +22,22 @@ interface ExerciseDao {
     @Query("DELETE FROM exercises WHERE ID = :id AND canModify = 1")
     suspend fun deleteExercise(id: Int)
 
-    @Query("SELECT * FROM exercises")
+    @Query("SELECT * FROM exercises ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getAllExercises(): List<Exercise>
 
-    @Query("SELECT * FROM exercises WHERE canModify = 1")
+    @Query("SELECT * FROM exercises WHERE canModify = 1 ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getUserExercises(): List<Exercise>
 
-    @Query("SELECT * FROM exercises WHERE canModify = 0")
+    @Query("SELECT * FROM exercises WHERE canModify = 0 ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getBasicExercises(): List<Exercise>
 
-    @Query("SELECT * FROM exercises WHERE isFavourite = 1")
+    @Query("SELECT * FROM exercises WHERE isFavourite = 1 ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getFavouriteExercises(): List<Exercise>
 
-    @Query("SELECT * FROM exercises WHERE workoutType = 0")
+    @Query("SELECT * FROM exercises WHERE workoutType = 0 ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getStrengthExercises(): List<Exercise>
 
-    @Query("SELECT * FROM exercises WHERE workoutType = 1")
+    @Query("SELECT * FROM exercises WHERE workoutType = 1 ORDER BY exerciseName COLLATE NOCASE")
     suspend fun getCardioExercises(): List<Exercise>
 
     @Query("SELECT * FROM exercises WHERE exerciseName MATCH :queryName")
