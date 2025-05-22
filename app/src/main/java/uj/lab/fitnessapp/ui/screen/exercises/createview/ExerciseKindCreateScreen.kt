@@ -213,7 +213,13 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                             viewModel.saveNewExercise()
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        enabled = selectedExerciseName.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 1.0f),
+                            disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 1.0f)
+                        ),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
@@ -230,7 +236,12 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                         onClick = {
                             navController.popBackStack()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 1.0f),
+                            disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 1.0f)
+                        ),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
