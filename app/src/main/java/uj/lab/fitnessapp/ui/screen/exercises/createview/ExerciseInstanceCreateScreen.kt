@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -134,25 +135,38 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 }
 
                 LazyColumn {
-                    itemsIndexed(state.workoutSets) { index, workoutSet ->
-                        when (state.workoutType) {
-                            WorkoutType.Cardio ->
-                                CardioWorkoutSetEntry(
-                                    index,
-                                    workoutSet.distance!!,
-                                    workoutSet.time!!.toDuration(DurationUnit.SECONDS),
-                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) },
-                                    viewModel = viewModel
-                                )
+                    if (state.workoutSets.isEmpty()) {
+                        item {
+                            Text(
+                                "Brak serii dodanych do tego ćwiczenia.",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    else {
+                        itemsIndexed(state.workoutSets) { index, workoutSet ->
+                            when (state.workoutType) {
+                                WorkoutType.Cardio ->
+                                    CardioWorkoutSetEntry(
+                                        index,
+                                        workoutSet.distance!!,
+                                        workoutSet.time!!.toDuration(DurationUnit.SECONDS),
+                                        onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                        viewModel = viewModel
+                                    )
 
-                            WorkoutType.Strength ->
-                                StrengthWorkoutSetEntry(
-                                    index,
-                                    workoutSet.load!!,
-                                    workoutSet.reps!!,
-                                    onDelete = { viewModel.removeWorkoutSet(workoutSet) },
-                                    viewModel = viewModel
-                                )
+                                WorkoutType.Strength ->
+                                    StrengthWorkoutSetEntry(
+                                        index,
+                                        workoutSet.load!!,
+                                        workoutSet.reps!!,
+                                        onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                        viewModel = viewModel
+                                    )
+                            }
                         }
                     }
                 }
