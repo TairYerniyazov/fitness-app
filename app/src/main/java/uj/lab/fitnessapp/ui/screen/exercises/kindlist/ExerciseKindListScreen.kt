@@ -32,8 +32,8 @@ import androidx.compose.material3.MultiChoiceSegmentedButtonRow
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.runtime.key
 import androidx.compose.ui.text.style.TextAlign
-import uj.lab.fitnessapp.ui.theme.favoriteColor
 
 /**
  * Screen displaying a list of exercise kinds.
@@ -43,8 +43,8 @@ import uj.lab.fitnessapp.ui.theme.favoriteColor
 fun ExerciseKindListScreen(navController: NavController) {
     val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
+    val selectedFilters by viewModel.selectedFilters.collectAsState()
     val filterIconSize = 32.dp
-
     LaunchedEffect(Unit) {
         viewModel.loadExercises()
     }
@@ -113,7 +113,8 @@ fun ExerciseKindListScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                MultiChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                   getFilters().forEach { filter ->
+                   viewModel.filters.forEachIndexed() { index, filter ->
+                       val isSelected = selectedFilters.contains(filter)
                        val resolvedBgColor = when (filter.color) {
                            FilterColors.Strength -> MaterialTheme.colorScheme.primaryContainer
                            FilterColors.Cardio -> MaterialTheme.colorScheme.secondaryContainer
@@ -126,29 +127,31 @@ fun ExerciseKindListScreen(navController: NavController) {
                            FilterColors.Favorite -> MaterialTheme.colorScheme.onTertiaryContainer
                            FilterColors.User -> MaterialTheme.colorScheme.onErrorContainer
                        }
-                   SegmentedButton(
-                       shape = SegmentedButtonDefaults.itemShape(
-                           index = filter.index,
-                           count = getFilters().size
-                       ),
-                       onCheckedChange = {
-                           viewModel.toggleFilter(filter)
-                           viewModel.filterExercises()
-                                 },
-                       checked = viewModel.isFilterSelected(filter),
-                       label = { Icon(
-                           imageVector = filter.icon(),
-                           contentDescription = filter.description,
-                           modifier = Modifier.size(filterIconSize),
-                           tint = resolvedTextColor
-                       )},
-                       colors = SegmentedButtonDefaults.colors(
-                           activeContainerColor = resolvedBgColor,
-                           activeContentColor =  resolvedTextColor,
-                           disabledInactiveContainerColor = MaterialTheme.colorScheme.surface,
-                           disabledInactiveContentColor = MaterialTheme.colorScheme.onSurface
-                       )
-                   )
+                       key(index) {
+                           SegmentedButton(
+                               shape = SegmentedButtonDefaults.itemShape(
+                                   index = index,
+                                   count = viewModel.filters.size
+                               ),
+                               onCheckedChange = {
+                                   viewModel.toggleFilter(filter)
+                                   viewModel.filterExercises()
+                               },
+                               checked = isSelected,
+                               label = { Icon(
+                                       imageVector = filter.icon(),
+                                       contentDescription = filter.description,
+                                       modifier = Modifier.size(filterIconSize),
+                                       tint = resolvedTextColor
+                                   )},
+                               colors = SegmentedButtonDefaults.colors(
+                                   activeContainerColor = resolvedBgColor,
+                                   activeContentColor = resolvedTextColor,
+                                   disabledInactiveContainerColor = MaterialTheme.colorScheme.surface,
+                                   disabledInactiveContentColor = MaterialTheme.colorScheme.onSurface
+                               )
+                           )
+                       }
                    }
                }
             }

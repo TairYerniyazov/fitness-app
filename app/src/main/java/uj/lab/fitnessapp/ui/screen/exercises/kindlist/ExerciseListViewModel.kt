@@ -20,13 +20,14 @@ class ExerciseListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ExercisesUiState(emptyList(), emptyList()))
     val uiState: StateFlow<ExercisesUiState> get() = _uiState
-    private var currentFilters = mutableListOf<Filter>()
+    val filters = getFilters()
+    private val _selectedFilters = MutableStateFlow<List<Filter>>(emptyList())
+    val selectedFilters: StateFlow<List<Filter>> = _selectedFilters
 
     fun loadExercises() {
         viewModelScope.launch {
             val allExercises = exerciseRepository.getAllExercises()
             _uiState.update {
-                Log.d("DEBUG", "ExerciseListViewModel: ${allExercises.size} exercises loaded")
                 ExercisesUiState(allExercises,allExercises)
             }
             filterExercises() // filter is preserved when navigating back
@@ -35,7 +36,7 @@ class ExerciseListViewModel @Inject constructor(
     fun filterExercises() {
         _uiState.value = _uiState.value.copy(
             filteredExercises = _uiState.value.allExercises.filter { exercise ->
-                currentFilters.all { filter -> filter.predicate(exercise) }
+                _selectedFilters.value.all { filter -> filter.predicate(exercise) }
             }
         )
     }
@@ -51,19 +52,16 @@ class ExerciseListViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 allExercises = updatedExercises,
                 filteredExercises = updatedExercises.filter { exercise ->
-                    currentFilters.all { filter -> filter.predicate(exercise) }
+                    _selectedFilters.value.all { filter -> filter.predicate(exercise) }
                 }
             )
         }
     }
-    fun isFilterSelected(filter: Filter): Boolean {
-        return currentFilters.contains(filter)
-    }
     fun getSelectedFilters(): List<Filter> {
-        return currentFilters
+        return _selectedFilters.value
     }
     fun toggleFilter(filter: Filter) {
-
+        val currentFilters = _selectedFilters.value.toMutableList()
         // can't select both cardio and strength
         if (filter.description == "Cardio") {
             currentFilters.removeIf { it.description == "Strength" }
@@ -73,11 +71,14 @@ class ExerciseListViewModel @Inject constructor(
         }
 
         if (currentFilters.contains(filter)) {
+            Log.d("DEBUG", "toggleFilter: remove ${filter.description} ")
             currentFilters.remove(filter)
         }
         else {
+            Log.d("DEBUG", "toggleFilter: add ${filter.description} ")
             currentFilters += filter
         }
+        _selectedFilters.value = currentFilters
     }
 }
 
