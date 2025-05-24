@@ -43,6 +43,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -55,6 +57,10 @@ import uj.lab.fitnessapp.ui.component.DateRangeSelector
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Alignment
+
 
 private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
 private val YDecimalFormat = DecimalFormat("#")
@@ -152,14 +158,35 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
             )
 
             if (metrics.isNotEmpty()) {
-                metrics.forEach { (label, value) ->
-                    Text(
-                        text = "$label: $value",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                val selectedMetricsList = remember(metrics, exerciseType, currentDistanceUnit, currentWeightUnit) {
+                    when (exerciseType) {
+                        WorkoutType.Cardio -> listOf(
+                            "Całkowity dystans (${currentDistanceUnit.let { if (it == "imperial") "mi" else "km" }})" to metrics["Całkowity dystans (${currentDistanceUnit.let { if (it == "imperial") "mi" else "km" }})"],
+                            "Maks. dystans (${currentDistanceUnit.let { if (it == "imperial") "mi" else "km" }})" to metrics["Maks. dystans (${currentDistanceUnit.let { if (it == "imperial") "mi" else "km" }})"],
+                            "Średnia prędkość (${currentDistanceUnit.let { if (it == "imperial") "mi/h" else "km/h" }})" to metrics["Średnia prędkość (${currentDistanceUnit.let { if (it == "imperial") "mi/h" else "km/h" }})"],
+                            "Maks. prędkość (${currentDistanceUnit.let { if (it == "imperial") "mi/h" else "km/h" }})" to metrics["Maks. prędkość (${currentDistanceUnit.let { if (it == "imperial") "mi/h" else "km/h" }})"]
+                        ).filter { it.second != null }.map { it.first to it.second.toString() }
+                        WorkoutType.Strength -> listOf(
+                            "Całkowite powtórzenia" to metrics["Całkowite powtórzenia"],
+                            "Objętość treningu (${currentWeightUnit.let { if (it == "imperial") "lb" else "kg" }})" to metrics["Objętość treningu (${currentWeightUnit.let { if (it == "imperial") "lb" else "kg" }})"],
+                            "Szacowany 1RM (${currentWeightUnit.let { if (it == "imperial") "lb" else "kg" }})" to metrics["Szacowany 1RM (${currentWeightUnit.let { if (it == "imperial") "lb" else "kg" }})"],
+                            "Maks. liczba powtórzeń" to metrics["Maks. liczba powtórzeń"]
+                        ).filter { it.second != null }.map { it.first to it.second.toString() }
+                        else -> emptyList()
+                    }
                 }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    content = {
+                        items(selectedMetricsList) { (label, value) ->
+                            MetricCard(label = label, value = value)
+                        }
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -195,29 +222,23 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(
-                    onClick = { selectedTab = 1 },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Wykres 1", color = MaterialTheme.colorScheme.onPrimary)
+                val chartLabels = remember(exerciseType) {
+                    when (exerciseType) {
+                        WorkoutType.Strength -> listOf("Powtórzenia", "Obciążenie", "Objętość")
+                        WorkoutType.Cardio -> listOf("Dystans", "Czas", "Prędkość")
+                        else -> listOf("Wykres 1", "Wykres 2", "Wykres 3")
+                    }
                 }
-                Button(
-                    onClick = { selectedTab = 2 },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Wykres 2", color = MaterialTheme.colorScheme.onPrimary)
-                }
-                Button(
-                    onClick = { selectedTab = 3 },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTab == 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text("Wykres 3", color = MaterialTheme.colorScheme.onPrimary)
+
+                chartLabels.forEachIndexed { index, label ->
+                    Button(
+                        onClick = { selectedTab = index + 1 },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedTab == index + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text(label, color = MaterialTheme.colorScheme.onPrimary)
+                    }
                 }
             }
 
@@ -236,6 +257,38 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
             } ?: run {
                 Text("Ładowanie danych...", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground)
             }
+        }
+    }
+}
+
+
+@Composable
+private fun MetricCard(label: String, value: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(90.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
         }
     }
 }
