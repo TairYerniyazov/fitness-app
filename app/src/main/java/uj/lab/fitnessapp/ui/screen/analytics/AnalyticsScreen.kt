@@ -73,6 +73,8 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
     val exerciseName by viewModel.exerciseName.collectAsState()
     val metrics by viewModel.metricsData.collectAsState()
     val exerciseType by viewModel.exerciseType.collectAsState()
+    val currentDistanceUnit by viewModel.currentDistanceUnit.collectAsState()
+    val currentWeightUnit by viewModel.currentWeightUnit.collectAsState()
 
     var selectedChip by remember { mutableStateOf("tydzień") }
 
@@ -143,7 +145,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 .padding(16.dp)
         ) {
             Text(
-                text = exerciseName.uppercase(),
+                text = exerciseName,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp),
                 color = MaterialTheme.colorScheme.onBackground
@@ -227,7 +229,9 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                     exerciseType = type,
                     strengthData = strengthData,
                     cardioData = cardioData,
-                    modifier = modifier
+                    modifier = modifier,
+                    currentDistanceUnit = currentDistanceUnit,
+                    currentWeightUnit = currentWeightUnit
                 )
             } ?: run {
                 Text("Ładowanie danych...", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground)
@@ -378,7 +382,9 @@ private fun ChartSelectionAndDisplay(
     exerciseType: WorkoutType,
     strengthData: List<StrengthChartData>,
     cardioData: List<CardioChartData>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currentDistanceUnit: String,
+    currentWeightUnit: String
 ) {
     when (selectedTab) {
         1 -> {
@@ -400,7 +406,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp dystansu",
-                    yAxisLabel = "Dystans (km)"
+                    yAxisLabel = "Dystans (${if (currentDistanceUnit == "imperial") "mi" else "km"})"
                 )
             }
         }
@@ -413,7 +419,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp obciążenia",
-                    yAxisLabel = "Obciążenie (kg)"
+                    yAxisLabel = "Obciążenie (${if (currentWeightUnit == "imperial") "lb" else "kg"})"
                 )
             } else if (exerciseType == WorkoutType.Cardio) {
                 val yValues = cardioData.map { it.time }
@@ -436,7 +442,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp objętości",
-                    yAxisLabel = "Objętość"
+                    yAxisLabel = "Objętość (${if (currentWeightUnit == "imperial") "lb" else "kg"})"
                 )
             } else if (exerciseType == WorkoutType.Cardio) {
                 val yValues = cardioData.map { it.velocity }
@@ -446,7 +452,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp prędkości",
-                    yAxisLabel = "Prędkość (km/h)"
+                    yAxisLabel = "Prędkość (${if (currentDistanceUnit == "imperial") "mi/h" else "km/h"})"
                 )
             }
         }

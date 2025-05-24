@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
+import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -18,8 +20,8 @@ import javax.inject.Inject
 
 data class CardioChartData(
     val date: String,
-    val distance: Double, // Zmieniono na Double, żeby obsłużyć ułamki po konwersji
-    val time: Double,    // Zmieniono na Double, żeby obsłużyć ułamki po konwersji
+    val distance: Double,
+    val time: Double,
     val velocity: Double
 )
 
@@ -34,7 +36,8 @@ data class StrengthChartData(
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
-    private val exerciseInstanceRepository: ExerciseInstanceRepository
+    private val exerciseInstanceRepository: ExerciseInstanceRepository,
+    private val settingsManager: SettingsManager
 ) : ViewModel() {
 
     private val _cardioChartData = MutableStateFlow<List<CardioChartData>>(emptyList())
@@ -55,7 +58,32 @@ class AnalyticsViewModel @Inject constructor(
     private val _metricsData = MutableStateFlow<Map<String, Any>>(emptyMap())
     val metricsData: StateFlow<Map<String, Any>> = _metricsData
 
+    private val _currentDistanceUnit = MutableStateFlow("metric")
+    val currentDistanceUnit: StateFlow<String> = _currentDistanceUnit
+
+    private val _currentWeightUnit = MutableStateFlow("metric")
+    val currentWeightUnit: StateFlow<String> = _currentWeightUnit
+
     private val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+    init {
+        viewModelScope.launch {
+            settingsManager.distanceUnit.collect { unit ->
+                _currentDistanceUnit.value = unit
+                if (_exerciseID.value > 0) {
+                    getAllTimeInstances(_exerciseID.value)
+                }
+            }
+        }
+        viewModelScope.launch {
+            settingsManager.weightUnit.collect { unit ->
+                _currentWeightUnit.value = unit
+                if (_exerciseID.value > 0 && _exerciseType.value == WorkoutType.Strength) {
+                    getAllTimeInstances(_exerciseID.value)
+                }
+            }
+        }
+    }
 
     fun getExerciseIDFromKind(exerciseKind: String) {
         viewModelScope.launch {
@@ -94,10 +122,12 @@ class AnalyticsViewModel @Inject constructor(
                 WorkoutType.Strength -> _strengthChartData.value = computeStrengthStatistics(allInstances)
                 null -> {}
             }
+            calculateKeyMetrics(exerciseID)
         }
     }
 
     private fun computeCardioStatistics(allInstances: List<ExerciseInstanceWithDetails>): List<CardioChartData> {
+        val isImperial = _currentDistanceUnit.value == "imperial"
         return allInstances.map { instance ->
             val dateMillis = instance.exerciseInstance?.date ?: 0L
             val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
@@ -111,35 +141,37 @@ class AnalyticsViewModel @Inject constructor(
                 totalTimeSeconds += (set.time ?: 0)
             }
 
-            // Konwersja na kilometr i godziny
-            val totalDistanceKm = totalDistanceMeters / 1000.0
+            val totalDistanceConverted = if (isImperial) totalDistanceMeters * 0.000621371 else totalDistanceMeters / 1000.0
             val totalTimeHours = totalTimeSeconds / 3600.0
-            val velocityKmH = if (totalTimeHours > 0) totalDistanceKm / totalTimeHours else 0.0
+            val velocityConverted = if (totalTimeHours > 0) totalDistanceConverted / totalTimeHours else 0.0
 
-            CardioChartData(date, totalDistanceKm, totalTimeHours, velocityKmH)
+            CardioChartData(date, totalDistanceConverted, totalTimeHours, velocityConverted)
         }
     }
 
     private fun computeStrengthStatistics(allInstances: List<ExerciseInstanceWithDetails>): List<StrengthChartData> {
+        val isImperial = _currentWeightUnit.value == "imperial"
         return allInstances.map { instance ->
             val dateMillis = instance.exerciseInstance?.date ?: 0L
             val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
             val date = formatter.format(dateTime)
 
             var totalReps = 0
-            var totalLoad = 0.0
+            var totalLoadKg = 0.0
             var trainingVolume = 0.0
             var estimated1RM = 0.0
 
             instance.seriesList?.forEach { set ->
                 val reps = set.reps ?: 0
-                val load = set.load ?: 0.0
+                val loadKg = set.load ?: 0.0
                 totalReps += reps
-                totalLoad += load
-                trainingVolume += reps * load
+                totalLoadKg += loadKg
+
+                val currentLoadConverted = if (isImperial) loadKg * 2.20462 else loadKg
+                trainingVolume += reps * currentLoadConverted
 
                 if (reps > 0) {
-                    val oneRM = load * (1 + reps / 30.0)
+                    val oneRM = currentLoadConverted * (1 + reps / 30.0)
                     if (oneRM > estimated1RM) estimated1RM = oneRM
                 }
             }
@@ -147,7 +179,9 @@ class AnalyticsViewModel @Inject constructor(
             StrengthChartData(
                 date = date,
                 reps = totalReps,
-                load = if (instance.seriesList.isNullOrEmpty()) 0.0 else totalLoad / instance.seriesList.size,
+                load = if (instance.seriesList.isNullOrEmpty()) 0.0 else (totalLoadKg / instance.seriesList.size).let {
+                    if (isImperial) it * 2.20462 else it
+                },
                 volume = trainingVolume,
                 estimated1RM = estimated1RM
             )
@@ -159,6 +193,9 @@ class AnalyticsViewModel @Inject constructor(
             val allInstances = exerciseInstanceRepository.getExerciseInstanceWithDetailsByExerciseId(exerciseID)
             val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
             val metrics = mutableMapOf<String, Any>()
+
+            val isDistanceImperial = _currentDistanceUnit.value == "imperial"
+            val isWeightImperial = _currentWeightUnit.value == "imperial"
 
             when (exerciseType) {
                 WorkoutType.Cardio -> {
@@ -185,14 +222,20 @@ class AnalyticsViewModel @Inject constructor(
                         }
                     }
 
-                    // Konwersja na kilometry, godziny i km/h
-                    metrics["Całkowity dystans (km)"] = String.format("%.2f", totalDistanceMeters / 1000.0)
-                    metrics["Całkowity czas (h)"] = String.format("%.2f", totalTimeSeconds / 3600.0)
-                    metrics["Maks. dystans (km)"] = String.format("%.2f", maxDistanceMeters / 1000.0)
-                    metrics["Maks. czas (h)"] = String.format("%.2f", maxTimeSeconds / 3600.0)
+                    val totalDistanceConverted = if (isDistanceImperial) totalDistanceMeters * 0.000621371 else totalDistanceMeters / 1000.0
+                    val maxDistanceConverted = if (isDistanceImperial) maxDistanceMeters * 0.000621371 else maxDistanceMeters / 1000.0
+                    val totalTimeHours = totalTimeSeconds / 3600.0
+                    val maxTimeHours = maxTimeSeconds / 3600.0
+                    val avgVelocityConverted = if (isDistanceImperial) (totalVelocityMps / sessionCount) * 2.23694 else (totalVelocityMps / sessionCount) * 3.6
+                    val maxVelocityConverted = if (isDistanceImperial) maxVelocityMps * 2.23694 else maxVelocityMps * 3.6
+
+                    metrics["Całkowity dystans (${if (isDistanceImperial) "mi" else "km"})"] = String.format("%.2f", totalDistanceConverted)
+                    metrics["Całkowity czas (h)"] = String.format("%.2f", totalTimeHours)
+                    metrics["Maks. dystans (${if (isDistanceImperial) "mi" else "km"})"] = String.format("%.2f", maxDistanceConverted)
+                    metrics["Maks. czas (h)"] = String.format("%.2f", maxTimeHours)
                     metrics["Liczba sesji"] = sessionCount
-                    metrics["Średnia prędkość (km/h)"] = String.format("%.2f", if (sessionCount > 0) (totalVelocityMps / sessionCount) * 3.6 else 0.0) // m/s na km/h
-                    metrics["Maks. prędkość (km/h)"] = String.format("%.2f", maxVelocityMps * 3.6) // m/s na km/h
+                    metrics["Średnia prędkość (${if (isDistanceImperial) "mi/h" else "km/h"})"] = String.format("%.2f", avgVelocityConverted)
+                    metrics["Maks. prędkość (${if (isDistanceImperial) "mi/h" else "km/h"})"] = String.format("%.2f", maxVelocityConverted)
                 }
 
                 WorkoutType.Strength -> {
@@ -205,11 +248,14 @@ class AnalyticsViewModel @Inject constructor(
                     allInstances.forEach { instance ->
                         instance.seriesList?.forEach { set ->
                             val reps = set.reps ?: 0
-                            val load = set.load ?: 0.0
+                            val loadKg = set.load ?: 0.0
                             totalReps += reps
-                            trainingVolume += reps * load
+
+                            val currentLoadConverted = if (isWeightImperial) loadKg * 2.20462 else loadKg
+                            trainingVolume += reps * currentLoadConverted
+
                             if (reps > 0) {
-                                val oneRM = load * (1 + reps / 30.0)
+                                val oneRM = currentLoadConverted * (1 + reps / 30.0)
                                 if (oneRM > estimated1RM) estimated1RM = oneRM
                             }
                             if (reps > maxReps) maxReps = reps
@@ -217,8 +263,8 @@ class AnalyticsViewModel @Inject constructor(
                     }
 
                     metrics["Całkowite powtórzenia"] = totalReps
-                    metrics["Objętość treningu"] = String.format("%.1f", trainingVolume)
-                    metrics["Szacowany 1RM"] = String.format("%.1f", estimated1RM)
+                    metrics["Objętość treningu (${if (isWeightImperial) "lb" else "kg"})"] = String.format("%.1f", trainingVolume)
+                    metrics["Szacowany 1RM (${if (isWeightImperial) "lb" else "kg"})"] = String.format("%.1f", estimated1RM)
                     metrics["Maks. liczba powtórzeń"] = maxReps
                     metrics["Liczba sesji"] = sessionCount
                 }
