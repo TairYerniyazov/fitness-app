@@ -1,14 +1,11 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.Exercise
-import uj.lab.fitnessapp.data.model.ExerciseInstance
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
@@ -93,10 +90,10 @@ class AnalyticsViewModel @Inject constructor(
 
             when (exerciseType) {
                 WorkoutType.Cardio -> {
-                    var totalDistance = 0
+                    var totalDistance = 0.0
                     var totalTime = 0
                     instance.seriesList?.forEach { set ->
-                        totalDistance += (set.distance ?: 0)
+                        totalDistance += (set.distance ?: 0.0)
                         totalTime += (set.time ?: 0)
                     }
                     result.add(Pair(date, totalDistance))
@@ -127,14 +124,14 @@ class AnalyticsViewModel @Inject constructor(
             for (instance in allInstances) {
                 when (exerciseType) {
                     WorkoutType.Cardio -> {
-                        var totalDistance = 0
+                        var totalDistance = 0.0
                         var totalTime = 0
-                        var maxDistance = 0
+                        var maxDistance = 0.0
                         var maxTime = 0
                         val sessionCount = allInstances.size
 
                         instance.seriesList?.forEach { set ->
-                            val dist = set.distance ?: 0
+                            val dist = set.distance ?: 0.0
                             val time = set.time ?: 0
                             totalDistance += dist
                             totalTime += time
