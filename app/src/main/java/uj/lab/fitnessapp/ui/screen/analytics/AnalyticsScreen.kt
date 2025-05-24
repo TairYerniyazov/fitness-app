@@ -400,7 +400,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp dystansu",
-                    yAxisLabel = "Dystans (m)"
+                    yAxisLabel = "Dystans (km)"
                 )
             }
         }
@@ -423,7 +423,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp czasu",
-                    yAxisLabel = "Czas (s)"
+                    yAxisLabel = "Czas (h)"
                 )
             }
         }
@@ -446,7 +446,7 @@ private fun ChartSelectionAndDisplay(
                     dates = dates,
                     modifier = modifier,
                     chartTitle = "Postęp prędkości",
-                    yAxisLabel = "Prędkość (m/s)"
+                    yAxisLabel = "Prędkość (km/h)"
                 )
             }
         }

@@ -18,8 +18,8 @@ import javax.inject.Inject
 
 data class CardioChartData(
     val date: String,
-    val distance: Double,
-    val time: Int,
+    val distance: Double, // Zmieniono na Double, żeby obsłużyć ułamki po konwersji
+    val time: Double,    // Zmieniono na Double, żeby obsłużyć ułamki po konwersji
     val velocity: Double
 )
 
@@ -103,17 +103,20 @@ class AnalyticsViewModel @Inject constructor(
             val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
             val date = formatter.format(dateTime)
 
-            var totalDistance = 0.0
-            var totalTime = 0
+            var totalDistanceMeters = 0.0
+            var totalTimeSeconds = 0
 
             instance.seriesList?.forEach { set ->
-                totalDistance += (set.distance ?: 0.0)
-                totalTime += (set.time ?: 0)
+                totalDistanceMeters += (set.distance ?: 0).toDouble()
+                totalTimeSeconds += (set.time ?: 0)
             }
 
-            val velocity = if (totalTime > 0) totalDistance.toDouble() / totalTime else 0.0
+            // Konwersja na kilometr i godziny
+            val totalDistanceKm = totalDistanceMeters / 1000.0
+            val totalTimeHours = totalTimeSeconds / 3600.0
+            val velocityKmH = if (totalTimeHours > 0) totalDistanceKm / totalTimeHours else 0.0
 
-            CardioChartData(date, totalDistance, totalTime, velocity)
+            CardioChartData(date, totalDistanceKm, totalTimeHours, velocityKmH)
         }
     }
 
@@ -159,36 +162,37 @@ class AnalyticsViewModel @Inject constructor(
 
             when (exerciseType) {
                 WorkoutType.Cardio -> {
-                    var totalDistance = 0.0
-                    var totalTime = 0
-                    var maxDistance = 0.0
-                    var maxTime = 0
-                    var totalVelocity = 0.0
-                    var maxVelocity = 0.0
+                    var totalDistanceMeters = 0.0
+                    var totalTimeSeconds = 0
+                    var maxDistanceMeters = 0.0
+                    var maxTimeSeconds = 0
+                    var totalVelocityMps = 0.0
+                    var maxVelocityMps = 0.0
                     val sessionCount = allInstances.size
 
                     allInstances.forEach { instance ->
                         instance.seriesList?.forEach { set ->
-                            val dist = set.distance ?: 0.0
+                            val dist = (set.distance ?: 0).toDouble()
                             val time = set.time ?: 0
-                            totalDistance += dist
-                            totalTime += time
-                            if (dist > maxDistance) maxDistance = dist
-                            if (time > maxTime) maxTime = time
+                            totalDistanceMeters += dist
+                            totalTimeSeconds += time
+                            if (dist > maxDistanceMeters) maxDistanceMeters = dist
+                            if (time > maxTimeSeconds) maxTimeSeconds = time
 
-                            val currentVelocity = if (time > 0) dist.toDouble() / time else 0.0
-                            totalVelocity += currentVelocity
-                            if (currentVelocity > maxVelocity) maxVelocity = currentVelocity
+                            val currentVelocity = if (time > 0) dist / time else 0.0
+                            totalVelocityMps += currentVelocity
+                            if (currentVelocity > maxVelocityMps) maxVelocityMps = currentVelocity
                         }
                     }
 
-                    metrics["Całkowity dystans (m)"] = totalDistance
-                    metrics["Całkowity czas (s)"] = totalTime
-                    metrics["Maks. dystans (m)"] = maxDistance
-                    metrics["Maks. czas (s)"] = maxTime
+                    // Konwersja na kilometry, godziny i km/h
+                    metrics["Całkowity dystans (km)"] = String.format("%.2f", totalDistanceMeters / 1000.0)
+                    metrics["Całkowity czas (h)"] = String.format("%.2f", totalTimeSeconds / 3600.0)
+                    metrics["Maks. dystans (km)"] = String.format("%.2f", maxDistanceMeters / 1000.0)
+                    metrics["Maks. czas (h)"] = String.format("%.2f", maxTimeSeconds / 3600.0)
                     metrics["Liczba sesji"] = sessionCount
-                    metrics["Średnia prędkość (m/s)"] = String.format("%.2f", if (sessionCount > 0) totalVelocity / sessionCount else 0.0)
-                    metrics["Maks. prędkość (m/s)"] = String.format("%.2f", maxVelocity)
+                    metrics["Średnia prędkość (km/h)"] = String.format("%.2f", if (sessionCount > 0) (totalVelocityMps / sessionCount) * 3.6 else 0.0) // m/s na km/h
+                    metrics["Maks. prędkość (km/h)"] = String.format("%.2f", maxVelocityMps * 3.6) // m/s na km/h
                 }
 
                 WorkoutType.Strength -> {
@@ -218,7 +222,6 @@ class AnalyticsViewModel @Inject constructor(
                     metrics["Maks. liczba powtórzeń"] = maxReps
                     metrics["Liczba sesji"] = sessionCount
                 }
-
                 null -> {}
             }
 
