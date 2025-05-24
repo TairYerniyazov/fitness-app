@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 data class CardioChartData(
     val date: String,
-    val distance: Int,
+    val distance: Double,
     val time: Int,
     val velocity: Double
 )
@@ -103,11 +103,11 @@ class AnalyticsViewModel @Inject constructor(
             val dateTime = Instant.ofEpochMilli(dateMillis).atZone(ZoneId.systemDefault()).toLocalDate()
             val date = formatter.format(dateTime)
 
-            var totalDistance = 0
+            var totalDistance = 0.0
             var totalTime = 0
 
             instance.seriesList?.forEach { set ->
-                totalDistance += (set.distance ?: 0)
+                totalDistance += (set.distance ?: 0.0)
                 totalTime += (set.time ?: 0)
             }
 
@@ -159,9 +159,9 @@ class AnalyticsViewModel @Inject constructor(
 
             when (exerciseType) {
                 WorkoutType.Cardio -> {
-                    var totalDistance = 0
+                    var totalDistance = 0.0
                     var totalTime = 0
-                    var maxDistance = 0
+                    var maxDistance = 0.0
                     var maxTime = 0
                     var totalVelocity = 0.0
                     var maxVelocity = 0.0
@@ -169,7 +169,7 @@ class AnalyticsViewModel @Inject constructor(
 
                     allInstances.forEach { instance ->
                         instance.seriesList?.forEach { set ->
-                            val dist = set.distance ?: 0
+                            val dist = set.distance ?: 0.0
                             val time = set.time ?: 0
                             totalDistance += dist
                             totalTime += time
