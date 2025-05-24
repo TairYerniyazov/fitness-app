@@ -194,7 +194,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                             .weight(1f)
                             .height(56.dp)
                             .padding(end = 8.dp),
-                        enabled = !state.isSaving
+                        enabled = !state.isSaving && state.workoutSets.isNotEmpty()
                     ) {
                         Text(
                             text = "Zapisz",
@@ -263,7 +263,7 @@ fun CardioWorkoutSetCreator(
             onValueChange = {
                 distance = it
             },
-            isError = distance.toIntOrNull() == null || distance.toInt() < 0,
+            isError = distance.toDoubleOrNull() == null || distance.toDouble() < 0,
             label = { Text("Distance") },
             suffix = { Text(distanceUnit) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -281,7 +281,7 @@ fun CardioWorkoutSetCreator(
                             0,
                             0,
                             time = state.value.toDuration().toInt(DurationUnit.SECONDS),
-                            distance = distance.toInt()
+                            distance = distance.toDouble()
                         )
                     )
                 },
@@ -299,9 +299,9 @@ fun CardioWorkoutSetCreator(
                 enabled = state.value.hour.toIntOrNull() != null &&
                         state.value.minute.toIntOrNull() != null &&
                         state.value.second.toIntOrNull() != null &&
-                        distance.toIntOrNull() != null &&
+                        distance.toDoubleOrNull() != null &&
                         state.value.toDuration() > 0.toDuration(DurationUnit.SECONDS) &&
-                        distance.toInt() > 0
+                        distance.toDouble() > 0
             ) {
                 Text(
                     text = "Dodaj",

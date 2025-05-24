@@ -22,20 +22,19 @@ object UnitConverter {
         }
     }
 
-    fun displayDistance(meters: Int?, isImperial: Boolean): Pair<Double, String> {
-        val value = meters ?: 0
+    fun displayDistance(distance: Double, isImperial: Boolean): Pair<Double, String> {
         return if (isImperial) {
-            Pair(value * METER_TO_MILES, "mi")
+            Pair(distance * METER_TO_MILES, "mi")
         } else {
-            Pair(value * METER_TO_KM, "km")
+            Pair(distance * METER_TO_KM, "km")
         }
     }
 
-    fun storeDistance(displayValue: Double, isImperial: Boolean): Int {
+    fun storeDistance(displayValue: Double, isImperial: Boolean): Double {
         return if (isImperial) {
-            (displayValue / METER_TO_MILES).toInt()
+            (displayValue / METER_TO_MILES)
         } else {
-            (displayValue / METER_TO_KM).toInt()
+            (displayValue / METER_TO_KM)
         }
     }
 }
