@@ -36,7 +36,7 @@ import kotlin.time.Duration
 @Composable
 fun CardioWorkoutSetEntry(
     setIndex: Int,
-    distance: Int,
+    distance: Double,
     time: Duration,
     onDelete: (() -> Unit)? = null,
     viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()

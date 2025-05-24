@@ -23,6 +23,6 @@ data class WorkoutSet(
     @ColumnInfo(name = "reps") val reps: Int? = null,
     @ColumnInfo(name = "load") val load: Double? = null, //kg
     @ColumnInfo(name = "time") val time: Int? = null, //HH:MM:SS
-    @ColumnInfo(name = "distance") val distance: Int? = null //m
+    @ColumnInfo(name = "distance") val distance: Double? = null //m
 
 )
