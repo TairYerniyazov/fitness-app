@@ -31,10 +31,10 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import java.text.DecimalFormat
 import java.time.LocalDate
-import java.time.ZoneId // Dodaj import
+import java.time.ZoneId
 import androidx.compose.runtime.*
 import java.time.format.DateTimeFormatter
-import java.util.Locale // Dodaj import
+import java.util.Locale
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,11 +52,14 @@ import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.DateRangeSelector
-private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto() // Pozwól Vico automatycznie określić zakres
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import androidx.compose.ui.unit.sp
+
+private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
 private val YDecimalFormat = DecimalFormat("#")
 private val StartAxisValueFormatter = CartesianValueFormatter.decimal(YDecimalFormat)
 private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter.default(YDecimalFormat)
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,7 +84,6 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
         if (exerciseID > 0) {
             val startDate = LocalDate.now().minusDays(7)
             viewModel.getInstancesInTimeRange(exerciseID, startDate)
-//            viewModel.getAllTimeInstances(exerciseID)
         }
     }
 
@@ -143,7 +145,8 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
             Text(
                 text = exerciseName.uppercase(),
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp),
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             if (metrics.isNotEmpty()) {
@@ -151,7 +154,8 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                     Text(
                         text = "$label: $value",
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(bottom = 4.dp)
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -195,7 +199,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                         containerColor = if (selectedTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                 ) {
-                    Text("Wykres 1")
+                    Text("Wykres 1", color = MaterialTheme.colorScheme.onPrimary)
                 }
                 Button(
                     onClick = { selectedTab = 2 },
@@ -203,7 +207,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                         containerColor = if (selectedTab == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                 ) {
-                    Text("Wykres 2")
+                    Text("Wykres 2", color = MaterialTheme.colorScheme.onPrimary)
                 }
                 Button(
                     onClick = { selectedTab = 3 },
@@ -211,7 +215,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                         containerColor = if (selectedTab == 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                 ) {
-                    Text("Wykres 3")
+                    Text("Wykres 3", color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
 
@@ -220,14 +224,13 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
             exerciseType?.let { type ->
                 ChartSelectionAndDisplay(
                     selectedTab = selectedTab,
-                    exerciseType = type, // Tutaj 'type' jest już nie-null WorkoutType
+                    exerciseType = type,
                     strengthData = strengthData,
                     cardioData = cardioData,
                     modifier = modifier
                 )
             } ?: run {
-                // Opcjonalnie: Coś do wyświetlenia, gdy exerciseType jest null (np. Loading, Placeholder)
-                Text("Ładowanie danych...", modifier = Modifier.padding(16.dp))
+                Text("Ładowanie danych...", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground)
             }
         }
     }
@@ -238,10 +241,38 @@ private fun JetpackComposeBasicLineChart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
     bottomAxisValueFormatter: CartesianValueFormatter,
-    startAxisTitle: String? = null, // Nowy argument na tytuł osi Y
-    bottomAxisTitle: String? = null, // Nowy argument na tytuł osi X
+    startAxisTitle: String? = null,
+    bottomAxisTitle: String? = null,
 ) {
     val lineColor = Color(0xffa485e0)
+    val axisTextColor = MaterialTheme.colorScheme.onBackground
+    val axisLineColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val axisGuidelineColor = MaterialTheme.colorScheme.outlineVariant
+
+    val AXIS_LABEL_SIZE = 12f
+    val AXIS_LINE_WIDTH = 1f
+    val AXIS_GUIDELINE_WIDTH = 1f
+
+    val rememberAxisTextComponent = rememberTextComponent(
+        color = axisTextColor,
+        textSize = AXIS_LABEL_SIZE.sp,
+    )
+
+    val rememberAxisTitleComponent = rememberTextComponent(
+        color = axisTextColor,
+        textSize = AXIS_LABEL_SIZE.sp,
+    )
+
+    val rememberAxisLineComponent = rememberLineComponent(
+        fill = fill(axisLineColor),
+        thickness = AXIS_LINE_WIDTH.dp,
+    )
+
+    val rememberGuideline = rememberLineComponent(
+        fill = fill(axisGuidelineColor),
+        thickness = AXIS_GUIDELINE_WIDTH.dp,
+    )
+
     CartesianChartHost(
         rememberCartesianChart(
             rememberLineCartesianLayer(
@@ -261,14 +292,21 @@ private fun JetpackComposeBasicLineChart(
                     ),
                 rangeProvider = RangeProvider,
             ),
-            // Użycie nowych argumentów dla tytułów osi
             startAxis = VerticalAxis.rememberStart(
                 valueFormatter = StartAxisValueFormatter,
-                title = startAxisTitle // Przypisanie tytułu osi Y
+                title = startAxisTitle,
+                label = rememberAxisTextComponent,
+                titleComponent = rememberAxisTitleComponent,
+                line = rememberAxisLineComponent,
+                guideline = rememberGuideline,
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
                 valueFormatter = bottomAxisValueFormatter,
-                title = bottomAxisTitle // Przypisanie tytułu osi X
+                title = bottomAxisTitle,
+                label = rememberAxisTextComponent,
+                titleComponent = rememberAxisTitleComponent,
+                line = rememberAxisLineComponent,
+                guideline = rememberGuideline,
             ),
             marker = rememberMarker(MarkerValueFormatter),
         ),
@@ -283,9 +321,9 @@ private fun ChartContent(
     yValues: List<Number>,
     dates: List<String>,
     modifier: Modifier = Modifier,
-    chartTitle: String, // Nowy argument na tytuł wykresu
-    yAxisLabel: String, // Nowy argument na etykietę osi Y
-    xAxisLabel: String = "Data", // Domyślna etykieta osi X to "Data"
+    chartTitle: String,
+    yAxisLabel: String,
+    xAxisLabel: String = "Data",
 ) {
     val inputDateFormatter = remember { DateTimeFormatter.ofPattern("dd-MM-yyyy") }
     val outputDateFormatter = remember { DateTimeFormatter.ofPattern("dd-MM", Locale.getDefault()) }
@@ -317,23 +355,22 @@ private fun ChartContent(
         }
     }
 
-    Column { // Dodajemy Column, aby umieścić tytuł nad wykresem
+    Column {
         Text(
             text = chartTitle,
             style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground, // Kolor tekstu dostosowany do motywu
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         JetpackComposeBasicLineChart(
             modelProducer,
             modifier,
             bottomAxisValueFormatter,
-            startAxisTitle = yAxisLabel, // Przekazanie etykiety osi Y
-            bottomAxisTitle = xAxisLabel // Przekazanie etykiety osi X
+            startAxisTitle = yAxisLabel,
+            bottomAxisTitle = xAxisLabel
         )
     }
 }
-
 
 @Composable
 private fun ChartSelectionAndDisplay(
@@ -344,7 +381,7 @@ private fun ChartSelectionAndDisplay(
     modifier: Modifier = Modifier
 ) {
     when (selectedTab) {
-        1 -> { // Wykres 1
+        1 -> {
             if (exerciseType == WorkoutType.Strength) {
                 val yValues = strengthData.map { it.reps }
                 val dates = strengthData.map { it.date }
@@ -367,7 +404,7 @@ private fun ChartSelectionAndDisplay(
                 )
             }
         }
-        2 -> { // Wykres 2
+        2 -> {
             if (exerciseType == WorkoutType.Strength) {
                 val yValues = strengthData.map { it.load }
                 val dates = strengthData.map { it.date }
@@ -390,7 +427,7 @@ private fun ChartSelectionAndDisplay(
                 )
             }
         }
-        3 -> { // Wykres 3
+        3 -> {
             if (exerciseType == WorkoutType.Strength) {
                 val yValues = strengthData.map { it.volume }
                 val dates = strengthData.map { it.date }

@@ -1,13 +1,11 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
@@ -39,7 +37,6 @@ class AnalyticsViewModel @Inject constructor(
     private val exerciseInstanceRepository: ExerciseInstanceRepository
 ) : ViewModel() {
 
-    // Zmieniamy na bardziej specyficzne typy danych
     private val _cardioChartData = MutableStateFlow<List<CardioChartData>>(emptyList())
     val cardioChartData: StateFlow<List<CardioChartData>> = _cardioChartData
 
@@ -114,7 +111,6 @@ class AnalyticsViewModel @Inject constructor(
                 totalTime += (set.time ?: 0)
             }
 
-            // Obliczanie prędkości (dystans w metrach, czas w sekundach)
             val velocity = if (totalTime > 0) totalDistance.toDouble() / totalTime else 0.0
 
             CardioChartData(date, totalDistance, totalTime, velocity)
@@ -167,8 +163,8 @@ class AnalyticsViewModel @Inject constructor(
                     var totalTime = 0
                     var maxDistance = 0
                     var maxTime = 0
-                    var totalVelocity = 0.0 // Do obliczania średniej prędkości
-                    var maxVelocity = 0.0 // Do obliczania maksymalnej prędkości
+                    var totalVelocity = 0.0
+                    var maxVelocity = 0.0
                     val sessionCount = allInstances.size
 
                     allInstances.forEach { instance ->
@@ -191,7 +187,7 @@ class AnalyticsViewModel @Inject constructor(
                     metrics["Maks. dystans (m)"] = maxDistance
                     metrics["Maks. czas (s)"] = maxTime
                     metrics["Liczba sesji"] = sessionCount
-                    metrics["Średnia prędkość (m/s)"] = String.format("%.2f", if (sessionCount > 0) totalVelocity / sessionCount else 0.0) // Średnia prędkość na sesję
+                    metrics["Średnia prędkość (m/s)"] = String.format("%.2f", if (sessionCount > 0) totalVelocity / sessionCount else 0.0)
                     metrics["Maks. prędkość (m/s)"] = String.format("%.2f", maxVelocity)
                 }
 
