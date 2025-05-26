@@ -59,7 +59,7 @@ fun ExerciseInstanceEntry(
                         Icon(
                             painter = painterResource(id = R.drawable.edit_24px),
                             contentDescription = "Edit exercise",
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -69,7 +69,7 @@ fun ExerciseInstanceEntry(
                                 .size(32.dp),
                             painter = painterResource(R.drawable.baseline_auto_graph_24),
                             contentDescription = "Go to Analytics",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     IconButton(onClick = onDelete) {
@@ -89,7 +89,7 @@ fun ExerciseInstanceEntry(
                                     R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32
                             ),
                             contentDescription = "Add to favorites",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
