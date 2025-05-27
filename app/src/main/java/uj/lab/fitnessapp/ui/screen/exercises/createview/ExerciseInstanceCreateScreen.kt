@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -81,17 +82,16 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
         topBar = {
             CenterAlignedTopAppBar(title = {
                 Surface(
-                    modifier = Modifier
-                        .fillMaxWidth(),
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(4.dp),
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = exerciseKind,
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -188,7 +188,12 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                 navController.popBackStack(Screen.Home.route, false)
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 1.0f),
+                            disabledContentColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 1.0f)
+                        ),
                         shape = MaterialTheme.shapes.small,
                         modifier = Modifier
                             .weight(1f)
