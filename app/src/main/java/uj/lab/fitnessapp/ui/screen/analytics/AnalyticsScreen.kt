@@ -1,6 +1,7 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
+import uj.lab.fitnessapp.ui.component.DateRangePickerModal
 
 
 private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
@@ -83,6 +85,9 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
     val currentWeightUnit by viewModel.currentWeightUnit.collectAsState()
 
     var selectedChip by remember { mutableStateOf("tydzień") }
+    var selectedDateRange by remember { mutableStateOf<Pair<Long?, Long?>>(null to null) }
+//    val dateRangePickerState = rememberDateRangePickerState()
+
 
     LaunchedEffect(exerciseKind) {
         viewModel.getExerciseIDFromKind(exerciseKind)
@@ -192,6 +197,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
 
             DateRangeSelector(
                 selected = selectedChip,
+                onDateRangeChange = { selectedDateRange = it },
                 onSelectedChange = {
                     selectedChip = it
                     when(it){
@@ -213,6 +219,14 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                         }
                         "cały okres" -> {
                             viewModel.getAllTimeInstances(exerciseID)
+                        }
+                        "własny zakres" ->{
+                            val first = selectedDateRange.first
+                            val second = selectedDateRange.second
+
+                            if(first != null && second != null){
+                                viewModel.getInstancesInTimeRangeLong(exerciseID, first, second)
+                            }
                         }
                     }
                 }
@@ -272,7 +286,9 @@ private fun MetricCard(label: String, value: String) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(12.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
