@@ -73,5 +73,18 @@ fun Navigation(navController: NavHostController) {
             val selectedFilters = selectedFiltersString.split(",")
             ExerciseKindCreateScreen(navController, selectedFilters)
         }
+        composable(
+            route = Screen.EditExerciseKind.route,
+            arguments = listOf(
+                navArgument("kindId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val kindId = backStackEntry.arguments?.getInt("kindId")
+            ExerciseKindCreateScreen(
+                navController = navController,
+                selectedFilters = emptyList(),
+                kindId = kindId
+            )
+        }
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.R
+import uj.lab.fitnessapp.data.model.ExerciseInstance
 import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
@@ -51,6 +52,8 @@ fun HomeScreen(navController: NavController) {
     val selectedDate by viewModel.date.collectAsState()
 
     val exerciseInstanceListState = rememberLazyListState()
+
+    var exerciseToDelete by remember { mutableStateOf<ExerciseInstance?>(null) }
 
     LaunchedEffect(selectedDate) {
         selectedDate.let{
@@ -88,6 +91,26 @@ fun HomeScreen(navController: NavController) {
             )
         },
         content = { padding ->
+            exerciseToDelete?.let {
+                AlertDialog(
+                    onDismissRequest = { exerciseToDelete = null },
+                    title = { Text("Potwierdzenie usunięcia") },
+                    text = { Text("Czy na pewno chcesz usunąć tę instancję ćwiczenia?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            viewModel.deleteExerciseInstance(it.id)
+                            exerciseToDelete = null
+                        }) {
+                            Text("Usuń", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { exerciseToDelete = null }) {
+                            Text("Usuń", color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                )
+            }
             LazyColumn(
                 Modifier.padding(padding),
                 state = exerciseInstanceListState,
@@ -107,9 +130,8 @@ fun HomeScreen(navController: NavController) {
                         },
                         onAnalyticsClick = { clickedExercise ->
                             navController.navigate(Screen.Analytics.withArgs(clickedExercise.exerciseName)) },
-                        //TODO: trzeba zrobić jakiś popup, który ostrzega przed usuwaniem
                         onDelete = {
-                            viewModel.deleteExerciseInstance(instance.exerciseInstance!!.id)
+                            exerciseToDelete = instance.exerciseInstance
                         },
                         onEditClick = { clickedExercise ->
                             navController.navigate(

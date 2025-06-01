@@ -3,6 +3,8 @@ package uj.lab.fitnessapp.ui.component
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -28,12 +30,13 @@ import uj.lab.fitnessapp.ui.theme.*
 fun ExerciseKindListEntry(
     exercise: Exercise,
     onClick: () -> Unit,
-    onFavoriteClick: (Exercise) -> Unit
+    onFavoriteClick: (Exercise) -> Unit,
+    onEditClick: (Exercise) -> Unit,
+    onDeleteClick: (Exercise) -> Unit,
 ) {
-
     val bgColor = if (exercise.workoutType == WorkoutType.Strength)
         MaterialTheme.colorScheme.primaryContainer
-        else MaterialTheme.colorScheme.secondaryContainer
+    else MaterialTheme.colorScheme.secondaryContainer
     val textColor = if (exercise.workoutType == WorkoutType.Strength)
         MaterialTheme.colorScheme.onPrimaryContainer
     else MaterialTheme.colorScheme.onSecondaryContainer
@@ -67,17 +70,36 @@ fun ExerciseKindListEntry(
             IconButton(onClick = { onFavoriteClick(exercise) }) {
                 Icon(
                     modifier = Modifier
-                        .size(40.dp)
-                    ,
-                    painter = painterResource(id = if (exercise.isFavourite)
-                        R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32),
+                        .size(40.dp),
+                    painter = painterResource(
+                        id = if (exercise.isFavourite)
+                            R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32
+                    ),
                     contentDescription = "Add to favorites",
-                    tint = textColor
+                    tint = textColor,
                 )
             }
+            if (exercise.canModify) {
+                IconButton(onClick = { onEditClick(exercise) }) {
+                    Icon(Icons.Default.Edit,
+                        contentDescription = "Edit Exercise",
+                        modifier = Modifier
+                            .size(40.dp),
+                        tint = textColor,
+                    )
+                }
+                IconButton(onClick = { onDeleteClick(exercise) }) {
+                    Icon(Icons.Default.Delete,
+                        contentDescription = "Delete Exercise",
+                        modifier = Modifier
+                            .size(40.dp),
+                        tint = textColor,
+                    )
+                }
             }
         }
     }
+}
 
 //@Preview(showBackground = true)
 //@Composable

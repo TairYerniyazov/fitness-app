@@ -1,10 +1,13 @@
 package uj.lab.fitnessapp.ui.screen.exercises.createview
 
+import android.R.attr.name
+import androidx.compose.ui.input.key.Key.Companion.F
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.WorkoutType
@@ -33,18 +36,54 @@ class ExerciseKindCreateViewModel @Inject constructor(
         }
     }
 
-    fun setNewExerciseName(it: String) {
-        _uiState.value = _uiState.value.copy(exerciseName = it)
+    fun updateExercise(kindId: Int) {
+        viewModelScope.launch {
+            exerciseRepository.updateExercise(Exercise(
+                id = kindId,
+                exerciseName = _uiState.value.exerciseName,
+                workoutType = _uiState.value.workoutType,
+                canModify = true,
+                isFavourite = _uiState.value.isFavorite
+            ))
+        }
     }
 
-    fun setNewExerciseType(it: WorkoutType) {
-        _uiState.value = _uiState.value.copy(workoutType = it)
+    fun loadExerciseKind(kindId: Int) {
+        viewModelScope.launch {
+            val kind = exerciseRepository.getExerciseById(kindId)
+            _uiState.update {
+                it.copy(
+                    exerciseName = kind.exerciseName,
+                    workoutType = kind.workoutType,
+                    isFavorite = kind.isFavourite
+                )
+            }
+        }
     }
 
-    fun setNewExerciseFavorite(it: Boolean) {
-        _uiState.value = _uiState.value.copy(isFavorite = it)
+    fun setExerciseName(name: String) {
+        _uiState.update {
+            it.copy(
+                exerciseName = name,
+            )
+        }
     }
 
+    fun setExerciseType(ty: WorkoutType) {
+        _uiState.update {
+            it.copy(
+                workoutType = ty,
+            )
+        }
+    }
+
+    fun setExerciseFavorite(isFavorite: Boolean) {
+        _uiState.update {
+            it.copy(
+                isFavorite = isFavorite,
+            )
+        }
+    }
 }
 
 data class ExerciseKindCreateUiState(
