@@ -80,6 +80,18 @@ class ExerciseListViewModel @Inject constructor(
         }
         _selectedFilters.value = currentFilters
     }
+
+    fun deleteExercise(kindId: Int) {
+        viewModelScope.launch {
+            exerciseRepository.deleteExercise(kindId)
+            _uiState.update {
+                it.copy(
+                    allExercises = it.allExercises.filter { exercise -> exercise.id != kindId },
+                    filteredExercises = it.filteredExercises.filter { exercise -> exercise.id != kindId }
+                )
+            }
+        }
+    }
 }
 
 data class ExercisesUiState(
