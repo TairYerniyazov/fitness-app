@@ -154,9 +154,9 @@ fun HomeScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier
-                    .padding(18.dp)
+                    .padding(16.dp)
                     .height(56.dp)
-                    .fillMaxWidth(0.6f)
+                    .fillMaxWidth(0.7f)
             ) {
                 Text(
                     "Dodaj instancję ćwiczenia",
