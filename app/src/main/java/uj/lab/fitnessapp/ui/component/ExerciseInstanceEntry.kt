@@ -49,6 +49,7 @@ fun ExerciseInstanceEntry(
     val height = instance.seriesList!!.size * 122
     val paddings = (instance.seriesList!!.size - 1) * 16
 
+    // Używamy stanu, aby śledzić, czy tekst jest rozwinięty
     var isExpanded by remember { mutableStateOf(false) }
 
     ElevatedCard(modifier = Modifier.padding(12.dp)) {
@@ -64,9 +65,11 @@ fun ExerciseInstanceEntry(
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp,
                     overflow = TextOverflow.Ellipsis,
+                    // Zmieniamy maxLines w zależności od stanu isExpanded
                     maxLines = if (isExpanded) 2 else 1,
                     modifier = Modifier
                         .weight(1f)
+                        // Dodajemy modyfikator clickable, aby reagować na kliknięcie
                         .clickable { isExpanded = !isExpanded },
                     color = MaterialTheme.colorScheme.onSurface
                 )
