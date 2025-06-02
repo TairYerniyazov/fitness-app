@@ -3,6 +3,7 @@ package uj.lab.fitnessapp
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,13 +22,24 @@ import java.time.ZoneId
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
 
         setContent {
             val viewModel = hiltViewModel<MainActivityViewModel>()
             val state by viewModel.uiState.collectAsState()
             val settingsViewModel = hiltViewModel<SettingsViewModel>()
             val isDarkTheme = settingsViewModel.isDarkTheme
+
+            // set status bar style based on theme (dark/light)
+            enableEdgeToEdge(
+                statusBarStyle = if (isDarkTheme) {
+                    SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT
+                    )
+                }
+            )
 
             LaunchedEffect(Unit) {
                 viewModel.populateDatabase()
