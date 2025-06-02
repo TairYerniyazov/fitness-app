@@ -1,6 +1,5 @@
 package uj.lab.fitnessapp.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,16 +17,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uj.lab.fitnessapp.R
@@ -48,32 +41,27 @@ fun ExerciseInstanceEntry(
     val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
     val height = instance.seriesList!!.size * 122
     val paddings = (instance.seriesList!!.size - 1) * 16
-
-    // Używamy stanu, aby śledzić, czy tekst jest rozwinięty
-    var isExpanded by remember { mutableStateOf(false) }
-
     ElevatedCard(modifier = Modifier.padding(12.dp)) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            Row (
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end=16.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top,
             ) {
                 Text(
-                    text = "${index + 1}. $name",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    // Zmieniamy maxLines w zależności od stanu isExpanded
-                    maxLines = if (isExpanded) 2 else 1,
-                    modifier = Modifier
-                        .weight(1f)
-                        // Dodajemy modyfikator clickable, aby reagować na kliknięcie
-                        .clickable { isExpanded = !isExpanded },
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Row(horizontalArrangement = Arrangement.End) {
+                "${index + 1}. $name",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            ) }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(start = 2.dp, end=2.dp, top = 0.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top
+            ) {
+                Row {
                     IconButton(onClick = { onEditClick(instance) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.edit_24px),
@@ -84,8 +72,7 @@ fun ExerciseInstanceEntry(
                     }
                     IconButton(onClick = { onAnalyticsClick(instance.exercise!!) }) {
                         Icon(
-                            modifier = Modifier
-                                .size(32.dp),
+                            modifier = Modifier.size(24.dp),
                             painter = painterResource(R.drawable.baseline_auto_graph_24),
                             contentDescription = "Go to Analytics",
                             tint = MaterialTheme.colorScheme.onSurface
@@ -101,8 +88,7 @@ fun ExerciseInstanceEntry(
                     }
                     IconButton(onClick = { onFavoriteClick(instance.exercise!!) }) {
                         Icon(
-                            modifier = Modifier
-                                .size(32.dp),
+                            modifier = Modifier.size(24.dp),
                             painter = painterResource(
                                 id = if (instance.exercise!!.isFavourite)
                                     R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32
