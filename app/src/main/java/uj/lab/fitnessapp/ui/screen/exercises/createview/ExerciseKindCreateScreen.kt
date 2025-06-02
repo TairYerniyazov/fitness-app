@@ -73,6 +73,9 @@ fun ExerciseKindCreateScreen(
             viewModel.loadExerciseKind(kindId)
             title = "Edytuj ćwiczenie"
         }
+        else {
+            viewModel.setExerciseName("")
+        }
     }
 
     Log.d("DEBUG", "ExerciseKindCreateScreen: $selectedFilters")
@@ -126,7 +129,8 @@ fun ExerciseKindCreateScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     singleLine = true,
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.small,
+                    placeholder = { Text("Wpisz nazwę ćwiczenia") }
                 )
                 // dropdown menu for workout type
                 Text(
