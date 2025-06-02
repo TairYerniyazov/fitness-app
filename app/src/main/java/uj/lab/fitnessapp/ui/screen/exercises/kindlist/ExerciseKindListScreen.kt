@@ -4,18 +4,22 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +37,8 @@ import uj.lab.fitnessapp.ui.component.ExerciseKindListEntry
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.Text
@@ -53,6 +59,7 @@ import uj.lab.fitnessapp.data.model.Exercise
 fun ExerciseKindListScreen(navController: NavController) {
     val viewModel = hiltViewModel<ExerciseListViewModel>()
     val state by viewModel.uiState.collectAsState()
+    val textFieldState = rememberTextFieldState()
     val selectedFilters by viewModel.selectedFilters.collectAsState()
     val filterIconSize = 32.dp
 
@@ -63,109 +70,139 @@ fun ExerciseKindListScreen(navController: NavController) {
     }
 
     Log.d("DEBUG", "ExerciseKindListScreen: ${state.allExercises.size} exercises loaded")
-    Scaffold { padding ->
-        exerciseToDelete?.let {
-            AlertDialog(
-                icon = { Icon(Icons.Default.Warning, contentDescription = "Warning") },
-                title = { Text("Potwierdź usunięcie ćwiczenia") },
-                text = { Text("Czy na pewno chcesz usunąć ćwiczenie ${exerciseToDelete?.exerciseName}?") },
-                onDismissRequest = {
-                    exerciseToDelete = null
+
+    Scaffold (
+        topBar = {
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                inputField = {
+                    SearchBarDefaults.InputField(
+                        query = textFieldState.text.toString(),
+                        onQueryChange = {
+                            textFieldState.edit { replace(0, length, it) }
+                            viewModel.searchForExercises(it)
+                        },
+                        expanded = false,
+                        onExpandedChange = { },
+                        onSearch = { },
+                        placeholder = { },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Szukaj") },
+                    )
                 },
-                confirmButton = {
-                    TextButton(onClick = {
-                        viewModel.deleteExercise(it.id)
-                        exerciseToDelete = null
-                    }) {
-                        Text("Usuń", color = MaterialTheme.colorScheme.error)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { exerciseToDelete = null }) {
-                        Text("Anuluj", color = MaterialTheme.colorScheme.onSurface)
-                    }
-                }
+                expanded = false,
+                onExpandedChange = { },
+                content = { },
             )
-        }
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            LazyColumn(Modifier.weight(1f)) {
-                if (state.filteredExercises.isEmpty()) {
+        },
+        content = { padding ->
+            exerciseToDelete?.let {
+                AlertDialog(
+                    icon = { Icon(Icons.Default.Warning, contentDescription = "Warning") },
+                    title = { Text("Potwierdź usunięcie ćwiczenia") },
+                    text = { Text("Czy na pewno chcesz usunąć ćwiczenie ${exerciseToDelete?.exerciseName}?") },
+                    onDismissRequest = {
+                        exerciseToDelete = null
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            viewModel.deleteExercise(it.id)
+                            exerciseToDelete = null
+                        }) {
+                            Text("Usuń", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { exerciseToDelete = null }) {
+                            Text("Anuluj", color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                )
+            }
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                LazyColumn(Modifier.weight(1f)) {
+                    if (state.filteredExercises.isEmpty()) {
+                        item {
+                            Text(
+                                "Brak ćwiczeń spełniających podane kryteria.",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    } else {
+                        items(state.filteredExercises) { exercise ->
+                            ExerciseKindListEntry(
+                                exercise = exercise,
+                                onClick = {
+                                    navController.navigate(
+                                        Screen.ExerciseInstanceCreate.withArgs(
+                                            exercise.exerciseName
+                                        )
+                                    )
+                                },
+                                onFavoriteClick = { viewModel.toggleFavorite(exercise) },
+                                onEditClick = {
+                                    navController.navigate(Screen.EditExerciseKind.withArgs(exercise.id))
+                                },
+                                onDeleteClick = { exerciseToDelete = it }
+                            )
+                        }
+                    }
                     item {
-                        Text(
-                            "Brak ćwiczeń spełniających podane kryteria.",
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                } else {
-                    items(state.filteredExercises) { exercise ->
-                        ExerciseKindListEntry(
-                            exercise = exercise,
-                            onClick = {
-                                navController.navigate(
-                                    Screen.ExerciseInstanceCreate.withArgs(
-                                        exercise.exerciseName
-                                    )
-                                )
-                            },
-                            onFavoriteClick = { viewModel.toggleFavorite(exercise) },
-                            onEditClick = {
-                                navController.navigate(Screen.EditExerciseKind.withArgs(exercise.id))
-                            },
-                            onDeleteClick = { exerciseToDelete = it }
-                        )
-                    }
-                }
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 18.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                val selectedFiltersDescriptions =
-                                    viewModel.getSelectedFilters().map { it.description }
-                                navController.navigate(
-                                    Screen.ExerciseKindCreate.withArgs(
-                                        selectedFiltersDescriptions
-                                    )
-                                )
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer
-                            ),
-                            shape = MaterialTheme.shapes.small,
-                            modifier = Modifier
-                                .height(56.dp)
-                                .fillMaxWidth(0.6f)
+                                .padding(vertical = 18.dp),
+                            horizontalArrangement = Arrangement.Center
                         ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = "Add",
-                                modifier = Modifier.padding(end = 8.dp),
-                                tint = MaterialTheme.colorScheme.onErrorContainer
-                            )
-                            Text(
-                                text = "Dodaj nowe ćwiczenie",
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
+                            Button(
+                                onClick = {
+                                    val selectedFiltersDescriptions =
+                                        viewModel.getSelectedFilters().map { it.description }
+                                    navController.navigate(
+                                        Screen.ExerciseKindCreate.withArgs(
+                                            selectedFiltersDescriptions
+                                        )
+                                    )
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
+                                ),
+                                shape = MaterialTheme.shapes.small,
+                                modifier = Modifier
+                                    .height(56.dp)
+                                    .fillMaxWidth(0.6f)
+                            ) {
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    tint = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                Text(
+                                    text = "Dodaj nowe ćwiczenie",
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
                         }
                     }
                 }
             }
+        },
+        bottomBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .padding(8.dp)
+                    .padding(androidx.compose.foundation.layout.WindowInsets.navigationBars.asPaddingValues()),
+            horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 MultiChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                     viewModel.filters.forEachIndexed() { index, filter ->
@@ -213,5 +250,5 @@ fun ExerciseKindListScreen(navController: NavController) {
                 }
             }
         }
-    }
+    )
 }
