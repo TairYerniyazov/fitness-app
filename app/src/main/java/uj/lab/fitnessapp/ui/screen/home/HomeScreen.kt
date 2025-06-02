@@ -156,7 +156,7 @@ fun HomeScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(18.dp)
                     .height(56.dp)
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.6f)
             ) {
                 Text(
                     "Dodaj instancję ćwiczenia",
