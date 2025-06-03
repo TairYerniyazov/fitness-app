@@ -1,7 +1,6 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -61,7 +60,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
-import uj.lab.fitnessapp.ui.component.DateRangePickerModal
 import androidx.compose.ui.text.style.TextOverflow
 
 
