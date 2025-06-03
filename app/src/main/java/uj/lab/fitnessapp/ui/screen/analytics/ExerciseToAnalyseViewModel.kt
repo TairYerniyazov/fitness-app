@@ -1,6 +1,5 @@
 package uj.lab.fitnessapp.ui.screen.analytics
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExercisesUiState
 import uj.lab.fitnessapp.data.repository.ExerciseRepository
 import javax.inject.Inject
@@ -30,7 +28,7 @@ class ExerciseToAnalyseViewModel @Inject constructor(
         }
     }
 
-    fun filterExercises(text: String) {
+    fun searchForExercises(text: String) {
         _uiState.value = _uiState.value.copy(
             filteredExercises = _uiState.value.allExercises.filter { exercise ->
                 exercise.exerciseName.lowercase().contains(text.lowercase())

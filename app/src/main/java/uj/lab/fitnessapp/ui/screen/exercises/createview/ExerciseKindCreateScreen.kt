@@ -2,7 +2,6 @@ package uj.lab.fitnessapp.ui.screen.exercises.createview
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +20,8 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,59 +39,76 @@ import uj.lab.fitnessapp.data.model.WorkoutType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List<String>) {
+fun ExerciseKindCreateScreen(
+    navController: NavController,
+    selectedFilters: List<String>,
+    kindId: Int? = null
+) {
     val viewModel = hiltViewModel<ExerciseKindCreateViewModel>()
-    val state = viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
-    var selectedExerciseName by remember { mutableStateOf("") }
-    var selectedWorkoutType by remember { mutableStateOf(WorkoutType.Strength) }
-    var selectedIsFavourite by remember { mutableStateOf(false) }
-
+    var title by remember { mutableStateOf("Dodaj nowe ćwiczenie") }
     var isWorkoutTypeMenuExpanded by remember { mutableStateOf(false) }
     var isFavouriteMenuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedFilters) {
+        if (kindId != null) {
+            return@LaunchedEffect
+        }
         // set selectedWorkoutType to Cardio if in selectedFilters, Strength is default
         if (selectedFilters.contains("Cardio")) {
-            selectedWorkoutType = WorkoutType.Cardio
+            viewModel.setExerciseType(WorkoutType.Cardio)
         }
         // set selectedIsFavourite to Tak if in selectedFilters, Nie is default
         if (selectedFilters.contains("Favorites")) {
-            selectedIsFavourite = true
+            viewModel.setExerciseFavorite(true)
+        }
+    }
+    LaunchedEffect(kindId) {
+        if (kindId != null) {
+            viewModel.loadExerciseKind(kindId)
+            title = "Edytuj ćwiczenie"
+        }
+        else {
+            viewModel.setExerciseName("")
         }
     }
 
     Log.d("DEBUG", "ExerciseKindCreateScreen: $selectedFilters")
 
-    Scaffold (
+    Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CenterAlignedTopAppBar(title = {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "Dodaj nowe ćwiczenie",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
+            CenterAlignedTopAppBar(
+                title = {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
                     }
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.background))
+                },
+                colors = TopAppBarDefaults.topAppBarColors()
+                    .copy(containerColor = MaterialTheme.colorScheme.background)
+            )
         },
         content = { padding ->
-            Column (
+            Column(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
-            ){
+            ) {
                 // text box for exercise name
                 Text(
                     text = "Nazwa ćwiczenia:",
@@ -103,15 +117,26 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     modifier = Modifier.padding(start = 8.dp)
                 )
                 OutlinedTextField(
-                    value = selectedExerciseName,
+                    value = state.exerciseName,
                     onValueChange = {
-                        selectedExerciseName = it
+                        viewModel.setExerciseName(it)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(75.dp),
                     singleLine = true,
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.small,
+                    placeholder = { Text("Wpisz nazwę ćwiczenia") },
+                    isError = state.errorMsg != null,
+                    supportingText = {
+                        if (state.errorMsg != null) {
+                            Text(
+                                state.errorMsg!!,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 )
                 // dropdown menu for workout type
                 Text(
@@ -125,7 +150,7 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     onExpandedChange = { isWorkoutTypeMenuExpanded = !isWorkoutTypeMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = when (selectedWorkoutType) {
+                        value = when (state.workoutType) {
                             WorkoutType.Strength -> "Siłowe"
                             WorkoutType.Cardio -> "Cardio"
                         },
@@ -139,17 +164,17 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                         onDismissRequest = { isWorkoutTypeMenuExpanded = false }
                     ) {
                         fun selectWorkoutTypeAndCloseMenu(workoutType: WorkoutType) {
-                            selectedWorkoutType = workoutType
+                            viewModel.setExerciseType(workoutType)
                             isWorkoutTypeMenuExpanded = false
                         }
                         DropdownMenuItem(
                             text = { Text("Siłowe") },
-                            onClick = {selectWorkoutTypeAndCloseMenu(WorkoutType.Strength)},
+                            onClick = { selectWorkoutTypeAndCloseMenu(WorkoutType.Strength) },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                         DropdownMenuItem(
                             text = { Text("Cardio") },
-                            onClick = {selectWorkoutTypeAndCloseMenu(WorkoutType.Cardio)},
+                            onClick = { selectWorkoutTypeAndCloseMenu(WorkoutType.Cardio) },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                     }
@@ -166,7 +191,7 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                     onExpandedChange = { isFavouriteMenuExpanded = !isFavouriteMenuExpanded }
                 ) {
                     OutlinedTextField(
-                        value = when (selectedIsFavourite) {
+                        value = when (state.isFavorite) {
                             true -> "Tak"
                             false -> "Nie"
                         },
@@ -180,17 +205,17 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
                         onDismissRequest = { isFavouriteMenuExpanded = false }
                     ) {
                         fun selectFavouriteOptionAndCloseMenu(isFavourite: Boolean) {
-                            selectedIsFavourite = isFavourite
+                            viewModel.setExerciseFavorite(isFavourite)
                             isFavouriteMenuExpanded = false
                         }
                         DropdownMenuItem(
                             text = { Text("Nie") },
-                            onClick = {selectFavouriteOptionAndCloseMenu(false)},
+                            onClick = { selectFavouriteOptionAndCloseMenu(false) },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                         DropdownMenuItem(
                             text = { Text("Tak") },
-                            onClick = {selectFavouriteOptionAndCloseMenu(true)},
+                            onClick = { selectFavouriteOptionAndCloseMenu(true) },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                     }
@@ -201,19 +226,32 @@ fun ExerciseKindCreateScreen(navController: NavController, selectedFilters: List
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.background
             ) {
-                Row (
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(
                         onClick = {
-                            viewModel.setNewExerciseName(selectedExerciseName)
-                            viewModel.setNewExerciseType(selectedWorkoutType)
-                            viewModel.setNewExerciseFavorite(selectedIsFavourite)
-                            viewModel.saveNewExercise()
-                            navController.popBackStack()
+                            if (kindId != null) {
+                                viewModel.updateExercise(kindId, onSuccess = {
+                                    navController.popBackStack()
+                                }, onError = { msg ->
+                                    viewModel.setErrorMsg(msg)
+                                })
+                            } else {
+                                viewModel.saveNewExercise(
+                                    onSuccess = {
+                                        navController.popBackStack()
+                                    },
+                                    onError = { msg ->
+                                        viewModel.setErrorMsg(msg)
+                                    }
+                                )
+                            }
                         },
-                        enabled = selectedExerciseName.isNotBlank(),
+                        enabled = state.exerciseName.isNotBlank(),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary,

@@ -41,18 +41,26 @@ fun ExerciseInstanceEntry(
     val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
     val height = instance.seriesList!!.size * 122
     val paddings = (instance.seriesList!!.size - 1) * 16
-    ElevatedCard(modifier = Modifier.padding(16.dp)) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(
+    ElevatedCard(modifier = Modifier.padding(12.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(0.dp)
+        ) {
+            Row (
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end=16.dp, top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.Top,
             ) {
                 Text(
-                    "${index + 1}. $name",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
-                )
+                "${index + 1}. $name",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            ) }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(start = 2.dp, end=2.dp, top = 0.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top
+            ) {
                 Row {
                     IconButton(onClick = { onEditClick(instance) }) {
                         Icon(
@@ -64,8 +72,7 @@ fun ExerciseInstanceEntry(
                     }
                     IconButton(onClick = { onAnalyticsClick(instance.exercise!!) }) {
                         Icon(
-                            modifier = Modifier
-                                .size(32.dp),
+                            modifier = Modifier.size(24.dp),
                             painter = painterResource(R.drawable.baseline_auto_graph_24),
                             contentDescription = "Go to Analytics",
                             tint = MaterialTheme.colorScheme.onSurface
@@ -81,8 +88,7 @@ fun ExerciseInstanceEntry(
                     }
                     IconButton(onClick = { onFavoriteClick(instance.exercise!!) }) {
                         Icon(
-                            modifier = Modifier
-                                .size(32.dp),
+                            modifier = Modifier.size(24.dp),
                             painter = painterResource(
                                 id = if (instance.exercise!!.isFavourite)
                                     R.drawable.baseline_star_32 else R.drawable.baseline_star_outline_32
@@ -112,5 +118,3 @@ fun ExerciseInstanceEntry(
         }
     }
 }
-
-

@@ -1,5 +1,6 @@
 package uj.lab.fitnessapp.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,9 +21,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DateRangeSelector(
     selected: String,
-    onSelectedChange: (String) -> Unit
+    onSelectedChange: (String) -> Unit,
+    onDateRangeChange: (Pair<Long?, Long?>) -> Unit
 ) {
-    val options = listOf("tydzień", "miesiąc", "kwartał", "rok", "cały okres")
+    val options = listOf("tydzień", "miesiąc", "kwartał", "rok", "cały okres", "własny zakres")
+    var canSelectRange by remember { mutableStateOf(false) }
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -31,20 +34,40 @@ fun DateRangeSelector(
         items(options) { label ->
             FilterChip(
                 selected = label == selected,
-                onClick = { onSelectedChange(label) },
+                onClick = {
+                    if(label == "własny zakres"){
+                        canSelectRange = true
+                    }
+                    else{
+                        onSelectedChange(label)
+                    }
+                },
                 label = { Text(label) }
             )
         }
     }
+
+    if(canSelectRange){
+        DateRangePickerModal(
+            onDateRangeSelected = { range ->
+                onDateRangeChange(range)
+                onSelectedChange("własny zakres")
+            },
+            onDismiss = { canSelectRange = false }
+        )
+    }
+
+
+
 }
 
-@Preview(showBackground = true)
-@Composable
-internal fun DateRangeSelectorPreview(){
-    var selectedChip by remember { mutableStateOf("cały okres") }
-
-    DateRangeSelector(
-        selected = selectedChip,
-        onSelectedChange = { selectedChip = it }
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//internal fun DateRangeSelectorPreview(){
+//    var selectedChip by remember { mutableStateOf("cały okres") }
+//
+//    DateRangeSelector(
+//        selected = selectedChip,
+//        onSelectedChange = { selectedChip = it }
+//    )
+//}

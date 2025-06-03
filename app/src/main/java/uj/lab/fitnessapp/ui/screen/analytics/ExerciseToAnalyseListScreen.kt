@@ -76,7 +76,7 @@ fun ExerciseToAnalyseListScreen(navController: NavController) {
                         query = textFieldState.text.toString(),
                         onQueryChange = {
                             textFieldState.edit { replace(0, length, it) }
-                            viewModel.filterExercises(it)
+                            viewModel.searchForExercises(it)
                         },
                         expanded = false,
                         onExpandedChange = { },

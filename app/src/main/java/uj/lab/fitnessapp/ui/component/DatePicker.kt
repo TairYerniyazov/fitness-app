@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -12,6 +13,7 @@ import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerFormatter
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -21,7 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -183,7 +187,6 @@ fun DatePickerModal(
                 }
             },
 
-            //TODO: wywaliłem opcję ręcznego wpisania daty, bo nie da się zmodyfikować okna do jej wpisywania
             showModeToggle = false,
 
             title = {
@@ -196,8 +199,109 @@ fun DatePickerModal(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//internal fun DatePickerFieldToModalPreview(){
-//    DatePickerFieldToModal(initialSelectedDate = Date().time)
-//}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateRangePickerModal(
+    onDateRangeSelected: (Pair<Long?, Long?>) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val dateRangePickerState = rememberDateRangePickerState(
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                val selectedDate = Instant.ofEpochMilli(utcTimeMillis)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+
+                val today = LocalDate.now(ZoneId.systemDefault())
+                return !selectedDate.isAfter(today)
+            }
+        }
+    )
+
+    val confirmEnabled = remember {
+        derivedStateOf {
+            dateRangePickerState.selectedStartDateMillis != null && dateRangePickerState.selectedEndDateMillis != null
+        }
+    }
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onDateRangeSelected(
+                        Pair(
+                            dateRangePickerState.selectedStartDateMillis,
+                            dateRangePickerState.selectedEndDateMillis
+                        )
+                    )
+                    onDismiss()
+                },
+                enabled = confirmEnabled.value
+            ) {
+                Text("Wybierz")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anuluj")
+            }
+        }
+    ) {
+        DateRangePicker(
+            state = dateRangePickerState,
+            title = {
+                Text(
+                    text = "Wybierz przedział czasu"
+                )
+            },
+            dateFormatter = object : DatePickerFormatter {
+                private val locale = Locale("pl", "PL")
+                private val zone = ZoneId.systemDefault()
+
+                override fun formatDate(
+                    dateMillis: Long?,
+                    locale: CalendarLocale,
+                    forContentDescription: Boolean
+                ): String? {
+                    dateMillis ?: return null
+                    val date = Instant.ofEpochMilli(dateMillis)
+                        .atZone(zone)
+                        .toLocalDate()
+                    // "dd-MM-yyyy" → 19-04-2025
+                    return DateTimeFormatter.ofPattern("dd-MM-yyyy", this.locale).format(date)
+                }
+
+                override fun formatMonthYear(
+                    monthMillis: Long?,
+                    locale: CalendarLocale
+                ): String? {
+                    monthMillis ?: return null
+                    val date = Instant.ofEpochMilli(monthMillis)
+                        .atZone(zone)
+                        .toLocalDate()
+                    // "LLLL yyyy" → kwiecień 2025
+                    return DateTimeFormatter.ofPattern("LLLL yyyy", this.locale).format(date)
+                }
+            },
+            showModeToggle = false,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp)
+                .padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+internal fun DateRangePickerModalPreview() {
+    DateRangePickerModal(
+        onDateRangeSelected = { range ->
+            println("Selected range: ${range.first} to ${range.second}")
+        },
+        onDismiss = {
+            println("Dialog dismissed")
+        }
+    )
+}

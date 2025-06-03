@@ -2,14 +2,12 @@ package uj.lab.fitnessapp.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -59,7 +57,7 @@ fun DurationInput(
             onValueChange = { newHour ->
                 state = state.copy(hour = newHour)
             },
-            label = { Text("Hour") },
+            label = { Text("Godziny") },
             suffix = { Text("h") },
             isError = state.hour.toIntOrNull() == null || state.hour.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -73,7 +71,7 @@ fun DurationInput(
             onValueChange = { newMinute ->
                 state = state.copy(minute = newMinute)
             },
-            label = { Text("Minute") },
+            label = { Text("Minuty") },
             suffix = { Text("m") },
             isError = state.minute.toIntOrNull() == null || state.minute.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -87,7 +85,7 @@ fun DurationInput(
             onValueChange = { newSecond ->
                 state = state.copy(second = newSecond)
             },
-            label = { Text("Second") },
+            label = { Text("Sekundy") },
             suffix = { Text("s") },
             isError = state.second.toIntOrNull() == null || state.second.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

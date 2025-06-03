@@ -33,12 +33,22 @@ class ExerciseListViewModel @Inject constructor(
             filterExercises() // filter is preserved when navigating back
         }
     }
+    fun searchForExercises(text: String) {
+        _uiState.value = _uiState.value.copy(
+            filteredExercises = _uiState.value.allExercises.filter { exercise ->
+                exercise.exerciseName.lowercase().contains(text.lowercase())
+            }
+        )
+    }
     fun filterExercises() {
         _uiState.value = _uiState.value.copy(
             filteredExercises = _uiState.value.allExercises.filter { exercise ->
                 _selectedFilters.value.all { filter -> filter.predicate(exercise) }
             }
         )
+    }
+    fun getSelectedFilters(): List<Filter> {
+        return _selectedFilters.value
     }
     fun toggleFavorite(exercise: Exercise) {
         viewModelScope.launch {
@@ -56,9 +66,6 @@ class ExerciseListViewModel @Inject constructor(
                 }
             )
         }
-    }
-    fun getSelectedFilters(): List<Filter> {
-        return _selectedFilters.value
     }
     fun toggleFilter(filter: Filter) {
         val currentFilters = _selectedFilters.value.toMutableList()
@@ -79,6 +86,18 @@ class ExerciseListViewModel @Inject constructor(
             currentFilters += filter
         }
         _selectedFilters.value = currentFilters
+    }
+
+    fun deleteExercise(kindId: Int) {
+        viewModelScope.launch {
+            exerciseRepository.deleteExercise(kindId)
+            _uiState.update {
+                it.copy(
+                    allExercises = it.allExercises.filter { exercise -> exercise.id != kindId },
+                    filteredExercises = it.filteredExercises.filter { exercise -> exercise.id != kindId }
+                )
+            }
+        }
     }
 }
 

@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.style.TextOverflow
 
 
 private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
@@ -83,6 +84,9 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
     val currentWeightUnit by viewModel.currentWeightUnit.collectAsState()
 
     var selectedChip by remember { mutableStateOf("tydzień") }
+    var selectedDateRange by remember { mutableStateOf<Pair<Long?, Long?>>(null to null) }
+//    val dateRangePickerState = rememberDateRangePickerState()
+
 
     LaunchedEffect(exerciseKind) {
         viewModel.getExerciseIDFromKind(exerciseKind)
@@ -154,8 +158,10 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 text = exerciseName,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp),
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                color = MaterialTheme.colorScheme.onBackground,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+                )
 
             if (metrics.isNotEmpty()) {
                 val selectedMetricsList = remember(metrics, exerciseType, currentDistanceUnit, currentWeightUnit) {
@@ -192,6 +198,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
 
             DateRangeSelector(
                 selected = selectedChip,
+                onDateRangeChange = { selectedDateRange = it },
                 onSelectedChange = {
                     selectedChip = it
                     when(it){
@@ -213,6 +220,14 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                         }
                         "cały okres" -> {
                             viewModel.getAllTimeInstances(exerciseID)
+                        }
+                        "własny zakres" ->{
+                            val first = selectedDateRange.first
+                            val second = selectedDateRange.second
+
+                            if(first != null && second != null){
+                                viewModel.getInstancesInTimeRangeLong(exerciseID, first, second)
+                            }
                         }
                     }
                 }
@@ -237,7 +252,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                             containerColor = if (selectedTab == index + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text(label, color = MaterialTheme.colorScheme.onPrimary)
+                        Text(label, color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
                     }
                 }
             }
@@ -267,12 +282,14 @@ private fun MetricCard(label: String, value: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp),
+            .height(80.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(12.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {

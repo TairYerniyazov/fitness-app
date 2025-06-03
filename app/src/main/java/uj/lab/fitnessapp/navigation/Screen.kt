@@ -26,4 +26,9 @@ sealed class Screen(val route: String) {
             return "exercise_kind_create/$selectedFiltersString"
         }
     }
+    data object EditExerciseKind : Screen("edit_exercise_kind/{kindId}") {
+        fun withArgs(id: Int): String {
+            return "edit_exercise_kind/$id"
+        }
+    }
 }
