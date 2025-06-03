@@ -62,6 +62,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
 import uj.lab.fitnessapp.ui.component.DateRangePickerModal
+import androidx.compose.ui.text.style.TextOverflow
 
 
 private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
@@ -159,8 +160,10 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 text = exerciseName,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp),
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                color = MaterialTheme.colorScheme.onBackground,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+                )
 
             if (metrics.isNotEmpty()) {
                 val selectedMetricsList = remember(metrics, exerciseType, currentDistanceUnit, currentWeightUnit) {
@@ -251,7 +254,7 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                             containerColor = if (selectedTab == index + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text(label, color = MaterialTheme.colorScheme.onPrimary)
+                        Text(label, color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
                     }
                 }
             }
@@ -281,7 +284,7 @@ private fun MetricCard(label: String, value: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp),
+            .height(80.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

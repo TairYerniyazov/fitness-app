@@ -59,7 +59,7 @@ fun DurationInput(
             onValueChange = { newHour ->
                 state = state.copy(hour = newHour)
             },
-            label = { Text("Hour") },
+            label = { Text("Godziny") },
             suffix = { Text("h") },
             isError = state.hour.toIntOrNull() == null || state.hour.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -73,7 +73,7 @@ fun DurationInput(
             onValueChange = { newMinute ->
                 state = state.copy(minute = newMinute)
             },
-            label = { Text("Minute") },
+            label = { Text("Minuty") },
             suffix = { Text("m") },
             isError = state.minute.toIntOrNull() == null || state.minute.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -87,7 +87,7 @@ fun DurationInput(
             onValueChange = { newSecond ->
                 state = state.copy(second = newSecond)
             },
-            label = { Text("Second") },
+            label = { Text("Sekundy") },
             suffix = { Text("s") },
             isError = state.second.toIntOrNull() == null || state.second.toInt() < 0,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

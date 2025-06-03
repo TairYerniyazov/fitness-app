@@ -269,7 +269,7 @@ fun CardioWorkoutSetCreator(
                 distance = it
             },
             isError = distance.toDoubleOrNull() == null || distance.toDouble() < 0,
-            label = { Text("Distance") },
+            label = { Text("Dystans") },
             suffix = { Text(distanceUnit) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
