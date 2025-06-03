@@ -124,9 +124,19 @@ fun ExerciseKindCreateScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(75.dp),
                     singleLine = true,
-                    shape = MaterialTheme.shapes.small
+                    shape = MaterialTheme.shapes.small,
+                    isError = state.errorMsg != null,
+                    supportingText = {
+                        if (state.errorMsg != null) {
+                            Text(
+                                state.errorMsg!!,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 )
                 // dropdown menu for workout type
                 Text(
@@ -225,11 +235,21 @@ fun ExerciseKindCreateScreen(
                     Button(
                         onClick = {
                             if (kindId != null) {
-                                viewModel.updateExercise(kindId)
+                                viewModel.updateExercise(kindId, onSuccess = {
+                                    navController.popBackStack()
+                                }, onError = { msg ->
+                                    viewModel.setErrorMsg(msg)
+                                })
                             } else {
-                                viewModel.saveNewExercise()
+                                viewModel.saveNewExercise(
+                                    onSuccess = {
+                                        navController.popBackStack()
+                                    },
+                                    onError = { msg ->
+                                        viewModel.setErrorMsg(msg)
+                                    }
+                                )
                             }
-                            navController.popBackStack()
                         },
                         enabled = state.exerciseName.isNotBlank(),
                         colors = ButtonDefaults.buttonColors(

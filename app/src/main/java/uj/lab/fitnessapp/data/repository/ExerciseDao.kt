@@ -46,6 +46,9 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE exerciseName = :exerciseName")
     suspend fun getExerciseByName(exerciseName: String): Exercise
 
+    @Query("SELECT EXISTS(SELECT * FROM exercises WHERE exerciseName = :exerciseName)")
+    suspend fun checkExerciseExists(exerciseName: String): Boolean
+
     @Query("SELECT * FROM exercises WHERE id = :id")
     suspend fun getExerciseById(id: Int): Exercise
 
