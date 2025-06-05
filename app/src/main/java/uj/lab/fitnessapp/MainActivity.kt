@@ -1,14 +1,12 @@
 package uj.lab.fitnessapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -17,8 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import uj.lab.fitnessapp.navigation.NavigationWrapper
 import uj.lab.fitnessapp.ui.screen.settings.SettingsViewModel
 import uj.lab.fitnessapp.ui.theme.FitnessAppTheme
-import java.time.LocalDate
-import java.time.ZoneId
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

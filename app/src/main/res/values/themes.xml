@@ -4,7 +4,8 @@
     <style name="Theme.FitnessApp" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="android:windowBackground">@color/white</item>
         <item name="postSplashScreenTheme">@style/Theme.FitnessApp</item>
+        <item name="android:icon">@drawable/logo</item>
     </style>
 </resources>
