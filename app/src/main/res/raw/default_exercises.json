@@ -97,8 +97,8 @@
     },
     {
         "exerciseId": 13,
-        "exerciseName": "Deska",
-        "englishName": "Plank",
+        "exerciseName": "Wyciskanie na barki",
+        "englishName": "Overhead Press",
         "workoutType": "Strength",
         "canModify": false,
         "isFavourite": false

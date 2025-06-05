@@ -85,7 +85,6 @@ abstract class AppDatabase : RoomDatabase() {
                     .setQueryCallback(QueryCallback { sqlQuery, bindArgs ->
                         println("SQL Query: $sqlQuery SQL Args: $bindArgs")
                     }, Executors.newSingleThreadExecutor())
-                    .fallbackToDestructiveMigration() //TODO: to może być nienajlepsze wyjście, chociaż dla nas może być ok
                     .build()
                 INSTANCE = instance
                 instance

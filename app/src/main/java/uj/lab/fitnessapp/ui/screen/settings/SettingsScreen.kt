@@ -208,7 +208,7 @@ fun SettingsScreen(navController: NavController) {
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "April 2025, v1.2",
+                    text = "June 2025, v1.3",
                     modifier = Modifier.padding(top = 8.dp),
                     textAlign = TextAlign.Center
                 )

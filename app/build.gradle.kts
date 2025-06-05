@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation("com.github.anychart:anychart-android:1.1.5")
 
     implementation("com.patrykandpatrick.vico:compose:2.1.2")

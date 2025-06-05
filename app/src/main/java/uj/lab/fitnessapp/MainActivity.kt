@@ -6,10 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import uj.lab.fitnessapp.navigation.NavigationWrapper
@@ -21,6 +23,13 @@ import java.time.ZoneId
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val viewModel: MainActivityViewModel by viewModels()
+
+        installSplashScreen().apply{
+            setKeepOnScreenCondition {
+                !viewModel.uiState.value.isDatabaseInitialized
+            }
+        }
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -40,15 +49,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             )
-
-            LaunchedEffect(Unit) {
-                viewModel.populateDatabase()
-
-                val currentDate = LocalDate.now()
-                val dateMillis = currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-//                Log.d("Date", "date: ${dateMillis}")
-                settingsViewModel.setDate(dateMillis)
-            }
 
             if (state.isDatabaseInitialized) {
                 FitnessAppTheme(darkTheme = isDarkTheme) {

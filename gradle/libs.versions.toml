@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.1"
 anychartAndroid = "1.1.5"
+coreSplashscreen = "1.0.1"
 dagger = "2.56"
 hiltNavigationCompose = "1.2.0"
 ksp = "2.1.20-1.0.31"
@@ -21,6 +22,7 @@ uiAndroid = "1.8.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
