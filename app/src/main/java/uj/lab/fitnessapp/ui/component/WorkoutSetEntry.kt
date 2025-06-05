@@ -89,7 +89,7 @@ fun CardioWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Dystans: ${"%.2f".format(displayDistance)} $distanceUnit",
+                        text = "${"%.2f".format(displayDistance)} $distanceUnit",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -101,7 +101,7 @@ fun CardioWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Czas: $time",
+                        text = time.toString(),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -166,7 +166,7 @@ fun StrengthWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Obciążenie: ${"%.1f".format(displayLoad)} $weightUnit",
+                        text = "${"%.1f".format(displayLoad)} $weightUnit",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -178,7 +178,7 @@ fun StrengthWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Powtórzenia: $reps",
+                        text = reps.toString(),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
