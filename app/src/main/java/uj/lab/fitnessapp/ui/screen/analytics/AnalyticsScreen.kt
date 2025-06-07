@@ -36,6 +36,7 @@ import androidx.compose.runtime.*
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -233,42 +234,79 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 }
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                val chartLabels = remember(exerciseType) {
-                    when (exerciseType) {
-                        WorkoutType.Strength -> listOf("Powtórzenia", "Obciążenie", "Objętość")
-                        WorkoutType.Cardio -> listOf("Dystans", "Czas", "Prędkość")
-                        else -> listOf("Wykres 1", "Wykres 2", "Wykres 3")
-                    }
-                }
-
-                chartLabels.forEachIndexed { index, label ->
-                    Button(
-                        onClick = { selectedTab = index + 1 },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedTab == index + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                        )
-                    ) {
-                        Text(label, color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             exerciseType?.let { type ->
-                ChartSelectionAndDisplay(
-                    selectedTab = selectedTab,
-                    exerciseType = type,
-                    strengthData = strengthData,
-                    cardioData = cardioData,
-                    modifier = modifier,
-                    currentDistanceUnit = currentDistanceUnit,
-                    currentWeightUnit = currentWeightUnit
-                )
+                val dataSize = when (type) {
+                    WorkoutType.Cardio -> cardioData.size
+                    WorkoutType.Strength -> strengthData.size
+                }
+
+                when {
+                    dataSize == 0 -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Brak danych dla wybranego zakresu",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    dataSize == 1 -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Za mało danych do narysowania wykresu.\nPotrzebne są co najmniej 2 sesje.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                    else -> {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            val chartLabels = remember(exerciseType) {
+                                when (exerciseType) {
+                                    WorkoutType.Strength -> listOf("Powtórzenia", "Obciążenie", "Objętość")
+                                    WorkoutType.Cardio -> listOf("Dystans", "Czas", "Prędkość")
+                                    else -> listOf("Wykres 1", "Wykres 2", "Wykres 3")
+                                }
+                            }
+
+                            chartLabels.forEachIndexed { index, label ->
+                                Button(
+                                    onClick = { selectedTab = index + 1 },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (selectedTab == index + 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                                    )
+                                ) {
+                                    Text(label, color = MaterialTheme.colorScheme.onPrimary, fontSize = 12.sp)
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        ChartSelectionAndDisplay(
+                            selectedTab = selectedTab,
+                            exerciseType = type,
+                            strengthData = strengthData,
+                            cardioData = cardioData,
+                            modifier = modifier,
+                            currentDistanceUnit = currentDistanceUnit,
+                            currentWeightUnit = currentWeightUnit
+                        )
+                    }
+                }
             } ?: run {
                 Text("Ładowanie danych...", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onBackground)
             }
