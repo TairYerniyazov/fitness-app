@@ -97,6 +97,8 @@ class AnalyticsViewModel @Inject constructor(
 
     fun getInstancesInTimeRange(exerciseID: Int, startDate: LocalDate, endDate: LocalDate? = null) {
         viewModelScope.launch {
+            _cardioChartData.value = emptyList()
+            _strengthChartData.value = emptyList()
             val _endDate = endDate ?: LocalDate.now()
             val startDateLong = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val endDateLong = _endDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -114,6 +116,8 @@ class AnalyticsViewModel @Inject constructor(
 
     fun getInstancesInTimeRangeLong(exerciseID: Int, startDateLong: Long, endDateLong: Long? = null) {
         viewModelScope.launch {
+            _cardioChartData.value = emptyList()
+            _strengthChartData.value = emptyList()
             val endDateLong = endDateLong ?: LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             val allInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsInRange(exerciseID, startDateLong, endDateLong)
 
@@ -128,6 +132,8 @@ class AnalyticsViewModel @Inject constructor(
 
     fun getAllTimeInstances(exerciseID: Int) {
         viewModelScope.launch {
+            _cardioChartData.value = emptyList()
+            _strengthChartData.value = emptyList()
             val allInstances = exerciseInstanceRepository.getExerciseInstanceWithDetailsByExerciseId(exerciseID)
             val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
 
