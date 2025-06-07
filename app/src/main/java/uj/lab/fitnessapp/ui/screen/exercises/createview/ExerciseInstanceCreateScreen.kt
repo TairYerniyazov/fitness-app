@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -67,6 +69,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
     val state by viewModel.uiState.collectAsState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet = remember { mutableStateOf(false) }
+    var workoutSetToDelete by remember { mutableStateOf<WorkoutSet?>(null) }
 
     LaunchedEffect(Unit) {
         if (instanceId != null) {
@@ -106,6 +109,27 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                workoutSetToDelete?.let {
+                    AlertDialog(
+                        onDismissRequest = { workoutSetToDelete = null },
+                        title = { Text("Potwierdzenie usunięcia") },
+                        text = { Text("Czy na pewno chcesz usunąć tę serię?") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.removeWorkoutSet(it)
+                                workoutSetToDelete = null
+                            }) {
+                                Text("Usuń", color = MaterialTheme.colorScheme.error)
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { workoutSetToDelete = null }) {
+                                Text("Anuluj")
+                            }
+                        }
+                    )
+                }
+
                 if (showBottomSheet.value) {
                     ModalBottomSheet(onDismissRequest = {
                         showBottomSheet.value = false
@@ -154,7 +178,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         index,
                                         workoutSet.distance!!,
                                         workoutSet.time!!.toDuration(DurationUnit.SECONDS),
-                                        onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                        onDelete = { workoutSetToDelete = workoutSet },
                                         viewModel = viewModel
                                     )
 
@@ -163,7 +187,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         index,
                                         workoutSet.load!!,
                                         workoutSet.reps!!,
-                                        onDelete = { viewModel.removeWorkoutSet(workoutSet) },
+                                        onDelete = { workoutSetToDelete = workoutSet },
                                         viewModel = viewModel
                                     )
                             }

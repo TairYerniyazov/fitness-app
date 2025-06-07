@@ -1,6 +1,5 @@
 package uj.lab.fitnessapp.ui.screen.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -29,13 +28,6 @@ import uj.lab.fitnessapp.data.model.ExerciseInstance
 import uj.lab.fitnessapp.ui.component.DatePickerFieldToModal
 import uj.lab.fitnessapp.ui.component.ExerciseInstanceEntry
 import uj.lab.fitnessapp.ui.screen.exercises.kindlist.ExerciseListViewModel
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 
 /**
@@ -106,7 +98,7 @@ fun HomeScreen(navController: NavController) {
                     },
                     dismissButton = {
                         TextButton(onClick = { exerciseToDelete = null }) {
-                            Text("Usuń", color = MaterialTheme.colorScheme.onSurface)
+                            Text("Anuluj", color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 )
