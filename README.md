@@ -7,3 +7,6 @@ Simple mobile app as a team programming project.
 ## Code style
 - https://developer.android.com/kotlin/style-guide
 
+## Demo
+https://github.com/user-attachments/assets/8cf0bb53-8c71-4443-a203-d07bd70f4fb1
+
