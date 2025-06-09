@@ -55,24 +55,8 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Column(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        Text("Dzisiaj", fontWeight = FontWeight.Bold, fontSize = 30.sp, color = MaterialTheme.colorScheme.onPrimary)
-//                    }
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primary)
-//            )
-//        },
-
         topBar = {
             DatePickerFieldToModal(
-//                            colors = MaterialTheme.colorScheme.onPrimary //TODO: Nie działa, trzeba ogarnąć kolory w DatePicker.kt
                 modifier = Modifier
                     .height(130.dp)
                     .padding(PaddingValues(start = 25.dp, end = 25.dp, top = 40.dp, bottom = 25.dp)),

@@ -55,14 +55,16 @@ fun DatePickerFieldToModal(
 ) {
     var showModal by remember { mutableStateOf(false) }
 
-    val currentDate = Date()
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-    val defaultDate = formatter.format(currentDate)
 
-    val dateOnly = formatter.parse(defaultDate)
-    val dateOnlyMillis = dateOnly!!.time
+    val dateOnlyMillis = LocalDate.now()
+        .atStartOfDay(ZoneId.systemDefault())
+        .toInstant()
+        .toEpochMilli()
 
-    OutlinedTextField(
+    val defaultDate = formatter.format(Date(dateOnlyMillis))
+
+        OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: defaultDate,
         onValueChange = { },
         label = {
@@ -143,7 +145,16 @@ fun DatePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+                val rawMillis = datePickerState.selectedDateMillis
+                val normalizedMillis = rawMillis?.let {
+                    Instant.ofEpochMilli(it)
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate()
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+                }
+                onDateSelected(normalizedMillis)
                 onDismiss()
             }) {
                 Text("Wybierz")
