@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -57,12 +58,13 @@ fun DatePickerFieldToModal(
 
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
-    val dateOnlyMillis = LocalDate.now()
-        .atStartOfDay(ZoneId.systemDefault())
+    val dateOnlyMillis = LocalDate.now(ZoneId.systemDefault())
+        .atStartOfDay(ZoneOffset.UTC)
         .toInstant()
         .toEpochMilli()
 
     val defaultDate = formatter.format(Date(dateOnlyMillis))
+
 
         OutlinedTextField(
         value = selectedDate?.let { convertMillisToDate(it) } ?: defaultDate,
@@ -127,10 +129,10 @@ fun DatePickerModal(
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 val selectedDate = Instant.ofEpochMilli(utcTimeMillis)
-                    .atZone(ZoneId.systemDefault())
+                    .atZone(ZoneOffset.UTC)
                     .toLocalDate()
 
-                val today = LocalDate.now(ZoneId.systemDefault())
+                val today = LocalDate.now(ZoneOffset.UTC)
                 return !selectedDate.isAfter(today)
             }
 //            TODO: Można to ustawić na jakiś 2022 albo 2023, bo po co więcej lat
@@ -148,9 +150,9 @@ fun DatePickerModal(
                 val rawMillis = datePickerState.selectedDateMillis
                 val normalizedMillis = rawMillis?.let {
                     Instant.ofEpochMilli(it)
-                        .atZone(ZoneId.systemDefault())
+                        .atZone(ZoneOffset.UTC)
                         .toLocalDate()
-                        .atStartOfDay(ZoneId.systemDefault())
+                        .atStartOfDay(ZoneOffset.UTC)
                         .toInstant()
                         .toEpochMilli()
                 }
@@ -220,10 +222,10 @@ fun DateRangePickerModal(
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 val selectedDate = Instant.ofEpochMilli(utcTimeMillis)
-                    .atZone(ZoneId.systemDefault())
+                    .atZone(ZoneOffset.UTC)
                     .toLocalDate()
 
-                val today = LocalDate.now(ZoneId.systemDefault())
+                val today = LocalDate.now(ZoneOffset.UTC)
                 return !selectedDate.isAfter(today)
             }
         }

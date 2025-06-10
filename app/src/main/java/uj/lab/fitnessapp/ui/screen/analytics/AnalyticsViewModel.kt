@@ -15,6 +15,7 @@ import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -99,14 +100,15 @@ class AnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             _cardioChartData.value = emptyList()
             _strengthChartData.value = emptyList()
-            val _endDate = endDate ?: LocalDate.now()
-            val startDateLong = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val endDateLong = _endDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-            val allInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsInRange(exerciseID, startDateLong, endDateLong)
+            val startDateLong = startDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+            val _endDate = endDate ?: LocalDate.now(ZoneOffset.UTC)
+            val endDateLong = _endDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
 
-            val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
-            when (exerciseType) {
+            val allInstances = exerciseInstanceRepository
+                .getAllExerciseInstanceWithDetailsInRange(exerciseID, startDateLong, endDateLong)
+
+            when (allInstances.firstOrNull()?.exercise?.workoutType) {
                 WorkoutType.Cardio -> _cardioChartData.value = computeCardioStatistics(allInstances)
                 WorkoutType.Strength -> _strengthChartData.value = computeStrengthStatistics(allInstances)
                 null -> {}
@@ -114,21 +116,6 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun getInstancesInTimeRangeLong(exerciseID: Int, startDateLong: Long, endDateLong: Long? = null) {
-        viewModelScope.launch {
-            _cardioChartData.value = emptyList()
-            _strengthChartData.value = emptyList()
-            val endDateLong = endDateLong ?: LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val allInstances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsInRange(exerciseID, startDateLong, endDateLong)
-
-            val exerciseType = allInstances.firstOrNull()?.exercise?.workoutType
-            when (exerciseType) {
-                WorkoutType.Cardio -> _cardioChartData.value = computeCardioStatistics(allInstances)
-                WorkoutType.Strength -> _strengthChartData.value = computeStrengthStatistics(allInstances)
-                null -> {}
-            }
-        }
-    }
 
     fun getAllTimeInstances(exerciseID: Int) {
         viewModelScope.launch {

@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.source.AppDatabase
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +29,8 @@ class MainActivityViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             populateDatabase()
-            val currentDate = LocalDate.now()
-            val dateMillis = currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val currentDate = LocalDate.now(ZoneId.systemDefault())
+            val dateMillis = currentDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
             settingsManager.setDate(dateMillis)
         }
     }

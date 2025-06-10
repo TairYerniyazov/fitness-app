@@ -62,6 +62,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextOverflow
+import java.time.Instant
+import java.time.ZoneOffset
 
 
 private val RangeProvider: CartesianLayerRangeProvider = CartesianLayerRangeProvider.auto()
@@ -202,21 +204,24 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                 onDateRangeChange = { selectedDateRange = it },
                 onSelectedChange = {
                     selectedChip = it
+
+                    val today = Instant.now().atZone(ZoneOffset.UTC).toLocalDate()
+
                     when(it){
                         "tydzień" -> {
-                            val startDate = LocalDate.now().minusDays(7)
+                            val startDate = today.minusDays(7)
                             viewModel.getInstancesInTimeRange(exerciseID, startDate)
                         }
                         "miesiąc" -> {
-                            val startDate = LocalDate.now().minusMonths(1)
+                            val startDate = today.minusMonths(1)
                             viewModel.getInstancesInTimeRange(exerciseID, startDate)
                         }
                         "kwartał" -> {
-                            val startDate = LocalDate.now().minusMonths(3)
+                            val startDate = today.minusMonths(3)
                             viewModel.getInstancesInTimeRange(exerciseID, startDate)
                         }
                         "rok" -> {
-                            val startDate = LocalDate.now().minusYears(1)
+                            val startDate = today.minusYears(1)
                             viewModel.getInstancesInTimeRange(exerciseID, startDate)
                         }
                         "cały okres" -> {
@@ -226,8 +231,10 @@ fun AnalyticsScreen(navController: NavController, exerciseKind: String, modifier
                             val first = selectedDateRange.first
                             val second = selectedDateRange.second
 
-                            if(first != null && second != null){
-                                viewModel.getInstancesInTimeRangeLong(exerciseID, first, second)
+                            if (first != null && second != null) {
+                                val startDate = Instant.ofEpochMilli(first).atZone(ZoneOffset.UTC).toLocalDate()
+                                val endDate = Instant.ofEpochMilli(second).atZone(ZoneOffset.UTC).toLocalDate()
+                                viewModel.getInstancesInTimeRange(exerciseID, startDate, endDate)
                             }
                         }
                     }
@@ -443,7 +450,7 @@ private fun ChartContent(
     val xValues = remember(dates) {
         dates.map { dateString ->
             LocalDate.parse(dateString, inputDateFormatter)
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
                 .toEpochMilli()
         }
