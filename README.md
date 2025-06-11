@@ -16,7 +16,7 @@ A mobile application designed to help users track their fitness statistics and d
 - **Unit Customization**: users can change the units for saved measurements and data.
 
 ## How to run the project
-This is an Android App.
+This is an Android app (Android 12 and above).
 1. Just clone the repository and open it in Android Studio.
 2. Install it via an APK file or run it directly on an Android device/emulator. Your Android device may ask for additional
 permissions before installing; please grant them and feel free to ignore any safety check warnings, as the app is not yet
@@ -44,7 +44,7 @@ opracowana jako zespołowy projekt programistyczny.
 - **Dostosowywanie jednostek**: użytkownicy mogą zmieniać jednostki dla zapisanych pomiarów i danych.
 
 ## Jak uruchomić projekt
-To jest aplikacja na Androida.
+To jest aplikacja na Androida (Android 12 i nowsze).
 1. Po prostu sklonuj repozytorium i otwórz je w Android Studio.
 2. Zainstaluj ją za pomocą pliku APK lub uruchom bezpośrednio na urządzeniu z systemem Android/emulatorze. Twoje urządzenie z
 systemem Android może poprosić o dodatkowe uprawnienia przed instalacją; udziel ich i zignoruj wszelkie ostrzeżenia dotyczące
