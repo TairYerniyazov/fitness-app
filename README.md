@@ -17,7 +17,39 @@ A mobile application designed to help users track their fitness statistics and d
 
 ## How to run the project
 1. Just clone the repository and open it in Android Studio.
-2. Install it via an APK file or run it directly on an Android device/emulator.
+2. Install it via an APK file or run it directly on an Android device/emulator. Your Android device may ask for additional
+permissions before installing; please grant them and feel free to ignore any safety check warnings, as the app is not yet
+available on Google Play. If you have a Samsung device, you may also be asked to disable the Auto Blocker (you can enable it
+back after the installation).
+
+---
+
+# Aplikacja Fitness
+Aplikacja mobilna zaprojektowana, aby pomóc użytkownikom śledzić statystyki fitness i codzienną aktywność. Ta aplikacja została 
+opracowana jako zespołowy projekt programistyczny.
+
+## Funkcje
+- **Rejestrowanie ćwiczeń**: użytkownicy mogą rejestrować serie wykonywanych ćwiczeń.
+- **Rodzaje ćwiczeń**: obsługuje różne rodzaje ćwiczeń - cardio i trening siłowy.
+- **Ulubione ćwiczenia**: możliwość oznaczania często używanych ćwiczeń jako ulubione za pomocą gwiazdki.
+- **Predefiniowane i niestandardowe ćwiczenia**:
+    - Zawiera domyślną listę różnych rodzajów ćwiczeń.
+    - Użytkownicy mogą dodawać i nazywać własne niestandardowe rodzaje ćwiczeń.
+- **Codzienne rejestrowanie**: serie ćwiczeń są zapisywane dla określonych dat, takich jak bieżący dzień.
+- **Analityka i śledzenie postępów**:
+    - Zakładka "Analityka" wyświetla dane historyczne za pomocą wykresów (np. powtórzenia i daty dla ćwiczeń siłowych).
+    - Panele informacyjne pokazują dodatkowe statystyki, takie jak objętość treningowa, szacowany 1 Rep Max (1RM) i maksymalna liczba powtórzeń.
+- **Tryb ciemny**: oferuje ciemny motyw interfejsu użytkownika.
+- **Dostosowywanie jednostek**: użytkownicy mogą zmieniać jednostki dla zapisanych pomiarów i danych.
+
+## Jak uruchomić projekt
+1. Po prostu sklonuj repozytorium i otwórz je w Android Studio.
+2. Zainstaluj ją za pomocą pliku APK lub uruchom bezpośrednio na urządzeniu z systemem Android/emulatorze. Twoje urządzenie z
+systemem Android może poprosić o dodatkowe uprawnienia przed instalacją; udziel ich i zignoruj wszelkie ostrzeżenia dotyczące
+bezpieczeństwa, ponieważ aplikacja nie jest jeszcze dostępna w Google Play. Jeśli masz urządzenie Samsung, możesz również zostać
+poproszony o wyłączenie funkcji Auto Blocker (możesz ją ponownie włączyć po instalacji).
+
+---
 
 ## Demo
 https://github.com/user-attachments/assets/8cf0bb53-8c71-4443-a203-d07bd70f4fb1
