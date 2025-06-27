@@ -140,6 +140,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                     ModalBottomSheet(onDismissRequest = {
                         showBottomSheet.value = false
                     }, sheetState = sheetState) {
+                        val lastWorkoutSet = viewModel.getLastWorkoutSetValues()
                         when (state.workoutType) {
                             WorkoutType.Cardio ->
                                 CardioWorkoutSetCreator(
@@ -148,7 +149,8 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         showBottomSheet.value = false
                                     },
                                     onCancel = { showBottomSheet.value = false },
-                                    viewModel = viewModel
+                                    viewModel = viewModel,
+                                    initialValues = lastWorkoutSet
                                 )
 
                             WorkoutType.Strength ->
@@ -158,7 +160,8 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         showBottomSheet.value = false
                                     },
                                     onCancel = { showBottomSheet.value = false },
-                                    viewModel = viewModel
+                                    viewModel = viewModel,
+                                    initialValues = lastWorkoutSet
                                 )
                         }
                     }
@@ -317,13 +320,39 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
 fun CardioWorkoutSetCreator(
     onSave: (WorkoutSet) -> Unit,
     onCancel: () -> Unit,
-    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel(),
+    initialValues: WorkoutSet? = null
 ) {
     var state = remember {
         mutableStateOf(DurationInputState())
     }
-    var distance by remember { mutableStateOf("0") }
     val distanceUnit by viewModel.distanceUnit.collectAsState()
+    val isImperial by viewModel.isImperialDistance.collectAsState()
+    
+    var distance by remember {
+        mutableStateOf(
+            if (initialValues?.distance != null) {
+                val (displayDistance, _) = UnitConverter.displayDistance(initialValues.distance, isImperial)
+                displayDistance.toString()
+            } else {
+                "0"
+            }
+        ) 
+    }
+    
+    LaunchedEffect(initialValues) {
+        if (initialValues?.time != null) {
+            val totalSeconds = initialValues.time
+            val hours = totalSeconds / 3600
+            val minutes = (totalSeconds % 3600) / 60
+            val seconds = totalSeconds % 60
+            state.value = DurationInputState(
+                hour = hours.toString(),
+                minute = minutes.toString(),
+                second = seconds.toString()
+            )
+        }
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         DurationInput(state)
@@ -403,11 +432,25 @@ fun CardioWorkoutSetCreator(
 fun StrengthWorkoutSetCreator(
     onSave: (WorkoutSet) -> Unit,
     onCancel: () -> Unit,
-    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel(),
+    initialValues: WorkoutSet? = null
 ) {
-    var reps by remember { mutableStateOf("0") }
-    var load by remember { mutableStateOf("0") }
     val weightUnit by viewModel.weightUnit.collectAsState()
+    val isImperial by viewModel.isImperialWeight.collectAsState()
+    
+    var reps by remember {
+        mutableStateOf(initialValues?.reps?.toString() ?: "0") 
+    }
+    var load by remember { 
+        mutableStateOf(
+            if (initialValues?.load != null) {
+                val (displayWeight, _) = UnitConverter.displayWeight(initialValues.load, isImperial)
+                displayWeight.toString()
+            } else {
+                "0"
+            }
+        ) 
+    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         OutlinedTextField(

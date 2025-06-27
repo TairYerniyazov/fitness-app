@@ -91,6 +91,10 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
+    fun getLastWorkoutSetValues(): WorkoutSet? {
+        return _uiState.value.workoutSets.lastOrNull()
+    }
+
     fun removeWorkoutSet(workoutSet: WorkoutSet) {
         _uiState.update { currentState ->
             val newWorkoutSets = currentState.workoutSets - workoutSet
