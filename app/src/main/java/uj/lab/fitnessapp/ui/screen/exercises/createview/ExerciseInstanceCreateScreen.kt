@@ -375,12 +375,15 @@ fun CardioWorkoutSetCreator(
         ) {
             Button(
                 onClick = {
+                    // Create a completely new WorkoutSet object
                     onSave(
                         WorkoutSet(
-                            0,
-                            0,
+                            id = 0, // Always use 0 for new sets
+                            instanceID = 0,
                             time = state.value.toDuration().toInt(DurationUnit.SECONDS),
-                            distance = distance.toDouble()
+                            distance = distance.toDouble(),
+                            reps = null,
+                            load = null
                         )
                     )
                 },
@@ -482,12 +485,15 @@ fun StrengthWorkoutSetCreator(
         ) {
             Button(
                 onClick = {
+                    // Create a completely new WorkoutSet object
                     onSave(
                         WorkoutSet(
-                            0,
-                            0,
+                            id = 0, // Always use 0 for new sets
+                            instanceID = 0,
                             reps = reps.toInt(),
                             load = load.toDouble(),
+                            time = null,
+                            distance = null
                         )
                     )
                 },
@@ -614,12 +620,16 @@ fun CardioWorkoutSetEditDialog(
                     val minutesInt = minutes.toIntOrNull() ?: 0
                     val secondsInt = seconds.toIntOrNull() ?: 0
                     val totalSeconds = hoursInt * 3600 + minutesInt * 60 + secondsInt
-                    // Convert distance back to meters for storage
                     val newDisplayDistance = distance.toDoubleOrNull() ?: 0.0
-                    val distanceInMeters = UnitConverter.storeDistance(newDisplayDistance, isImperial)
-                    val updatedSet = workoutSet.copy(
-                        distance = distanceInMeters,
-                        time = totalSeconds
+                    
+                    // Pass display values - conversion will happen in updateWorkoutSet
+                    val updatedSet = WorkoutSet(
+                        id = workoutSet.id,
+                        instanceID = workoutSet.instanceID,
+                        distance = newDisplayDistance, // This is in display units
+                        time = totalSeconds,
+                        reps = null,
+                        load = null
                     )
                     onSave(updatedSet)
                 }
@@ -676,12 +686,16 @@ fun StrengthWorkoutSetEditDialog(
             TextButton(
                 onClick = {
                     val newDisplayLoad = load.toDoubleOrNull() ?: 0.0
-                    // Convert back to kg for storage
-                    val newLoadKg = UnitConverter.storeWeight(newDisplayLoad, isImperial)
                     val newReps = reps.toIntOrNull() ?: 0
-                    val updatedSet = workoutSet.copy(
-                        load = newLoadKg,
-                        reps = newReps
+                    
+                    // Pass display values - conversion will happen in updateWorkoutSet
+                    val updatedSet = WorkoutSet(
+                        id = workoutSet.id,
+                        instanceID = workoutSet.instanceID,
+                        load = newDisplayLoad, // This is in display units
+                        reps = newReps,
+                        time = null,
+                        distance = null
                     )
                     onSave(updatedSet)
                 }

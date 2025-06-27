@@ -85,14 +85,18 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
 
     fun addWorkoutSet(workoutSet: WorkoutSet) {
         val convertedSet = convertToMetric(workoutSet)
+        val uniqueId = -(System.currentTimeMillis() + System.nanoTime()).toInt()
+        val uniqueSet = convertedSet.copy(id = uniqueId)
+        
         _uiState.update { currentState ->
-            val newWorkoutSets = currentState.workoutSets + convertedSet
+            val newWorkoutSets = currentState.workoutSets + uniqueSet
             currentState.copy(workoutSets = newWorkoutSets)
         }
     }
 
     fun getLastWorkoutSetValues(): WorkoutSet? {
-        return _uiState.value.workoutSets.lastOrNull()
+        val lastSet = _uiState.value.workoutSets.lastOrNull()
+        return lastSet?.copy(id = 0, instanceID = 0)
     }
 
     fun removeWorkoutSet(workoutSet: WorkoutSet) {
@@ -105,8 +109,11 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
     fun updateWorkoutSet(oldSet: WorkoutSet, newSet: WorkoutSet) {
         _uiState.update { currentState ->
             val updatedSets = currentState.workoutSets.map { set ->
-                if (set.id == oldSet.id) {
-                    newSet.copy(id = oldSet.id, instanceID = oldSet.instanceID)
+                if (set.id == oldSet.id && set.instanceID == oldSet.instanceID) {
+                    // Convert the new values to metric for storage
+                    val convertedNewSet = convertToMetric(newSet)
+                    // Preserve the original IDs to maintain proper mapping
+                    convertedNewSet.copy(id = oldSet.id, instanceID = oldSet.instanceID)
                 } else {
                     set
                 }

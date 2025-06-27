@@ -102,8 +102,10 @@ public class HomeViewModel @Inject constructor(
 
     fun updateWorkoutSet(workoutSet: WorkoutSet) {
         viewModelScope.launch {
+            // Update the workout set in the database
             workoutSetRepository.updateWorkoutSet(workoutSet)
 
+            // Reload the exercise instances to reflect the changes
             val currentDate = _date.value
             if (currentDate != 0L) {
                 loadExerciseInstances(currentDate)
