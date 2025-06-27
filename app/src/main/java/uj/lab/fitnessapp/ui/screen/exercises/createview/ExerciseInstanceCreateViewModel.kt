@@ -129,7 +129,9 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                 val instanceId = _instanceId.value!!
                 workoutSetRepository.deleteWorkoutSetsForInstance(instanceId)
 
-                _uiState.value.workoutSets.forEach { workoutSet ->
+                // Sort sets before inserting to maintain order
+                val sortedSets = _uiState.value.workoutSets.sortedBy { it.id }
+                sortedSets.forEach { workoutSet ->
                     workoutSetRepository.insertWorkoutSet(
                         workoutSet.copy(instanceID = instanceId)
                     )
@@ -143,7 +145,10 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                         date = _date.value
                     )
                 )
-                state.workoutSets.forEach { workoutSet ->
+                
+                // Sort sets before inserting to maintain order
+                val sortedSets = state.workoutSets.sortedBy { it.id }
+                sortedSets.forEach { workoutSet ->
                     workoutSetRepository.insertWorkoutSet(
                         workoutSet.copy(instanceID = instanceId)
                     )
@@ -178,14 +183,18 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
                 val instance = exerciseInstanceRepository.getExerciseInstanceWithDetails(instanceId)
                 instance?.let {
                     val exercise = exerciseRepository.getExerciseByName(it.exercise?.exerciseName ?: "")
+                    
+                    // Sort workout sets by ID to ensure consistent ordering
+                    val sortedSets = it.seriesList?.sortedBy { set -> set.id } ?: emptyList()
+                    
                     _uiState.update { currentState ->
                         currentState.copy(
                             exerciseId = exercise.id,
                             workoutType = exercise.workoutType,
-                            workoutSets = it.seriesList?.toList() ?: emptyList()
+                            workoutSets = sortedSets
                         )
                     }
-                    println("Loaded instance: $instanceId with ${it.seriesList?.size ?: 0} sets")
+                    println("Loaded instance: $instanceId with ${sortedSets.size} sets")
                 } ?: run {
                     println("Failed to load instance: $instanceId")
                 }

@@ -14,7 +14,13 @@ import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
 import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
 import uj.lab.fitnessapp.data.model.WorkoutSet
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
+import java.time.LocalDate
 import javax.inject.Inject
+
+data class HomeUiState(
+    val exerciseInstances: List<ExerciseInstanceWithDetails> = emptyList(),
+    val currentDate: Long? = null
+)
 
 @HiltViewModel
 public class HomeViewModel @Inject constructor(
@@ -61,7 +67,7 @@ public class HomeViewModel @Inject constructor(
             )
             _uiState.update {
                 HomeUiState(
-                    exerciseInstances = exerciseInstances,
+                    exerciseInstances = ensureConsistentSetOrdering(exerciseInstances),
                     currentDate = workoutDate
                 )
             }
@@ -105,11 +111,8 @@ public class HomeViewModel @Inject constructor(
             // Update the workout set in the database
             workoutSetRepository.updateWorkoutSet(workoutSet)
 
-            // Reload the exercise instances to reflect the changes
-            val currentDate = _date.value
-            if (currentDate != 0L) {
-                loadExerciseInstances(currentDate)
-            }
+            // Refresh the exercise instances to reflect the changes
+            refreshExerciseInstances()
         }
     }
 
@@ -117,16 +120,38 @@ public class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             workoutSetRepository.deleteWorkoutSet(workoutSet.id)
 
-            val currentDate = _date.value
-            if (currentDate != 0L) {
-                loadExerciseInstances(currentDate)
+            // Refresh the exercise instances to reflect the changes
+            refreshExerciseInstances()
+        }
+    }
+
+    /**
+     * Ensures consistent ordering of workout sets in exercise instances:
+     * keeps seriesList sorted by their original ID so item numbers never shift.
+     */
+    private fun ensureConsistentSetOrdering(instances: List<ExerciseInstanceWithDetails>): List<ExerciseInstanceWithDetails> {
+        return instances.map { instance ->
+            val sortedSeries = instance.seriesList
+                // sort by the generated PK so newly added sets keep their number
+                ?.sortedBy { it.id } 
+                ?: emptyList()
+            instance.copy(seriesList = sortedSeries)
+        }
+    }
+
+    fun loadExerciseInstancesForDate(date: LocalDate) {
+        viewModelScope.launch {
+            val instances = exerciseInstanceRepository.getAllExerciseInstanceWithDetailsForDate(date.toEpochDay())
+            _uiState.update {
+                it.copy(exerciseInstances = ensureConsistentSetOrdering(instances))
             }
         }
     }
 
+    private fun refreshExerciseInstances() {
+        val currentDate = _date.value
+        if (currentDate != 0L) {
+            loadExerciseInstances(currentDate)
+        }
+    }
 }
-
-data class HomeUiState(
-    val exerciseInstances: List<ExerciseInstanceWithDetails> = emptyList(),
-    val currentDate: Long? = null
-)

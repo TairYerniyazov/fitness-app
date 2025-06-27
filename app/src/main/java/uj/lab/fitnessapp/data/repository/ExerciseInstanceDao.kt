@@ -39,7 +39,4 @@ interface ExerciseInstanceDao {
     @Transaction
     @Query("SELECT * FROM exerciseInstances WHERE date BETWEEN :startDate AND :endDate AND exerciseID = :exerciseID ORDER BY date")
     suspend fun getAllExerciseInstanceWithDetailsInRange(exerciseID: Int, startDate: Long, endDate: Long): List<ExerciseInstanceWithDetails>
-
-
-
 }

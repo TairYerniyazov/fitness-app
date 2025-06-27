@@ -16,7 +16,10 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["instanceID"])]
+    indices = [
+        Index(value = ["instanceID"]),
+        Index(value = ["ID"])
+    ]
 )
 data class WorkoutSet(
     @PrimaryKey(autoGenerate = true)

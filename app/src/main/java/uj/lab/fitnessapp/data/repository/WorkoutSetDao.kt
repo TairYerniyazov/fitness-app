@@ -18,6 +18,6 @@ interface WorkoutSetDao {
     @Query("DELETE FROM workoutSets WHERE instanceID = :instanceId")
     suspend fun deleteWorkoutSetsForInstance(instanceId: Int)
     
-    @Query("SELECT * FROM workoutSets WHERE instanceID = :instanceId")
+    @Query("SELECT * FROM workoutSets WHERE instanceID = :instanceId ORDER BY ID ASC")
     suspend fun getWorkoutSetsForInstance(instanceId: Int): List<WorkoutSet>
 }
