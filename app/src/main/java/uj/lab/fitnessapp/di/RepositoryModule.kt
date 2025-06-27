@@ -19,7 +19,6 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindExerciseRepository(repository: ExerciseRepositoryImpl): ExerciseRepository
 
-
     @Singleton
     @Binds
     abstract fun bindExerciseInstanceRepository(repository: ExerciseInstanceRepositoryImpl): ExerciseInstanceRepository

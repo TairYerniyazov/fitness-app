@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -52,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import uj.lab.fitnessapp.data.model.WorkoutSet
 import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.data.utils.UnitConverter
 import uj.lab.fitnessapp.navigation.Screen
 import uj.lab.fitnessapp.ui.component.CardioWorkoutSetEntry
 import uj.lab.fitnessapp.ui.component.DurationInput
@@ -70,11 +72,15 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet = remember { mutableStateOf(false) }
     var workoutSetToDelete by remember { mutableStateOf<WorkoutSet?>(null) }
+    var editingWorkoutSet by remember { mutableStateOf<WorkoutSet?>(null) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(instanceId, exerciseKind) {
+        println("ExerciseInstanceCreateScreen - instanceId: $instanceId, exerciseKind: $exerciseKind")
         if (instanceId != null) {
+            println("Loading existing instance: $instanceId")
             viewModel.loadExistingInstance(instanceId)
         } else {
+            println("Loading exercise: $exerciseKind")
             viewModel.loadExercise(exerciseKind)
         }
     }
@@ -90,7 +96,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = exerciseKind,
+                            text = if (instanceId != null) "Edytuj: $exerciseKind" else exerciseKind,
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
@@ -179,6 +185,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         workoutSet.distance!!,
                                         workoutSet.time!!.toDuration(DurationUnit.SECONDS),
                                         onDelete = { workoutSetToDelete = workoutSet },
+                                        onEdit = { editingWorkoutSet = workoutSet },
                                         viewModel = viewModel
                                     )
 
@@ -188,6 +195,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                                         workoutSet.load!!,
                                         workoutSet.reps!!,
                                         onDelete = { workoutSetToDelete = workoutSet },
+                                        onEdit = { editingWorkoutSet = workoutSet },
                                         viewModel = viewModel
                                     )
                             }
@@ -208,8 +216,16 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                 ) {
                     Button(
                         onClick = {
-                            viewModel.saveExerciseInstance() {
-                                navController.popBackStack(Screen.Home.route, false)
+                            if (instanceId != null) {
+                                println("Updating existing instance: $instanceId")
+                                viewModel.updateExerciseInstance(instanceId) {
+                                    navController.popBackStack(Screen.Home.route, false)
+                                }
+                            } else {
+                                println("Saving new instance")
+                                viewModel.saveExerciseInstance() {
+                                    navController.popBackStack(Screen.Home.route, false)
+                                }
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -226,7 +242,7 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
                         enabled = !state.isSaving && state.workoutSets.isNotEmpty()
                     ) {
                         Text(
-                            text = "Zapisz",
+                            text = if (instanceId != null) "Aktualizuj" else "Zapisz",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelLarge,
                         )
@@ -269,6 +285,31 @@ fun ExerciseInstanceCreateScreen(navController: NavController, exerciseKind: Str
             }
         }
     )
+
+    editingWorkoutSet?.let { workoutSet ->
+        when (state.workoutType) {
+            WorkoutType.Cardio -> {
+                CardioWorkoutSetEditDialog(
+                    workoutSet = workoutSet,
+                    onDismiss = { editingWorkoutSet = null },
+                    onSave = { updatedSet ->
+                        viewModel.updateWorkoutSet(workoutSet, updatedSet)
+                        editingWorkoutSet = null
+                    }
+                )
+            }
+            WorkoutType.Strength -> {
+                StrengthWorkoutSetEditDialog(
+                    workoutSet = workoutSet,
+                    onDismiss = { editingWorkoutSet = null },
+                    onSave = { updatedSet ->
+                        viewModel.updateWorkoutSet(workoutSet, updatedSet)
+                        editingWorkoutSet = null
+                    }
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -462,3 +503,153 @@ fun WorkoutSetCreatorPreview() {
 //        workoutDate =
 //    )
 //}
+
+@Composable
+fun CardioWorkoutSetEditDialog(
+    workoutSet: WorkoutSet,
+    onDismiss: () -> Unit,
+    onSave: (WorkoutSet) -> Unit,
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+) {
+    val isImperial by viewModel.isImperialDistance.collectAsState()
+    
+    // Convert stored distance (meters) to display units
+    val (initialDisplayDistance, distanceUnit) = UnitConverter.displayDistance(workoutSet.distance ?: 0.0, isImperial)
+    
+    var distance by remember { mutableStateOf(initialDisplayDistance.toString()) }
+    
+    // Convert stored time (seconds) to hours, minutes, seconds
+    val totalSeconds = workoutSet.time ?: 0
+    var hours by remember { mutableStateOf((totalSeconds / 3600).toString()) }
+    var minutes by remember { mutableStateOf(((totalSeconds % 3600) / 60).toString()) }
+    var seconds by remember { mutableStateOf((totalSeconds % 60).toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edytuj serię") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = distance,
+                    onValueChange = { distance = it },
+                    label = { Text("Dystans ($distanceUnit)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row {
+                    OutlinedTextField(
+                        value = hours,
+                        onValueChange = { hours = it },
+                        label = { Text("Godz") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    OutlinedTextField(
+                        value = minutes,
+                        onValueChange = { minutes = it },
+                        label = { Text("Min") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    OutlinedTextField(
+                        value = seconds,
+                        onValueChange = { seconds = it },
+                        label = { Text("Sek") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val hoursInt = hours.toIntOrNull() ?: 0
+                    val minutesInt = minutes.toIntOrNull() ?: 0
+                    val secondsInt = seconds.toIntOrNull() ?: 0
+                    val totalSeconds = hoursInt * 3600 + minutesInt * 60 + secondsInt
+                    // Convert distance back to meters for storage
+                    val newDisplayDistance = distance.toDoubleOrNull() ?: 0.0
+                    val distanceInMeters = UnitConverter.storeDistance(newDisplayDistance, isImperial)
+                    val updatedSet = workoutSet.copy(
+                        distance = distanceInMeters,
+                        time = totalSeconds
+                    )
+                    onSave(updatedSet)
+                }
+            ) {
+                Text("Zapisz")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anuluj")
+            }
+        }
+    )
+}
+
+@Composable
+fun StrengthWorkoutSetEditDialog(
+    workoutSet: WorkoutSet,
+    onDismiss: () -> Unit,
+    onSave: (WorkoutSet) -> Unit,
+    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+) {
+    val isImperial by viewModel.isImperialWeight.collectAsState()
+    
+    // Convert stored weight (kg) to display units
+    val (initialDisplayLoad, weightUnit) = UnitConverter.displayWeight(workoutSet.load ?: 0.0, isImperial)
+    
+    var load by remember { mutableStateOf(initialDisplayLoad.toString()) }
+    var reps by remember { mutableStateOf(workoutSet.reps?.toString() ?: "0") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edytuj serię") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = load,
+                    onValueChange = { load = it },
+                    label = { Text("Obciążenie ($weightUnit)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = reps,
+                    onValueChange = { reps = it },
+                    label = { Text("Powtórzenia") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val newDisplayLoad = load.toDoubleOrNull() ?: 0.0
+                    // Convert back to kg for storage
+                    val newLoadKg = UnitConverter.storeWeight(newDisplayLoad, isImperial)
+                    val newReps = reps.toIntOrNull() ?: 0
+                    val updatedSet = workoutSet.copy(
+                        load = newLoadKg,
+                        reps = newReps
+                    )
+                    onSave(updatedSet)
+                }
+            ) {
+                Text("Zapisz")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anuluj")
+            }
+        }
+    )
+}

@@ -110,6 +110,7 @@ fun HomeScreen(navController: NavController) {
                             exerciseToDelete = instance.exerciseInstance
                         },
                         onEditClick = { clickedExercise ->
+                            println("Edit clicked for exercise: ${clickedExercise.exercise?.exerciseName}, instanceId: ${clickedExercise.exerciseInstance?.id}")
                             navController.navigate(
                                 Screen.EditExerciseInstance.createRoute(
                                     exerciseKind = clickedExercise.exercise!!.exerciseName,

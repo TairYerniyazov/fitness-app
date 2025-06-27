@@ -57,12 +57,12 @@ fun Navigation(navController: NavHostController) {
             )
         ) { backStackEntry ->
             val exerciseKind = backStackEntry.arguments?.getString("exerciseKind") ?: ""
-            val instanceId = backStackEntry.arguments?.getInt("instanceId")
+            val instanceId = backStackEntry.arguments?.getInt("instanceId") ?: 0
 
             ExerciseInstanceCreateScreen(
                 navController = navController,
                 exerciseKind = exerciseKind,
-                instanceId = instanceId
+                instanceId = if (instanceId > 0) instanceId else null
             )
         }
         composable(

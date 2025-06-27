@@ -4,28 +4,21 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
-import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import uj.lab.fitnessapp.R
-
 import uj.lab.fitnessapp.data.model.*
 import uj.lab.fitnessapp.data.repository.ExerciseDao
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceDao
 import uj.lab.fitnessapp.data.repository.WorkoutSetDao
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
 import androidx.core.content.edit
 
 
 @Database(
     entities = [Exercise::class, ExerciseInstance::class, WorkoutSet::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun exerciseDao(): ExerciseDao

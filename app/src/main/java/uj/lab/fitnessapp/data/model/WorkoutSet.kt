@@ -3,6 +3,7 @@ package uj.lab.fitnessapp.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -14,7 +15,8 @@ import androidx.room.PrimaryKey
             childColumns = ["instanceID"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index(value = ["instanceID"])]
 )
 data class WorkoutSet(
     @PrimaryKey(autoGenerate = true)
@@ -24,5 +26,4 @@ data class WorkoutSet(
     @ColumnInfo(name = "load") val load: Double? = null, //kg
     @ColumnInfo(name = "time") val time: Int? = null, //HH:MM:SS
     @ColumnInfo(name = "distance") val distance: Double? = null //m
-
 )

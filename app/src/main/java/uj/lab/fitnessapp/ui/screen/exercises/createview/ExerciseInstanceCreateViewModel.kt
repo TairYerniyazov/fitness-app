@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.ExerciseInstance
@@ -99,6 +98,19 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
+    fun updateWorkoutSet(oldSet: WorkoutSet, newSet: WorkoutSet) {
+        _uiState.update { currentState ->
+            val updatedSets = currentState.workoutSets.map { set ->
+                if (set.id == oldSet.id) {
+                    newSet.copy(id = oldSet.id, instanceID = oldSet.instanceID)
+                } else {
+                    set
+                }
+            }
+            currentState.copy(workoutSets = updatedSets)
+        }
+    }
+
     fun saveExerciseInstance(onSave: () -> Unit) {
         _uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
@@ -131,21 +143,43 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
     }
 
+    fun updateExerciseInstance(instanceId: Int, onSave: () -> Unit) {
+        _uiState.update { it.copy(isSaving = true) }
+        viewModelScope.launch {
+            workoutSetRepository.deleteWorkoutSetsForInstance(instanceId)
+
+            _uiState.value.workoutSets.forEach { workoutSet ->
+                workoutSetRepository.insertWorkoutSet(
+                    workoutSet.copy(instanceID = instanceId)
+                )
+            }
+            _uiState.update { it.copy(isSaving = false) }
+            onSave()
+        }
+    }
+
     fun loadExistingInstance(instanceId: Int) {
         viewModelScope.launch {
-            _isEditMode.value = true
-            _instanceId.value = instanceId
+            try {
+                _isEditMode.value = true
+                _instanceId.value = instanceId
 
-            val instance = exerciseInstanceRepository.getExerciseInstanceWithDetails(instanceId)
-            instance.let {
-                val exercise = exerciseRepository.getExerciseByName(it.exercise?.exerciseName ?: "")
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        exerciseId = exercise.id,
-                        workoutType = exercise.workoutType,
-                        workoutSets = it.seriesList?.toList() ?: emptyList()
-                    )
+                val instance = exerciseInstanceRepository.getExerciseInstanceWithDetails(instanceId)
+                instance?.let {
+                    val exercise = exerciseRepository.getExerciseByName(it.exercise?.exerciseName ?: "")
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            exerciseId = exercise.id,
+                            workoutType = exercise.workoutType,
+                            workoutSets = it.seriesList?.toList() ?: emptyList()
+                        )
+                    }
+                    println("Loaded instance: $instanceId with ${it.seriesList?.size ?: 0} sets")
+                } ?: run {
+                    println("Failed to load instance: $instanceId")
                 }
+            } catch (e: Exception) {
+                println("Error loading instance $instanceId: ${e.message}")
             }
         }
     }
@@ -158,7 +192,7 @@ class ExerciseInstanceCreateViewModel @Inject constructor(
         }
 
         val metricDistance = if (workoutSet.distance != null && workoutSet.distance > 0) {
-            UnitConverter.storeDistance(workoutSet.distance.toDouble(), _isImperialDistance.value)
+            UnitConverter.storeDistance(workoutSet.distance, _isImperialDistance.value)
         } else {
             workoutSet.distance
         }
@@ -179,4 +213,8 @@ data class ExerciseInstanceCreateUiState(
     val workoutType: WorkoutType = WorkoutType.Strength,
     val workoutSets: List<WorkoutSet> = emptyList(),
     val isSaving: Boolean = false,
+    val exerciseInstance: ExerciseInstance? = null,
+    val isEditMode: Boolean = false,
+    val isLoading: Boolean = false,
+    val error: String? = null
 )

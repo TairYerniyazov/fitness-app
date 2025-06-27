@@ -11,13 +11,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.repository.ExerciseInstanceRepository
-import uj.lab.fitnessapp.ui.screen.settings.MetricUnit
+import uj.lab.fitnessapp.data.repository.WorkoutSetRepository
+import uj.lab.fitnessapp.data.model.WorkoutSet
 import uj.lab.fitnessapp.ui.screen.settings.SettingsManager
 import javax.inject.Inject
 
 @HiltViewModel
-internal class HomeViewModel @Inject constructor(
+public class HomeViewModel @Inject constructor(
     private val exerciseInstanceRepository: ExerciseInstanceRepository,
+    private val workoutSetRepository: WorkoutSetRepository,
     private val settingsManager: SettingsManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -26,10 +28,28 @@ internal class HomeViewModel @Inject constructor(
     private val _date = MutableStateFlow(0L)
     val date: StateFlow<Long> = _date.asStateFlow()
 
+    private val _isImperialWeight = MutableStateFlow(false)
+    val isImperialWeight: StateFlow<Boolean> = _isImperialWeight.asStateFlow()
+
+    private val _isImperialDistance = MutableStateFlow(false)
+    val isImperialDistance: StateFlow<Boolean> = _isImperialDistance.asStateFlow()
+
     init {
         viewModelScope.launch {
             settingsManager.date.collect { date ->
                 _date.value = date
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.weightUnit.collect { unit ->
+                _isImperialWeight.value = unit == "imperial"
+            }
+        }
+
+        viewModelScope.launch {
+            settingsManager.distanceUnit.collect { unit ->
+                _isImperialDistance.value = unit == "imperial"
             }
         }
     }
@@ -77,6 +97,28 @@ internal class HomeViewModel @Inject constructor(
         _date.value = date
         viewModelScope.launch {
             settingsManager.setDate(date)
+        }
+    }
+
+    fun updateWorkoutSet(workoutSet: WorkoutSet) {
+        viewModelScope.launch {
+            workoutSetRepository.updateWorkoutSet(workoutSet)
+
+            val currentDate = _date.value
+            if (currentDate != 0L) {
+                loadExerciseInstances(currentDate)
+            }
+        }
+    }
+
+    fun deleteWorkoutSet(workoutSet: WorkoutSet) {
+        viewModelScope.launch {
+            workoutSetRepository.deleteWorkoutSet(workoutSet.id)
+
+            val currentDate = _date.value
+            if (currentDate != 0L) {
+                loadExerciseInstances(currentDate)
+            }
         }
     }
 

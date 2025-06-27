@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -26,11 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import uj.lab.fitnessapp.R
+import uj.lab.fitnessapp.data.utils.TimeFormatter
 import uj.lab.fitnessapp.data.utils.UnitConverter
 import uj.lab.fitnessapp.ui.screen.exercises.createview.ExerciseInstanceCreateViewModel
-import uj.lab.fitnessapp.ui.theme.FitnessAppTheme
 import kotlin.time.Duration
 
 @Composable
@@ -39,12 +39,18 @@ fun CardioWorkoutSetEntry(
     distance: Double,
     time: Duration,
     onDelete: (() -> Unit)? = null,
-    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+    onEdit: (() -> Unit)? = null,
+    viewModel: ExerciseInstanceCreateViewModel? = null,
+    isImperial: Boolean = false
 ) {
+    val actualIsImperial = if (viewModel != null) {
+        val viewModelIsImperial by viewModel.isImperialDistance.collectAsState()
+        viewModelIsImperial
+    } else {
+        isImperial
+    }
 
-    val distanceUnit by viewModel.distanceUnit.collectAsState()
-    val isImperial by viewModel.isImperialDistance.collectAsState()
-    val (displayDistance, _) = UnitConverter.displayDistance(distance, isImperial)
+    val (displayDistance, actualUnit) = UnitConverter.displayDistance(distance, actualIsImperial)
 
     Card(
         modifier = Modifier
@@ -63,6 +69,19 @@ fun CardioWorkoutSetEntry(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.weight(1f))
+                if (onEdit != null) {
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 if (onDelete != null) {
                     IconButton(
                         onClick = onDelete,
@@ -89,7 +108,7 @@ fun CardioWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${"%.2f".format(displayDistance)} $distanceUnit",
+                        text = "${"%.2f".format(displayDistance).replace('.', ',')} $actualUnit",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -101,7 +120,7 @@ fun CardioWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = time.toString(),
+                        text = TimeFormatter.formatDuration(time),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -116,12 +135,19 @@ fun StrengthWorkoutSetEntry(
     load: Double,
     reps: Int,
     onDelete: (() -> Unit)? = null,
-    viewModel: ExerciseInstanceCreateViewModel = hiltViewModel()
+    onEdit: (() -> Unit)? = null,
+    viewModel: ExerciseInstanceCreateViewModel? = null,
+    isImperial: Boolean = false
 ) {
-    val weightUnit by viewModel.weightUnit.collectAsState()
-    val isImperial by viewModel.isImperialWeight.collectAsState()
+    // Use passed parameter first, fallback to viewModel if available
+    val actualIsImperial = if (viewModel != null) {
+        val viewModelIsImperial by viewModel.isImperialWeight.collectAsState()
+        viewModelIsImperial
+    } else {
+        isImperial
+    }
 
-    val (displayLoad, _) = UnitConverter.displayWeight(load, isImperial)
+    val (displayLoad, actualUnit) = UnitConverter.displayWeight(load, actualIsImperial)
 
     Card(
         modifier = Modifier
@@ -140,6 +166,19 @@ fun StrengthWorkoutSetEntry(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.weight(1f))
+                if (onEdit != null) {
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 if (onDelete != null) {
                     IconButton(
                         onClick = onDelete,
@@ -166,7 +205,7 @@ fun StrengthWorkoutSetEntry(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "${"%.1f".format(displayLoad)} $weightUnit",
+                        text = "${"%.1f".format(displayLoad).replace('.', ',')} $actualUnit",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -186,3 +225,4 @@ fun StrengthWorkoutSetEntry(
         }
     }
 }
+

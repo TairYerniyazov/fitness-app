@@ -1,58 +1,55 @@
 package uj.lab.fitnessapp.ui.component
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import uj.lab.fitnessapp.R
 import uj.lab.fitnessapp.data.model.Exercise
 import uj.lab.fitnessapp.data.model.ExerciseInstanceWithDetails
 import uj.lab.fitnessapp.data.model.WorkoutType
+import uj.lab.fitnessapp.data.model.WorkoutSet
+import uj.lab.fitnessapp.ui.screen.home.HomeViewModel
+import androidx.compose.ui.unit.sp
 import kotlin.time.Duration.Companion.seconds
+import uj.lab.fitnessapp.data.utils.UnitConverter
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun ExerciseInstanceEntry(
+internal fun ExerciseInstanceEntry(
     index: Int,
     instance: ExerciseInstanceWithDetails,
     onFavoriteClick: (Exercise) -> Unit,
     onAnalyticsClick: (Exercise) -> Unit,
     onDelete: () -> Unit,
-    onEditClick: (ExerciseInstanceWithDetails) -> Unit
+    onEditClick: (ExerciseInstanceWithDetails) -> Unit,
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val name = instance.exercise?.exerciseName ?: "Unknown Exercise"
-    val height = instance.seriesList!!.size * 122
-    val paddings = (instance.seriesList!!.size - 1) * 16
+    val isImperialWeight by homeViewModel.isImperialWeight.collectAsState()
+    val isImperialDistance by homeViewModel.isImperialDistance.collectAsState()
+
     ElevatedCard(modifier = Modifier.padding(12.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end=16.dp, top = 8.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.Top,
             ) {
                 Text(
-                "${index + 1}. $name",
+                "${index + 1}. ${instance.exercise?.exerciseName ?: "Unknown Exercise"}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
             ) }
@@ -101,20 +98,109 @@ fun ExerciseInstanceEntry(
             }
             LazyColumn(
                 modifier = Modifier
-                    .height(((height - paddings)).dp)
+                    .height(((instance.seriesList!!.size * 122) - ((instance.seriesList!!.size - 1) * 16)).dp)
                     .padding(8.dp),
                 userScrollEnabled = false
             ) {
-                itemsIndexed(instance.seriesList!!) { index, set ->
+                itemsIndexed(instance.seriesList!!) { setIndex, workoutSet ->
                     when (instance.exercise!!.workoutType) {
                         WorkoutType.Cardio ->
-                            CardioWorkoutSetEntry(index, set.distance!!, set.time!!.seconds)
+                            CardioWorkoutSetEntry(
+                                setIndex = setIndex,
+                                distance = workoutSet.distance!!,
+                                time = (workoutSet.time ?: 0).seconds,
+                                onDelete = null,
+                                onEdit = null,
+                                viewModel = null,
+                                isImperial = isImperialDistance
+                            )
 
                         WorkoutType.Strength ->
-                            StrengthWorkoutSetEntry(index, set.load!!, set.reps!!)
+                            StrengthWorkoutSetEntry(
+                                setIndex = setIndex,
+                                load = workoutSet.load!!,
+                                reps = workoutSet.reps!!,
+                                onDelete = null,
+                                onEdit = null,
+                                viewModel = null,
+                                isImperial = isImperialWeight
+                            )
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun WorkoutSetEditDialog(
+    workoutSet: WorkoutSet,
+    isImperial: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (WorkoutSet) -> Unit
+) {
+    var reps by remember { mutableStateOf(workoutSet.reps?.toString() ?: "") }
+    var load by remember { mutableStateOf(workoutSet.load?.let { 
+        UnitConverter.displayWeight(it, isImperial).first.toString() 
+    } ?: "") }
+    var time by remember { mutableStateOf(workoutSet.time?.toString() ?: "") }
+    var distance by remember { mutableStateOf(workoutSet.distance?.let { 
+        UnitConverter.displayDistance(it, isImperial).first.toString() 
+    } ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edytuj serię") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = reps,
+                    onValueChange = { reps = it },
+                    label = { Text("Powtórzenia") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = load,
+                    onValueChange = { load = it },
+                    label = { Text("Ciężar") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = time,
+                    onValueChange = { time = it },
+                    label = { Text("Czas (sekundy)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = distance,
+                    onValueChange = { distance = it },
+                    label = { Text("Dystans") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val updatedSet = workoutSet.copy(
+                        reps = reps.toIntOrNull(),
+                        load = load.toDoubleOrNull()?.let { UnitConverter.storeWeight(it, isImperial) },
+                        time = time.toIntOrNull(),
+                        distance = distance.toDoubleOrNull()?.let { UnitConverter.storeDistance(it, isImperial) }
+                    )
+                    onConfirm(updatedSet)
+                }
+            ) {
+                Text("Zapisz")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Anuluj")
+            }
+        }
+    )
 }
